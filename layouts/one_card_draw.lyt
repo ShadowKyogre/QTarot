@@ -1,0 +1,9 @@
+<layout name="One Card Draw" height="4.0" width="4.0">
+	<purpose>This is completely dependent on what you want to know</purpose>
+	<card>
+		<purpose>The answer</purpose>
+		<x>0.0</x>
+		<y>0.375</y>
+		<angle>0.0</angle>
+	</card>
+</layout>
