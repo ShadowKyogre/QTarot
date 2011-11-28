@@ -1,0 +1,58 @@
+<layout name="European" height="2.0" width="12.0">
+	<purpose>A timeline of yourself</purpose>
+	<card>
+		<purpose>Your past - part 1</purpose>
+		<x>0.0</x>
+		<y>0.375</y>
+		<angle>0.0</angle>
+	</card>
+	<card>
+		<purpose>Your past - part 2</purpose>
+		<x>0.0833333333333</x>
+		<y>0.375</y>
+		<angle>0.0</angle>
+	</card>
+	<card>
+		<purpose>Your past - part 3</purpose>
+		<x>0.166666666667</x>
+		<y>0.375</y>
+		<angle>0.0</angle>
+	</card>
+	<card>
+		<purpose>Your present - part 1</purpose>
+		<x>0.333333333333</x>
+		<y>0.375</y>
+		<angle>0.0</angle>
+	</card>
+	<card>
+		<purpose>Your present - part 2
+(probably your most recent experience)</purpose>
+		<x>0.416666666667</x>
+		<y>0.375</y>
+		<angle>0.0</angle>
+	</card>
+	<card>
+		<purpose>Your present - part 3</purpose>
+		<x>0.5</x>
+		<y>0.375</y>
+		<angle>0.0</angle>
+	</card>
+	<card>
+		<purpose>Your future - part 1</purpose>
+		<x>0.666666666667</x>
+		<y>0.375</y>
+		<angle>0.0</angle>
+	</card>
+	<card>
+		<purpose>Your future - part 2</purpose>
+		<x>0.75</x>
+		<y>0.375</y>
+		<angle>0.0</angle>
+	</card>
+	<card>
+		<purpose>Your future - part 3</purpose>
+		<x>0.833333333333</x>
+		<y>0.375</y>
+		<angle>0.0</angle>
+	</card>
+</layout>

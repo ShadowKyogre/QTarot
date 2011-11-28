@@ -1,0 +1,57 @@
+<layout name="Mandala" height="10.0" width="3.0">
+	<purpose>An overview of yourself</purpose>
+	<card>
+		<purpose>Your desires or higher purpose</purpose>
+		<x>0.333333333333</x>
+		<y>0.0</y>
+		<angle>0.0</angle>
+	</card>
+	<card>
+		<purpose>Your self-image</purpose>
+		<x>0.166666666666</x>
+		<y>0.2</y>
+		<angle>0.0</angle>
+	</card>
+	<card>
+		<purpose>Your ambitions or desires</purpose>
+		<x>0.5</x>
+		<y>0.2</y>
+		<angle>0.0</angle>
+	</card>
+	<card>
+		<purpose>Your weaknesses</purpose>
+		<x>0.0</x>
+		<y>0.4</y>
+		<angle>0.0</angle>
+	</card>
+	<card>
+		<purpose>You overall</purpose>
+		<x>0.333333333333</x>
+		<y>0.4</y>
+		<angle>0.0</angle>
+	</card>
+	<card>
+		<purpose>Your goals</purpose>
+		<x>0.666666666666</x>
+		<y>0.4</y>
+		<angle>0.0</angle>
+	</card>
+	<card>
+		<purpose>Your strengths</purpose>
+		<x>0.166666666666</x>
+		<y>0.6</y>
+		<angle>0.0</angle>
+	</card>
+	<card>
+		<purpose>Your true path and real accomplishments</purpose>
+		<x>0.5</x>
+		<y>0.6</y>
+		<angle>0.0</angle>
+	</card>
+	<card>
+		<purpose>Your mishaps</purpose>
+		<x>0.333333333333</x>
+		<y>0.8</y>
+		<angle>0.0</angle>
+	</card>
+</layout>
