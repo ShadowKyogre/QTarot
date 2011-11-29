@@ -2,14 +2,54 @@
 
 import sys
 from PyQt4 import QtGui,QtCore
-from random import shuffle,random
+from random import sample,random
 from qtarotconfig import QTarotConfig
+from utilities import ZPGraphicsView
+
+class QTarotScene(QtGui.QGraphicsScene):
+	def addTarot(self, pixmap, number, x=0.0, y=0.0,angle=0.0):
+		qtarotitem=QTarotItem(pixmap)
+		self.addItem(qtarotitem)
+		if angle != 0:
+			qtarotitem.rotate(angle)
+		qtarotitem.setPos(x,y)
+		qtarotitem.cardNumber=number
+		return qtarotitem
+
+class QTarotItem(QtGui.QGraphicsPixmapItem):
+	def cardNumber(self):
+		return self.data(32).toInt()[0]
+
+	def setCardNumber(self, idx):
+		#self.setGraphicsEffect(QtGui.QGraphicsDropShadowEffect())
+		self.setData(32,idx)
+
+	def purpose(self):
+		return self.data(33).toString()
+
+	def setPurpose(self, string):
+		self.setData(33, string)
+
+	cardNumber = QtCore.pyqtProperty("int", cardNumber, setCardNumber)
+	purpose = QtCore.pyqtProperty("QString", purpose, setPurpose)
 
 class QTarot(QtGui.QMainWindow):
 
 	def __init__(self):
 		super(QTarot, self).__init__()
 		self.initUI()
+
+	def updateCards(self):
+		j=0
+		offset=(self.scene.sceneRect().width()-self.smallerD)/2.0
+		for item in self.scene.items():
+			if isinstance(item,QtGui.QGraphicsPixmapItem):
+				card=item.data(32).toInt()[0]
+				item.setPixmap(qtrcfg.deck[card].scaledToWidth(self.smallerD/self.currentLayout.largetDimension))
+				i=self.currentLayout.elements[j]
+				item.setPos(offset+i[0]*self.smallerD, i[1]*self.smallerD)
+				j+=1
+		self.scene.invalidate()
 
 	def updateTable(self,fn="deck:table.png"):
 		self.wallpaper=QtGui.QPixmap(fn)
@@ -23,13 +63,13 @@ class QTarot(QtGui.QMainWindow):
 		else:
 			self.scene.setSceneRect(QtCore.QRectF(self.wallpaper.rect()))
 		j=0
-		offset=self.scene.sceneRect().width()/8.0
-		for k in self.scene.items():
-			if isinstance(k,QtGui.QGraphicsPixmapItem):
-				k.setPixmap(k.pixmap().\
+		offset=(self.scene.sceneRect().width()-self.smallerD)/2.0
+		for item in self.scene.items():
+			if isinstance(item,QTarotItem):
+				item.setPixmap(item.pixmap().\
 				scaledToWidth(self.smallerD/self.currentLayout.largetDimension))
 				i=self.currentLayout.elements[j]
-				k.setPos(offset+i[0]*self.smallerD, i[1]*self.smallerD)
+				item.setPos(offset+i[0]*self.smallerD, i[1]*self.smallerD)
 				j+=1
 		self.scene.invalidate()
 
@@ -50,7 +90,7 @@ class QTarot(QtGui.QMainWindow):
 			self.scene.render(painter, here, here)
 			pixMap.save(filename,format=fmt)
 
-	def updateScene(self,item=None):
+	def newReading(self,item=None):
 		if item is None or item == False:
 			item,ok = QtGui.QInputDialog.getItem(self, "Generate new reading",
 			"Layout to use:", qtrcfg.layouts.keys(), 0, False)
@@ -65,23 +105,23 @@ class QTarot(QtGui.QMainWindow):
 		self.scene.clear()
 		self.scene.invalidate(self.scene.sceneRect())
 
-		offset=self.scene.sceneRect().width()/8.0
-		shuffle(qtrcfg.deck)
-		for x,i in enumerate(lay.elements):
+		offset=(self.scene.sceneRect().width()-self.smallerD)/2.0
+		draws=sample(xrange(len(qtrcfg.deck)),len(lay.elements))
+		for (card,placement) in zip(draws, lay.elements):
 			#rectitem=self.scene.addRect(0,0,1/lay.largetDimension*self.smallerD,\
 			#2/lay.largetDimension*self.smallerD,\
 			#pen=QtGui.QPen(QtGui.QColor("red"),2),\
 			#brush=QtGui.QBrush(QtGui.QColor("indigo")))
-			px=qtrcfg.deck[x].scaledToWidth(1/lay.largetDimension*self.smallerD)
+			px=qtrcfg.deck[card].scaledToWidth(1/lay.largetDimension*self.smallerD)
 			if random() <= qtrcfg.negativity:
 				rm=QtGui.QMatrix()
 				rm.rotate(180)
-				rectitem=self.scene.addPixmap(px.transformed(rm))
-			else:
-				rectitem=self.scene.addPixmap(px)
-			rectitem.setRotation(i[2])
-			rectitem.setToolTip(i[3])
-			rectitem.setPos(offset+i[0]*self.smallerD, i[1]*self.smallerD)
+				px=px.transformed(rm)
+			rectitem=self.scene.addTarot(px,card,\
+						x=offset+placement[0]*self.smallerD,\
+						y=placement[1]*self.smallerD,\
+						angle=placement[2])
+			rectitem.setToolTip(placement[3])
 
 	def settingsWrite(self):
 		self.settingsChange()
@@ -90,10 +130,14 @@ class QTarot(QtGui.QMainWindow):
 
 	def settingsChange(self):
 		qtrcfg.negativity=self.negativity.value()
-		qtrcfg.deck_name=self.deck.currentText()
-		qtrcfg.default_layout=self.default_layout.currentText()
+		if str(self.deck.currentText()) != qtrcfg.deck_name:
+			qtrcfg.deck_name=str(self.deck.currentText())
+			reload_deck=True
+		qtrcfg.default_layout=str(self.default_layout.currentText())
 		qtrcfg.load_layouts()
 		qtrcfg.load_deck()
+		if reload_deck:
+			self.updateCards()
 
 	def settingsReset(self):
 		qtrcfg.reset_settings()
@@ -157,14 +201,14 @@ class QTarot(QtGui.QMainWindow):
 
 	def initUI(self):
 		self.setWindowTitle(app.applicationName())
-		self.scene=QtGui.QGraphicsScene(self)
+		self.scene=QTarotScene(self)
 
 		self.updateTable()
 
-		self.view=QtGui.QGraphicsView(self.scene,self)
+		self.view=ZPGraphicsView(self.scene,self)
 
 		self.setCentralWidget(self.view)
-		self.updateScene(item=qtrcfg.default_layout)
+		self.newReading(item=qtrcfg.default_layout)
 
 		exitAction = QtGui.QAction(QtGui.QIcon.fromTheme('application-exit'), 'Exit', self)
 		exitAction.setShortcut('Ctrl+Q')
@@ -174,7 +218,7 @@ class QTarot(QtGui.QMainWindow):
 		newLayAction = QtGui.QAction(QtGui.QIcon.fromTheme('view-refresh'), 'Reload', self)
 		newLayAction.setShortcut('Ctrl+R')
 		newLayAction.setStatusTip('Reload')
-		newLayAction.triggered.connect(self.updateScene)
+		newLayAction.triggered.connect(self.newReading)
 
 		saveAction = QtGui.QAction(QtGui.QIcon.fromTheme('document-save'), 'Save', self)
 		saveAction.setShortcut('Ctrl+S')
