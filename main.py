@@ -86,8 +86,8 @@ class QTarot(QtGui.QMainWindow):
 		offset=self.scene.calculateOffset()
 		for item in self.scene.items():
 			if isinstance(item,QTarotItem):
-				item.setPixmap(item.pixmap().\
-				scaledToWidth(self.scene.smallerD/self.currentLayout.largetDimension))
+				card=item.data(32).toInt()[0]
+				item.setPixmap(qtrcfg.deck[card].scaledToWidth(self.scene.smallerD/self.currentLayout.largetDimension))
 				i=self.currentLayout.elements[j]
 				pos=QtCore.QPointF(i[0]*self.scene.smallerD,i[1]*self.scene.smallerD)
 				item.setPos(pos+offset)
