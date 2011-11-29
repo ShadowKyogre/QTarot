@@ -1,6 +1,11 @@
 from PyQt4 import QtGui,QtCore
 
 class ZPGraphicsView(QtGui.QGraphicsView):
+	def __init__(self, *args):
+		QtGui.QGraphicsView.__init__(self, *args)
+		self.lastPanPoint=QtCore.QPoint()
+		self.setCenter(QtCore.QPointF(self.sceneRect().width()/2.0, \
+		self.sceneRect().height()/2.0))
 
 	def setCenter(self, centerPoint):
 		#Get the rectangle of the visible area in scene coords
@@ -38,7 +43,6 @@ class ZPGraphicsView(QtGui.QGraphicsView):
 					self.currentCenterPoint.setY(bounds.y() + bounds.height())
 				elif centerPoint.y() < bounds.y():
 					self.currentCenterPoint.setY(bounds.y())
-
 		#Update the scrollbars
 		self.centerOn(self.currentCenterPoint)
 
@@ -49,11 +53,11 @@ class ZPGraphicsView(QtGui.QGraphicsView):
 		self.setCursor(QtCore.Qt.ClosedHandCursor)
 
 	def mouseReleaseEvent(self,event):
-		self.setCursor(QtCore.Qt.OpenHandCursor);
+		self.setCursor(QtCore.Qt.OpenHandCursor)
 		self.lastPanPoint = QtCore.QPoint()
 
 	def mouseMoveEvent(self, event):
-		if not (not hasattr(self, "lastPanPoint") or self.lastPanPoint.isNull()):
+		if not self.lastPanPoint.isNull():
 			#Get how much we panned
 			delta = self.mapToScene(self.lastPanPoint) - self.mapToScene(event.pos())
 			self.lastPanPoint = event.pos()
@@ -75,10 +79,10 @@ class ZPGraphicsView(QtGui.QGraphicsView):
 		scaleFactor = 1.15*numSteps #How fast we zoom
 
 		if(event.delta() > 0):
-			self.scale(scaleFactor, scaleFactor);
+			self.scale(scaleFactor, scaleFactor)
 		else:
 			#Zooming out
-			self.scale(1.0 / scaleFactor, 1.0 / scaleFactor)
+			self.scale(numSteps / scaleFactor, numSteps / scaleFactor)
 
 		#Get the position after scaling, in scene coords
 		pointAfterScale=QtCore.QPointF(self.mapToScene(event.pos()))

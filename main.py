@@ -7,14 +7,42 @@ from qtarotconfig import QTarotConfig
 from utilities import ZPGraphicsView
 
 class QTarotScene(QtGui.QGraphicsScene):
-	def addTarot(self, pixmap, number, x=0.0, y=0.0,angle=0.0):
+	def __init__(self,*args):
+		QtGui.QGraphicsScene.__init__(self, *args)
+		self.tableitem=self.addPixmap(QtGui.QPixmap())
+		self.tableitem.setZValue(-1000.0)
+	def calculateOffset(self):
+		xoffset=(self.sceneRect().width()-self.smallerD)/2.0
+		yoffset=(self.sceneRect().height()-self.smallerD)/2.0
+		return QtCore.QPointF(xoffset,yoffset)
+	def clear(self):
+		px=self.tableitem.pixmap()
+		QtGui.QGraphicsScene.clear(self)
+		self.tableitem=self.addPixmap(px)
+	@property
+	def smallerD(self):
+		return self.sceneRect().width() if \
+		self.sceneRect().width() < self.sceneRect().height() else \
+		self.sceneRect().height()
+	def setTable(self, table):
+		self.tableitem.setPixmap(table)
+		if self.smallerD == 0:
+			self.setSceneRect(QtCore.QRectF(0,0,500,500))
+		else:
+			self.setSceneRect(QtCore.QRectF(table.rect()))
+	def table(self):
+		return self.tableitem.pixmap()
+	def addTarot(self, pixmap, number, pos,angle=0.0):
 		qtarotitem=QTarotItem(pixmap)
 		self.addItem(qtarotitem)
 		if angle != 0:
 			qtarotitem.rotate(angle)
-		qtarotitem.setPos(x,y)
+		qtarotitem.setPos(pos)
 		qtarotitem.cardNumber=number
+		#graphicsItem->setTransform(QTransform().translate(centerX, centerY).rotate(angle).translate(-centerX, -centerY));
 		return qtarotitem
+
+	table = QtCore.pyqtProperty("QPixmap", table, setTable)
 
 class QTarotItem(QtGui.QGraphicsPixmapItem):
 	def cardNumber(self):
@@ -41,35 +69,28 @@ class QTarot(QtGui.QMainWindow):
 
 	def updateCards(self):
 		j=0
-		offset=(self.scene.sceneRect().width()-self.smallerD)/2.0
+		offset=self.scene.calculateOffset()
 		for item in self.scene.items():
 			if isinstance(item,QtGui.QGraphicsPixmapItem):
 				card=item.data(32).toInt()[0]
-				item.setPixmap(qtrcfg.deck[card].scaledToWidth(self.smallerD/self.currentLayout.largetDimension))
+				item.setPixmap(qtrcfg.deck[card].scaledToWidth(self.scene.smallerD/self.currentLayout.largetDimension))
 				i=self.currentLayout.elements[j]
-				item.setPos(offset+i[0]*self.smallerD, i[1]*self.smallerD)
+				pos=QtCore.QPointF(i[0]*self.scene.smallerD,i[1]*self.scene.smallerD)
+				item.setPos(pos+offset)
 				j+=1
 		self.scene.invalidate()
 
 	def updateTable(self,fn="deck:table.png"):
-		self.wallpaper=QtGui.QPixmap(fn)
-		self.scene.setBackgroundBrush(QtGui.QBrush(self.wallpaper))
-		self.smallerD=self.wallpaper.width() if \
-		self.wallpaper.width() > self.wallpaper.height else \
-		self.wallpaper.height()
-		if self.smallerD == 0:
-			self.scene.setSceneRect(QtCore.QRectF(0,0,500,500))
-			self.smallerD=500
-		else:
-			self.scene.setSceneRect(QtCore.QRectF(self.wallpaper.rect()))
+		self.scene.table=QtGui.QPixmap(fn)
 		j=0
-		offset=(self.scene.sceneRect().width()-self.smallerD)/2.0
+		offset=self.scene.calculateOffset()
 		for item in self.scene.items():
 			if isinstance(item,QTarotItem):
 				item.setPixmap(item.pixmap().\
-				scaledToWidth(self.smallerD/self.currentLayout.largetDimension))
+				scaledToWidth(self.scene.smallerD/self.currentLayout.largetDimension))
 				i=self.currentLayout.elements[j]
-				item.setPos(offset+i[0]*self.smallerD, i[1]*self.smallerD)
+				pos=QtCore.QPointF(i[0]*self.scene.smallerD,i[1]*self.scene.smallerD)
+				item.setPos(pos+offset)
 				j+=1
 		self.scene.invalidate()
 
@@ -84,9 +105,9 @@ class QTarot(QtGui.QMainWindow):
 			filter="Images (%s)" %(' '.join(formats)))
 		if filename is not None and filename != "":
 			fmt=filename.split(".",1)[-1]
-			pixMap = QtGui.QPixmap(self.wallpaper.width(),self.wallpaper.height())
+			pixMap = QtGui.QPixmap(self.scene.sceneRect().width(),self.scene.sceneRect().height())
 			painter=QtGui.QPainter(pixMap)
-			here=QtCore.QRectF(self.wallpaper.rect())
+			here=QtCore.QRectF(self.scene.sceneRect().rect())
 			self.scene.render(painter, here, here)
 			pixMap.save(filename,format=fmt)
 
@@ -103,24 +124,22 @@ class QTarot(QtGui.QMainWindow):
 			lay=qtrcfg.layouts[str(item)]
 			self.currentLayout=lay
 		self.scene.clear()
-		self.scene.invalidate(self.scene.sceneRect())
+		self.scene.invalidate()
 
-		offset=(self.scene.sceneRect().width()-self.smallerD)/2.0
+		offset=self.scene.calculateOffset()
 		draws=sample(xrange(len(qtrcfg.deck)),len(lay.elements))
 		for (card,placement) in zip(draws, lay.elements):
 			#rectitem=self.scene.addRect(0,0,1/lay.largetDimension*self.smallerD,\
 			#2/lay.largetDimension*self.smallerD,\
 			#pen=QtGui.QPen(QtGui.QColor("red"),2),\
 			#brush=QtGui.QBrush(QtGui.QColor("indigo")))
-			px=qtrcfg.deck[card].scaledToWidth(1/lay.largetDimension*self.smallerD)
+			px=qtrcfg.deck[card].scaledToWidth(1/lay.largetDimension*self.scene.smallerD)
 			if random() <= qtrcfg.negativity:
 				rm=QtGui.QMatrix()
 				rm.rotate(180)
 				px=px.transformed(rm)
-			rectitem=self.scene.addTarot(px,card,\
-						x=offset+placement[0]*self.smallerD,\
-						y=placement[1]*self.smallerD,\
-						angle=placement[2])
+			pos=QtCore.QPointF(placement[0]*self.scene.smallerD,placement[1]*self.scene.smallerD)
+			rectitem=self.scene.addTarot(px,card,pos+offset,angle=placement[2])
 			rectitem.setToolTip(placement[3])
 
 	def settingsWrite(self):
