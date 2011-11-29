@@ -71,7 +71,7 @@ class QTarot(QtGui.QMainWindow):
 		j=0
 		offset=self.scene.calculateOffset()
 		for item in self.scene.items():
-			if isinstance(item,QtGui.QGraphicsPixmapItem):
+			if isinstance(item,QTarotItem):
 				card=item.data(32).toInt()[0]
 				item.setPixmap(qtrcfg.deck[card].scaledToWidth(self.scene.smallerD/self.currentLayout.largetDimension))
 				i=self.currentLayout.elements[j]
@@ -149,6 +149,7 @@ class QTarot(QtGui.QMainWindow):
 
 	def settingsChange(self):
 		qtrcfg.negativity=self.negativity.value()
+		reload_deck=False
 		if str(self.deck.currentText()) != qtrcfg.deck_name:
 			qtrcfg.deck_name=str(self.deck.currentText())
 			reload_deck=True
