@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 import sys
+import argparse
 from PyQt4 import QtGui,QtCore
 from random import sample,random
 from qtarotconfig import QTarotConfig
@@ -32,13 +33,14 @@ class QTarotScene(QtGui.QGraphicsScene):
 			self.setSceneRect(QtCore.QRectF(table.rect()))
 	def table(self):
 		return self.tableitem.pixmap()
-	def addTarot(self, pixmap, number, pos,angle=0.0):
+	def addTarot(self, pixmap, number, pos ,angle=0.0, rev=False):
 		qtarotitem=QTarotItem(pixmap)
 		self.addItem(qtarotitem)
 		if angle != 0:
 			qtarotitem.rotate(angle)
 		qtarotitem.setPos(pos)
 		qtarotitem.cardNumber=number
+		qtarotitem.rev=rev
 		#graphicsItem->setTransform(QTransform().translate(centerX, centerY).rotate(angle).translate(-centerX, -centerY));
 		return qtarotitem
 
@@ -52,6 +54,12 @@ class QTarotItem(QtGui.QGraphicsPixmapItem):
 		#self.setGraphicsEffect(QtGui.QGraphicsDropShadowEffect())
 		self.setData(32,idx)
 
+	def setRev(self, rev):
+		self.setData(34,rev)
+
+	def rev(self):
+		return self.data(34).toBool()
+
 	def purpose(self):
 		return self.data(33).toString()
 
@@ -59,6 +67,7 @@ class QTarotItem(QtGui.QGraphicsPixmapItem):
 		self.setData(33, string)
 
 	cardNumber = QtCore.pyqtProperty("int", cardNumber, setCardNumber)
+	rev = QtCore.pyqtProperty("bool", rev, setRev)
 	purpose = QtCore.pyqtProperty("QString", purpose, setPurpose)
 
 class QTarot(QtGui.QMainWindow):
@@ -72,8 +81,16 @@ class QTarot(QtGui.QMainWindow):
 		offset=self.scene.calculateOffset()
 		for item in self.scene.items():
 			if isinstance(item,QTarotItem):
-				card=item.data(32).toInt()[0]
-				item.setPixmap(qtrcfg.deck[card].scaledToWidth(self.scene.smallerD/self.currentLayout.largetDimension))
+				card=item.cardNumber
+				rev=item.rev
+				px=qtrcfg.deck[card]\
+				.scaledToWidth(self.scene.smallerD/\
+				self.currentLayout.largetDimension)
+				if rev:
+					rm=QtGui.QMatrix()
+					rm.rotate(180)
+					px=px.transformed(rm)
+				item.setPixmap(px)
 				i=self.currentLayout.elements[j]
 				pos=QtCore.QPointF(i[0]*self.scene.smallerD,i[1]*self.scene.smallerD)
 				item.setPos(pos+offset)
@@ -86,8 +103,16 @@ class QTarot(QtGui.QMainWindow):
 		offset=self.scene.calculateOffset()
 		for item in self.scene.items():
 			if isinstance(item,QTarotItem):
-				card=item.data(32).toInt()[0]
-				item.setPixmap(qtrcfg.deck[card].scaledToWidth(self.scene.smallerD/self.currentLayout.largetDimension))
+				card=item.cardNumber
+				rev=item.rev
+				px=qtrcfg.deck[card]\
+				.scaledToWidth(self.scene.smallerD/\
+				self.currentLayout.largetDimension)
+				if rev:
+					rm=QtGui.QMatrix()
+					rm.rotate(180)
+					px=px.transformed(rm)
+				item.setPixmap(px)
 				i=self.currentLayout.elements[j]
 				pos=QtCore.QPointF(i[0]*self.scene.smallerD,i[1]*self.scene.smallerD)
 				item.setPos(pos+offset)
@@ -107,8 +132,10 @@ class QTarot(QtGui.QMainWindow):
 			fmt=filename.split(".",1)[-1]
 			pixMap = QtGui.QPixmap(self.scene.sceneRect().width(),self.scene.sceneRect().height())
 			painter=QtGui.QPainter(pixMap)
-			here=QtCore.QRectF(self.scene.sceneRect().rect())
-			self.scene.render(painter, here, here)
+			#here=QtCore.QRectF(self.scene.sceneRect().toRect())
+			#self.scene.render(painter, here, here)
+			self.scene.render(painter)
+			painter.end()
 			pixMap.save(filename,format=fmt)
 
 	def newReading(self,item=None):
@@ -134,12 +161,14 @@ class QTarot(QtGui.QMainWindow):
 			#pen=QtGui.QPen(QtGui.QColor("red"),2),\
 			#brush=QtGui.QBrush(QtGui.QColor("indigo")))
 			px=qtrcfg.deck[card].scaledToWidth(1/lay.largetDimension*self.scene.smallerD)
+			rev=False
 			if random() <= qtrcfg.negativity:
 				rm=QtGui.QMatrix()
 				rm.rotate(180)
 				px=px.transformed(rm)
+				rev=True
 			pos=QtCore.QPointF(placement[0]*self.scene.smallerD,placement[1]*self.scene.smallerD)
-			rectitem=self.scene.addTarot(px,card,pos+offset,angle=placement[2])
+			rectitem=self.scene.addTarot(px,card,pos+offset,angle=placement[2],rev=rev)
 			rectitem.setToolTip(placement[3])
 
 	def settingsWrite(self):
@@ -278,6 +307,9 @@ class QTarot(QtGui.QMainWindow):
 
 def main():
 	global formats
+	global app
+	global qtrcfg
+
 	formats=set(["*."+str(QtCore.QString(i)).lower() for i in \
 	QtGui.QImageWriter.supportedImageFormats ()])
 	formats=sorted(list(formats),key=str.lower)
@@ -293,9 +325,16 @@ def main():
 		formats.remove('*.rgba')
 	except ValueError:
 		pass
-	global app
+
+
 	app = QtGui.QApplication(sys.argv)
-	global qtrcfg
+	print list(app.arguments())
+
+	parser = argparse.ArgumentParser()
+	parser.add_argument('--foo', action='store_true')
+	parser.add_argument('bar')
+	parser.parse_known_args(sys.argv)
+
 	qtrcfg = QTarotConfig()
 	app.setApplicationName(qtrcfg.APPNAME)
 	ex = QTarot()
