@@ -1,7 +1,22 @@
 from PyQt4 import QtGui,QtCore
 import os
 from collections import OrderedDict as od
-from xml.etree import ElementTree
+from lxml import etree
+
+validator = etree.XMLSchema(etree.parse(open('%s/deck.xsd' \
+	%(os.sys.path[0]),'r')))
+
+
+class TarotDeck:
+	def __init__(self, deck_def):
+		f=open(deck_def)
+		tree=etree.parse(f).getroot()
+		self.name=tree.attrib['name']
+		#self.preview=#some path to the pixmap :B
+		#self.cards=#get all suits' cards
+
+#class TarotCard:
+#	def __init__(self, deck_def):
 
 class TarotLayout:
 	"""
@@ -10,7 +25,7 @@ class TarotLayout:
 	def __init__(self,layout_file):
 		self.elements=[]
 		f=open(layout_file,'r')
-		tree=ElementTree.parse(f).getroot()
+		tree=etree.parse(f).getroot()
 		self.name=tree.attrib['name']
 		self.min_height=float(tree.attrib['height'])
 		self.min_width=float(tree.attrib['width'])
@@ -52,10 +67,10 @@ class QTarotConfig:
 		%(str(QtGui.QDesktopServices.storageLocation\
 		(QtGui.QDesktopServices.DataLocation)), self.APPNAME)
 
-		app_theme_path="%s/decks" %(str(QtCore.QDir.currentPath()))
+		app_theme_path="%s/decks" %(os.sys.path[0])
 		config_theme_path=("%s/decks" %(self.__SETDIR)).replace('//','')
 
-		app_layout_path="%s/layouts" %(str(QtCore.QDir.currentPath()))
+		app_layout_path="%s/layouts" %(os.sys.path[0])
 		config_layout_path=("%s/layouts" %(self.__SETDIR)).replace('//','')
 
 		QtCore.QDir.setSearchPaths("layouts", [config_layout_path,app_layout_path])

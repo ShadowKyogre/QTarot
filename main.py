@@ -47,9 +47,14 @@ class QTarotScene(QtGui.QGraphicsScene):
 	table = QtCore.pyqtProperty("QPixmap", table, setTable)
 
 class QTarotItem(QtGui.QGraphicsPixmapItem):
+	def __init__(self, *args):
+		QtGui.QGraphicsPixmapItem.__init__(self, *args)
+		self.setAcceptHoverEvents(True)
 	def cardNumber(self):
 		return self.data(32).toInt()[0]
-
+	def hoverEnterEvent(self, event):
+		print "hi"
+		#QtGui.QGraphicsPixmapItem.hoverEnterEvent(self,event)
 	def setCardNumber(self, idx):
 		#self.setGraphicsEffect(QtGui.QGraphicsDropShadowEffect())
 		self.setData(32,idx)
@@ -255,6 +260,7 @@ class QTarot(QtGui.QMainWindow):
 		self.updateTable()
 
 		self.view=ZPGraphicsView(self.scene,self)
+		self.view.setMouseTracking(True)
 
 		self.setCentralWidget(self.view)
 		self.newReading(item=qtrcfg.default_layout)
