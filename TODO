@@ -1,4 +1,9 @@
 *Layout editor to add new layouts
+*Deck editor to make new deck definitions
+*CLI mode so it can be used to generate wallpaper.
+*Switches like "-l Mandala -n 50%|0.5 -d coleman-white -s coleman-whiten -t"
 *A panel to navigate the cards and to highlight the card of current interest
 *A dictionary that contains the meaning for each card
+*Allow overriding default table
+*Add Ouija mode, which'll allow both text responses and tarot card responses (note: special layout files can indicate whether they're primed for this mode. These layout files can also define additional responses, the text responses, and put out whether the cards they are laying out are face-down)
 *DOX. ALWAYS DOX.
