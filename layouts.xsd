@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+  <xs:element name="layout">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="purpose"/>
+        <xs:element maxOccurs="unbounded" ref="card"/>
+      </xs:sequence>
+      <xs:attribute name="height" use="required" type="xs:decimal"/>
+      <xs:attribute name="name" use="required"/>
+      <xs:attribute name="width" use="required" type="xs:decimal"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="card">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="purpose"/>
+        <xs:element ref="x"/>
+        <xs:element ref="y"/>
+        <xs:element ref="angle"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="x" type="xs:decimal"/>
+  <xs:element name="y" type="xs:decimal"/>
+  <xs:element name="angle" type="xs:decimal"/>
+  <xs:element name="purpose" type="xs:string"/>
+</xs:schema>

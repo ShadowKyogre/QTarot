@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+  <xs:element name="deck">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="suit"/>
+      </xs:sequence>
+      <xs:attribute name="name" use="required"/>
+      <xs:attribute name="preview"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="suit">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="card"/>
+      </xs:sequence>
+      <xs:attribute name="affinity" use="required"/>
+      <xs:attribute name="name" use="required"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="card">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="number"/>
+        <xs:element ref="file"/>
+        <xs:element minOccurs="0" ref="meaning"/>
+      </xs:sequence>
+      <xs:attribute name="name" use="required"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="number" type="xs:string"/>
+  <xs:element name="file" type="xs:NMTOKEN"/>
+  <xs:element name="meaning">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="normal"/>
+        <xs:element ref="reversed"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="normal" type="xs:string" />
+  <xs:element name="reversed" type="xs:string" nillable="true" />
+</xs:schema>

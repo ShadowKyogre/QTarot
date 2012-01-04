@@ -1,0 +1,241 @@
+<deck name="Elder Futhark">
+	<preview>path/to/file.ext</preview>
+	<suit name="Freyr's Aett" affinity="Things that relate to Freyr">
+		<card name="Fehu">
+			<number />
+			<file>fehu.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed>
+				</reversed>
+			</meaning>
+		</card>
+		<card name="Uruz">
+			<number />
+			<file>uruz.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed>
+				</reversed>
+			</meaning>
+		</card>
+		<card name="Thurisaz">
+			<number />
+			<file>thurisaz.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed>
+				</reversed>
+			</meaning>
+		</card>
+		<card name="Ansuz">
+			<number />
+			<file>ansuz.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed>
+				</reversed>
+			</meaning>
+		</card>
+		<card name="Raido">
+			<number />
+			<file>raido.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed>
+				</reversed>
+			</meaning>
+		</card>
+		<card name="Kenaz">
+			<number />
+			<file>kenaz.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed>
+				</reversed>
+			</meaning>
+		</card>
+		<card name="Gebo">
+			<number />
+			<file>gebo.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed />
+			</meaning>
+		</card>
+		<card name="Wunjo">
+			<number />
+			<file>wunjo.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed>
+				</reversed>
+			</meaning>
+		</card>
+	</suit>
+	<suit name="Heimdall's Aett" affinity="Things that relate to Heimdall">
+		<card name="Hagalaz">
+			<number />
+			<file>hagalaz.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed />
+			</meaning>
+		</card>
+		<card name="Nauthiz">
+			<number />
+			<file>nauthiz.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed />
+			</meaning>
+		</card>
+		<card name="Isa">
+			<number />
+			<file>isa.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed />
+			</meaning>
+		</card>
+		<card name="Jera">
+			<number />
+			<file>jera.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed />
+			</meaning>
+		</card>
+		<card name="Eihwaz">
+			<number />
+			<file>eihwaz.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed>
+				</reversed>
+			</meaning>
+		</card>
+		<card name="Pertho">
+			<number />
+			<file>pertho.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed>
+				</reversed>
+			</meaning>
+		</card>
+		<card name="Algiz">
+			<number />
+			<file>algiz.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed>
+				</reversed>
+			</meaning>
+		</card>
+		<card name="Sowilo">
+			<number />
+			<file>sowilo.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed />
+			</meaning>
+		</card>
+	</suit>
+	<suit name="Tyr's Aett" affinity="Things that relate to Tyr">
+		<card name="Tiwaz">
+			<number />
+			<file>tiwaz.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed>
+				</reversed>
+			</meaning>
+		</card>
+		<card name="Berkano">
+			<number />
+			<file>berkano.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed>
+				</reversed>
+			</meaning>
+		</card>
+		<card name="Ehwaz">
+			<number />
+			<file>ehwaz.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed>
+				</reversed>
+			</meaning>
+		</card>
+		<card name="Mannaz">
+			<number />
+			<file>fehu.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed>
+				</reversed>
+			</meaning>
+		</card>
+		<card name="Laguz">
+			<number />
+			<file>laguz.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed>
+				</reversed>
+			</meaning>
+		</card>
+		<card name="Ingwaz">
+			<number />
+			<file>ingwaz.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed />
+			</meaning>
+		</card>
+		<card name="Dagaz">
+			<number />
+			<file>dagaz.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed />
+			</meaning>
+		</card>
+		<card name="Othala">
+			<number />
+			<file>othala.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed>
+				</reversed>
+			</meaning>
+		</card>
+	</suit>
+</deck>
