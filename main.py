@@ -190,6 +190,7 @@ class QTarot(QtGui.QMainWindow):
 		qtrcfg.default_layout=str(self.default_layout.currentText())
 		qtrcfg.load_layouts()
 		qtrcfg.load_deck()
+		qtrcfg.current_icon_override=str(self.ico_theme.text())
 		if reload_deck:
 			self.updateCards()
 
@@ -208,13 +209,14 @@ class QTarot(QtGui.QMainWindow):
 		self.deck.addItems(decks)
 		idx=self.deck.findText(qtrcfg.deck_name)
 		self.deck.setCurrentIndex(idx)
+		self.ico_theme.setText(qtrcfg.current_icon_override)
 
 	def settings(self):
 		self.settings_dialog=QtGui.QDialog(self)
 		self.settings_dialog.setWindowTitle("Settings")
 
 		label=QtGui.QLabel(("Note: These will not take effect"
-		"until you make another reading"),self.settings_dialog)
+		" until you make another reading"),self.settings_dialog)
 		groupbox=QtGui.QGroupBox("Reading",self.settings_dialog)
 		groupbox2=QtGui.QGroupBox("Appearance",self.settings_dialog)
 		vbox=QtGui.QVBoxLayout(self.settings_dialog)
@@ -227,6 +229,12 @@ class QTarot(QtGui.QMainWindow):
 		self.negativity.setRange(0,1)
 
 		self.deck=QtGui.QComboBox(groupbox2)
+		self.ico_theme=QtGui.QLineEdit(groupbox2)
+		self.ico_theme.setToolTip(("You should only set this if Qt isn't"
+		" detecting your icon theme.\n"
+		"Currently detected icon theme: %s\n"
+		"Settings will take effect after a restart") \
+		% (qtrcfg.sys_icotheme))
 
 		gvbox.addWidget(QtGui.QLabel("Negativity"),0,0)
 		gvbox.addWidget(self.negativity,0,1)
@@ -234,6 +242,8 @@ class QTarot(QtGui.QMainWindow):
 		gvbox.addWidget(self.default_layout,1,1)
 		gvbox2.addWidget(QtGui.QLabel("Deck"),0,0)
 		gvbox2.addWidget(self.deck,0,1)
+		gvbox2.addWidget(QtGui.QLabel("Override Icon Theme"),2,0)
+		gvbox2.addWidget(self.ico_theme,2,1)
 
 		buttonbox=QtGui.QDialogButtonBox(QtCore.Qt.Horizontal)
 		resetbutton=buttonbox.addButton(QtGui.QDialogButtonBox.Reset)

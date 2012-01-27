@@ -75,7 +75,7 @@ class QTarotConfig:
 
 		QtCore.QDir.setSearchPaths("layouts", [config_layout_path,app_layout_path])
 		QtCore.QDir.setSearchPaths("decks", [config_theme_path,app_theme_path])
-
+		self.sys_icotheme=QtGui.QIcon.themeName()
 		self.reset_settings()
 
 	def load_layouts(self):
@@ -105,6 +105,12 @@ class QTarotConfig:
 
 		self.settings.beginGroup("Appearance")
 		self.deck_name=str(self.settings.value("deck","coleman-white").toString())
+		self.current_icon_override=str(self.settings.value("stIconTheme", \
+																	QtCore.QString("")).toPyObject())
+		if self.current_icon_override > "":
+			QtGui.QIcon.setThemeName(self.current_icon_override)
+		else:
+			QtGui.QIcon.setThemeName(self.sys_icotheme)
 		self.settings.endGroup()
 
 		self.load_deck()
@@ -118,6 +124,7 @@ class QTarotConfig:
 
 		self.settings.beginGroup("Appearance")
 		self.settings.setValue("deck",self.deck_name)
+		self.settings.setValue("stIconTheme",self.current_icon_override)
 		self.settings.endGroup()
 
 		self.settings.sync()
