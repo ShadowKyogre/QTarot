@@ -3,7 +3,9 @@ import os
 from collections import OrderedDict as od
 from lxml import etree
 
-validator = etree.XMLSchema(etree.parse(open('%s/deck.xsd' \
+deck_validator = etree.XMLSchema(etree.parse(open('%s/deck.xsd' \
+	%(os.sys.path[0]),'r')))
+layout_validator = etree.XMLSchema(etree.parse(open('%s/layout.xsd' \
 	%(os.sys.path[0]),'r')))
 
 

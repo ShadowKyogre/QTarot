@@ -161,8 +161,8 @@ class QTarot(QtGui.QMainWindow):
 		offset=self.scene.calculateOffset()
 		draws=sample(xrange(len(qtrcfg.deck)),len(lay.elements))
 		for (card,placement) in zip(draws, lay.elements):
-			#rectitem=self.scene.addRect(0,0,1/lay.largetDimension*self.smallerD,\
-			#2/lay.largetDimension*self.smallerD,\
+			#rectitem=self.scene.addRect(0,0,1/lay.largetDimension*self.scene.smallerD,\
+			#2/lay.largetDimension*self.scene.smallerD,\
 			#pen=QtGui.QPen(QtGui.QColor("red"),2),\
 			#brush=QtGui.QBrush(QtGui.QColor("indigo")))
 			px=qtrcfg.deck[card].scaledToWidth(1/lay.largetDimension*self.scene.smallerD)

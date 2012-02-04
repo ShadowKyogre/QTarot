@@ -1,0 +1,75 @@
+<layout name="Yin Yang" height="10.0" width="8.0">
+	<purpose>Ask about a conflict</purpose>
+	<card>
+		<purpose>Conflict roots - A</purpose>
+		<x>0.5</x>
+		<y>0.4</y>
+		<angle>0.0</angle>
+	</card>
+	<card>
+		<purpose>Conflict roots - B</purpose>
+		<x>0.625</x>
+		<y>0.3</y>
+		<angle>90.0</angle>
+	</card>
+	<card>
+		<purpose>A's position OR B's perception of A</purpose>
+		<x>0.25</x>
+		<y>0.3</y>
+		<angle>0.0</angle>
+	</card>
+	<card>
+		<purpose>B's position OR A's perception of B</purpose>
+		<x>0.75</x>
+		<y>0.3</y>
+		<angle>0.0</angle>
+	</card>
+	<card>
+		<purpose>A's thoughts OR A's ideal outcome</purpose>
+		<x>0.125</x>
+		<y>0.10</y>
+		<angle>0.0</angle>
+	</card>
+	<card>
+		<purpose>B's thoughts OR B's ideal outcome</purpose>
+		<x>0.875</x>
+		<y>0.10</y>
+		<angle>0.0</angle>
+	</card>
+	<card>
+		<purpose>A's unconcious thoughts OR A's deeper motives</purpose>
+		<x>0.125</x>
+		<y>0.6</y>
+		<angle>0.0</angle>
+	</card>
+	<card>
+		<purpose>B's unconcious thoughts OR B's deeper motives</purpose>
+		<x>0.875</x>
+		<y>0.6</y>
+		<angle>0.0</angle>
+	</card>
+	<card>
+		<purpose>Guidance for A's ideal outcome</purpose>
+		<x>0.0</x>
+		<y>0.3</y>
+		<angle>0.0</angle>
+	</card>
+	<card>
+		<purpose>Guidance for B's ideal outcome</purpose>
+		<x>1.0</x>
+		<y>0.3</y>
+		<angle>0.0</angle>
+	</card>
+	<card>
+		<purpose>Key to resolve conflict</purpose>
+		<x>0.5</x>
+		<y>0.8</y>
+		<angle>0.0</angle>
+	</card>
+	<card>
+		<purpose>Result if nothing is done</purpose>
+		<x>0.5</x>
+		<y>0.0</y>
+		<angle>0.0</angle>
+	</card>
+</layout>
