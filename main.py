@@ -59,13 +59,14 @@ class QTarot(QtGui.QMainWindow):
 	def pickTable(self):
 		filename=QtGui.QFileDialog.getOpenFileName (self, caption="Open a new file", \
 		directory=QtCore.QDir.homePath(), filter="Images (%s)" %(' '.join(formats)))
-		if filename is not None and filename != "":
+		if filename > "":
 			self.updateTable(fn=filename)
 
-	def saveReading(self):
-		filename=QtGui.QFileDialog.getSaveFileName(self, caption="Save Current Reading",
-			filter="Images (%s)" %(' '.join(formats)))
-		if filename is not None and filename != "":
+	def saveReading(self,filename=None):
+		if filename <= "":
+			filename=QtGui.QFileDialog.getSaveFileName(self, caption="Save Current Reading",
+				filter="Images (%s)" %(' '.join(formats)))
+		if filename > "":
 			fmt=filename.split(".",1)[-1]
 			pixMap = QtGui.QPixmap(self.scene.sceneRect().width(),self.scene.sceneRect().height())
 			painter=QtGui.QPainter(pixMap)
