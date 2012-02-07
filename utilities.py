@@ -1,11 +1,79 @@
 from PyQt4 import QtGui,QtCore
 
+class QTarotScene(QtGui.QGraphicsScene):
+	def __init__(self,*args):
+		QtGui.QGraphicsScene.__init__(self, *args)
+		self.tableitem=self.addPixmap(QtGui.QPixmap())
+		self.tableitem.setZValue(-1000.0)
+	def calculateOffset(self):
+		xoffset=(self.sceneRect().width()-self.smallerD)/2.0
+		yoffset=(self.sceneRect().height()-self.smallerD)/2.0
+		return QtCore.QPointF(xoffset,yoffset)
+	def clear(self):
+		px=self.tableitem.pixmap()
+		QtGui.QGraphicsScene.clear(self)
+		self.tableitem=self.addPixmap(px)
+	@property
+	def smallerD(self):
+		return self.sceneRect().width() if \
+		self.sceneRect().width() < self.sceneRect().height() else \
+		self.sceneRect().height()
+	def setTable(self, table):
+		self.tableitem.setPixmap(table)
+		if self.smallerD == 0:
+			self.setSceneRect(QtCore.QRectF(0,0,500,500))
+		else:
+			self.setSceneRect(QtCore.QRectF(table.rect()))
+	def table(self):
+		return self.tableitem.pixmap()
+	def addTarot(self, pixmap, number, pos ,angle=0.0, rev=False):
+		qtarotitem=QTarotItem(pixmap)
+		self.addItem(qtarotitem)
+		if angle != 0:
+			qtarotitem.rotate(angle)
+		qtarotitem.setPos(pos)
+		qtarotitem.cardNumber=number
+		qtarotitem.rev=rev
+		#graphicsItem->setTransform(QTransform().translate(centerX, centerY).rotate(angle).translate(-centerX, -centerY));
+		return qtarotitem
+
+	table = QtCore.pyqtProperty("QPixmap", table, setTable)
+
+class QTarotItem(QtGui.QGraphicsPixmapItem):
+	def __init__(self, *args):
+		QtGui.QGraphicsPixmapItem.__init__(self, *args)
+		self.setAcceptHoverEvents(True)
+	def hoverEnterEvent(self, event):
+		QtGui.QGraphicsPixmapItem.hoverEnterEvent(self,event)
+		window = self.scene().parent()
+		if window:
+			window.statusBar().showMessage(str(self.cardNumber))
+	def cardNumber(self):
+		return self.data(32).toInt()[0]
+	def setCardNumber(self, idx):
+		#self.setGraphicsEffect(QtGui.QGraphicsDropShadowEffect())
+		self.setData(32,idx)
+	def setRev(self, rev):
+		self.setData(34,rev)
+	def rev(self):
+		return self.data(34).toBool()
+	def purpose(self):
+		return self.data(33).toString()
+	def setPurpose(self, string):
+		self.setData(33, string)
+
+	cardNumber = QtCore.pyqtProperty("int", cardNumber, setCardNumber)
+	rev = QtCore.pyqtProperty("bool", rev, setRev)
+	purpose = QtCore.pyqtProperty("QString", purpose, setPurpose)
+
 class ZPGraphicsView(QtGui.QGraphicsView):
 	def __init__(self, *args):
 		QtGui.QGraphicsView.__init__(self, *args)
 		self.lastPanPoint=QtCore.QPoint()
 		self.setCenter(QtCore.QPointF(self.sceneRect().width()/2.0, \
 		self.sceneRect().height()/2.0))
+		self.setMouseTracking(True)
+		self.viewport().setMouseTracking(True)
 
 	def setCenter(self, centerPoint):
 		#Get the rectangle of the visible area in scene coords
@@ -49,14 +117,17 @@ class ZPGraphicsView(QtGui.QGraphicsView):
 
 	def mousePressEvent(self, event):
 		#For panning the view
+		QtGui.QGraphicsView.mousePressEvent(self,event)
 		self.lastPanPoint = event.pos()
 		self.setCursor(QtCore.Qt.ClosedHandCursor)
 
 	def mouseReleaseEvent(self,event):
+		QtGui.QGraphicsView.mouseReleaseEvent(self,event)
 		self.setCursor(QtCore.Qt.OpenHandCursor)
 		self.lastPanPoint = QtCore.QPoint()
 
 	def mouseMoveEvent(self, event):
+		QtGui.QGraphicsView.mouseMoveEvent(self,event)
 		if not self.lastPanPoint.isNull():
 			#Get how much we panned
 			delta = self.mapToScene(self.lastPanPoint) - self.mapToScene(event.pos())
@@ -66,7 +137,6 @@ class ZPGraphicsView(QtGui.QGraphicsView):
 			self.setCenter(self.currentCenterPoint + delta)
 
 	def wheelEvent(self,event):
-
 		#Get the position of the mouse before scaling, in scene coords
 		pointBeforeScale=QtCore.QPointF(self.mapToScene(event.pos()))
 

@@ -5,75 +5,7 @@ import argparse
 from PyQt4 import QtGui,QtCore
 from random import sample,random
 from qtarotconfig import QTarotConfig
-from utilities import ZPGraphicsView
-
-class QTarotScene(QtGui.QGraphicsScene):
-	def __init__(self,*args):
-		QtGui.QGraphicsScene.__init__(self, *args)
-		self.tableitem=self.addPixmap(QtGui.QPixmap())
-		self.tableitem.setZValue(-1000.0)
-	def calculateOffset(self):
-		xoffset=(self.sceneRect().width()-self.smallerD)/2.0
-		yoffset=(self.sceneRect().height()-self.smallerD)/2.0
-		return QtCore.QPointF(xoffset,yoffset)
-	def clear(self):
-		px=self.tableitem.pixmap()
-		QtGui.QGraphicsScene.clear(self)
-		self.tableitem=self.addPixmap(px)
-	@property
-	def smallerD(self):
-		return self.sceneRect().width() if \
-		self.sceneRect().width() < self.sceneRect().height() else \
-		self.sceneRect().height()
-	def setTable(self, table):
-		self.tableitem.setPixmap(table)
-		if self.smallerD == 0:
-			self.setSceneRect(QtCore.QRectF(0,0,500,500))
-		else:
-			self.setSceneRect(QtCore.QRectF(table.rect()))
-	def table(self):
-		return self.tableitem.pixmap()
-	def addTarot(self, pixmap, number, pos ,angle=0.0, rev=False):
-		qtarotitem=QTarotItem(pixmap)
-		self.addItem(qtarotitem)
-		if angle != 0:
-			qtarotitem.rotate(angle)
-		qtarotitem.setPos(pos)
-		qtarotitem.cardNumber=number
-		qtarotitem.rev=rev
-		#graphicsItem->setTransform(QTransform().translate(centerX, centerY).rotate(angle).translate(-centerX, -centerY));
-		return qtarotitem
-
-	table = QtCore.pyqtProperty("QPixmap", table, setTable)
-
-class QTarotItem(QtGui.QGraphicsPixmapItem):
-	def __init__(self, *args):
-		QtGui.QGraphicsPixmapItem.__init__(self, *args)
-		self.setAcceptHoverEvents(True)
-	def cardNumber(self):
-		return self.data(32).toInt()[0]
-	def hoverEnterEvent(self, event):
-		print "hi"
-		#QtGui.QGraphicsPixmapItem.hoverEnterEvent(self,event)
-	def setCardNumber(self, idx):
-		#self.setGraphicsEffect(QtGui.QGraphicsDropShadowEffect())
-		self.setData(32,idx)
-
-	def setRev(self, rev):
-		self.setData(34,rev)
-
-	def rev(self):
-		return self.data(34).toBool()
-
-	def purpose(self):
-		return self.data(33).toString()
-
-	def setPurpose(self, string):
-		self.setData(33, string)
-
-	cardNumber = QtCore.pyqtProperty("int", cardNumber, setCardNumber)
-	rev = QtCore.pyqtProperty("bool", rev, setRev)
-	purpose = QtCore.pyqtProperty("QString", purpose, setPurpose)
+from utilities import ZPGraphicsView,QTarotScene,QTarotItem
 
 class QTarot(QtGui.QMainWindow):
 
@@ -267,13 +199,9 @@ class QTarot(QtGui.QMainWindow):
 		self.setWindowTitle(app.applicationName())
 		self.scene=QTarotScene(self)
 
-		self.updateTable()
-
 		self.view=ZPGraphicsView(self.scene,self)
-		self.view.setMouseTracking(True)
 
 		self.setCentralWidget(self.view)
-		self.newReading(item=qtrcfg.default_layout)
 
 		exitAction = QtGui.QAction(QtGui.QIcon.fromTheme('application-exit'), 'Exit', self)
 		exitAction.setShortcut('Ctrl+Q')
@@ -318,7 +246,6 @@ class QTarot(QtGui.QMainWindow):
 
 		self.setGeometry(300, 300, 350, 250)
 		self.setWindowTitle('Main window')
-		self.show()
 
 
 def main():
@@ -342,19 +269,29 @@ def main():
 	except ValueError:
 		pass
 
-
 	app = QtGui.QApplication(sys.argv)
-	print list(app.arguments())
-
-	parser = argparse.ArgumentParser()
-	parser.add_argument('--foo', action='store_true')
-	parser.add_argument('bar')
-	parser.parse_known_args(sys.argv)
+	app.setApplicationName("QTarot")
 
 	qtrcfg = QTarotConfig()
 	app.setApplicationName(qtrcfg.APPNAME)
+	QCoreApplication.setApplicationVersion(qtrcfg.APPVERSION)
+
+	parser = argparse.ArgumentParser(prog='qtarot',description="A simple")
+	parser.add_argument('-l','--layout', help='The layout to use.',default=qtrcfg.default_layout)
+	parser.add_argument('-t','--table', help='File to use as table',default="deck:table.png")
+	parser.add_argument('-n','--negativity', help='How often cards are reversed', default=0.5,type=float)
+	parser.add_argument('-o','--output', help='Leave some of the words in the message blank', default=None)
+	args = parser.parse_args(sys.argv[1:])
+
 	ex = QTarot()
-	sys.exit(app.exec_())
+	ex.updateTable(fn=args.table)
+	ex.newReading(item=args.layout)
+	if args.output > "":
+		ex.saveReading(filename=args.output)
+		sys.exit(0)
+	else:
+		ex.show()
+		sys.exit(app.exec_())
 
 
 if __name__ == '__main__':
