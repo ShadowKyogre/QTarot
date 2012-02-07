@@ -274,7 +274,7 @@ def main():
 
 	qtrcfg = QTarotConfig()
 	app.setApplicationName(qtrcfg.APPNAME)
-	QCoreApplication.setApplicationVersion(qtrcfg.APPVERSION)
+	app.setApplicationVersion(qtrcfg.APPVERSION)
 
 	parser = argparse.ArgumentParser(prog='qtarot',description="A simple")
 	parser.add_argument('-l','--layout', help='The layout to use.',default=qtrcfg.default_layout)
