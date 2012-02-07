@@ -281,7 +281,7 @@ def main():
 	parser.add_argument('-l','--layout', help='The layout to use.',default=qtrcfg.default_layout)
 	parser.add_argument('-t','--table', help='File to use as table',default="deck:table.png")
 	parser.add_argument('-n','--negativity', help='How often cards are reversed', default=0.5,type=float)
-	parser.add_argument('-o','--output', help='Leave some of the words in the message blank', default=None)
+	parser.add_argument('-o','--output', help='Save the reading to this file', default=None)
 	args = parser.parse_args(sys.argv[1:])
 
 	ex = QTarot()
