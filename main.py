@@ -289,7 +289,7 @@ def main():
 	ex.newReading(item=args.layout)
 	if args.output > "":
 		ex.saveReading(filename=args.output)
-		sys.exit(0)
+		sys.exit(app.exec_())
 	else:
 		ex.show()
 		sys.exit(app.exec_())
