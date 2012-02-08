@@ -10,15 +10,42 @@ from lxml import etree
 
 
 class TarotDeck:
-	def __init__(self, deck_def):
+	def __init__(self, deck_def="defs/coleman-white.xml"):
 		f=open(deck_def)
-		tree=etree.parse(f).getroot()
-		self.name=tree.attrib['name']
+		self.tree=etree.parse(f).getroot()
+		self.name=self.tree.attrib['name']
 		#self.preview=#some path to the pixmap :B
 		#self.cards=#get all suits' cards
+	def preview(self):
+		return self.tree.find('preview').text
+	def name(self):
+		return self.tree.attrib['name']
+	def cards(self):
+		return self.tree.xpath('suit/card')
+	def suits(self):
+		return self.tree.xpath('suit')
 
-#class TarotCard:
-#	def __init__(self, deck_def):
+#print TarotDeck().preview()
+#print TarotDeck().cards()
+#print TarotDeck().suits()
+
+class TarotCard:
+	def __init__(self, card_elem):
+		self.card_elem=card_elem
+	def meanings(self):
+		return self.card_elem.xpath('meaning')
+	def filename(self):
+		return self.card_elem.xpath('file')
+	def number(self):
+		return self.card_elem.xpath('number')
+	def name(self):
+		parent=self.card_elem.getparent()
+		if parent.attrib.has_key('only_literal'):
+			return self.card_elem.attrib['name']
+		else:
+			return "{name} of {suit}"\
+			.format(suit=parent.attrib['name'], \
+			name=self.card_elem.attrib['name'])
 
 class TarotLayout:
 	"""
@@ -50,10 +77,10 @@ class TarotLayout:
 class QTarotConfig:
 	def __init__(self):
 		self.APPNAME="QTarot"
-		self.APPVERSION="0.1.0"
+		self.APPVERSION="0.2.0"
 		self.AUTHOR="ShadowKyogre"
 		self.DESCRIPTION="A simple tarot fortune teller."
-		self.YEAR="2011"
+		self.YEAR="2012"
 		self.PAGE="http://shadowkyogre.github.com/QTarot/"
 
 		self.settings=QtCore.QSettings(QtCore.QSettings.IniFormat,
@@ -94,7 +121,7 @@ class QTarotConfig:
 		QtCore.QDir.setSearchPaths("deck", ["decks:%s" %(self.deck_name)])
 		self.default_table=QtGui.QPixmap("deck:table.png")
 		for i in QtCore.QDir("deck:/").entryList():
-			if str(i) in (".","..","table.png"):
+			if str(i) in (".","..","table.png","deck.ini"):
 				continue
 			px=QtGui.QPixmap("deck:%s"%i)
 			self.deck.append(px)
