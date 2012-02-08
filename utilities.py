@@ -48,6 +48,11 @@ class QTarotItem(QtGui.QGraphicsPixmapItem):
 		window = self.scene().parent()
 		if window:
 			window.statusBar().showMessage(str(self.cardNumber))
+	def hoverLeaveEvent(self, event):
+		QtGui.QGraphicsPixmapItem.hoverLeaveEvent(self,event)
+		window = self.scene().parent()
+		if window:
+			window.statusBar().clearMessage()
 	def cardNumber(self):
 		return self.data(32).toInt()[0]
 	def setCardNumber(self, idx):
