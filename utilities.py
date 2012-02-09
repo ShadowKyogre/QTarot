@@ -1,4 +1,6 @@
 from PyQt4 import QtGui,QtCore
+from qtarotconfig import TarotCard
+from lxml import objectify
 
 class QTarotScene(QtGui.QGraphicsScene):
 	def __init__(self,*args):
@@ -18,6 +20,12 @@ class QTarotScene(QtGui.QGraphicsScene):
 		return self.sceneRect().width() if \
 		self.sceneRect().width() < self.sceneRect().height() else \
 		self.sceneRect().height()
+	"""
+	def setTableFromSkin(self, skin):
+		self.setTable(QtGui.QPixmap("skins:{skin}/table.png"))
+	def setTableFromFile(self, filename):
+		self.setTable(QtGui.QPixmap(filename))
+	"""
 	def setTable(self, table):
 		self.tableitem.setPixmap(table)
 		if self.smallerD == 0:
@@ -26,6 +34,16 @@ class QTarotScene(QtGui.QGraphicsScene):
 			self.setSceneRect(QtCore.QRectF(table.rect()))
 	def table(self):
 		return self.tableitem.pixmap()
+
+	def addTarot(self, card, pos_data, rev=False):
+		qtarotitem=QTarotItem(card, pos_data, rev)
+		#qtarotitem.rev=rev
+		self.addItem(qtarotitem)
+		qtarotitem.refresh()
+		qtarotitem.reposition()
+		return qtarotitem
+
+	"""
 	def addTarot(self, pixmap, number, pos ,angle=0.0, rev=False):
 		qtarotitem=QTarotItem(pixmap)
 		self.addItem(qtarotitem)
@@ -36,40 +54,88 @@ class QTarotScene(QtGui.QGraphicsScene):
 		qtarotitem.rev=rev
 		#graphicsItem->setTransform(QTransform().translate(centerX, centerY).rotate(angle).translate(-centerX, -centerY));
 		return qtarotitem
-
+	"""
 	table = QtCore.pyqtProperty("QPixmap", table, setTable)
 
 class QTarotItem(QtGui.QGraphicsPixmapItem):
-	def __init__(self, *args):
-		QtGui.QGraphicsPixmapItem.__init__(self, *args)
+
+	def __init__(self, card, pos_data, reverse, parent=None, scene=None):
+		QtGui.QGraphicsPixmapItem.__init__(self, parent=None, scene=None)
 		self.setAcceptHoverEvents(True)
+		self.card=card
+		self.posData=pos_data
+		self.rev=reverse
+		#self.reskin(skin)
+		#self.skin=skin
+
+	def itemChange (self, change, value):
+		if change == QtGui.QGraphicsItem.ItemSceneChange:
+			self.refresh()
+		return QtGui.QGraphicsPixmapItem.itemChange(self, change, value)
+
+	def refresh(self):
+		if None in (self.posData, self.card, self.scene()):
+			return
+		fn=self.card.file.text
+		#or skin:fn
+		px=QtGui.QPixmap("skin:{fn}".format(**locals()))
+		largestDim=self.posData.getparent().largetDimension()
+		shortest_dim_size=1/largestDim*self.scene().smallerD
+
+		if px.width() < px.height():
+			px=px.scaledToWidth(shortest_dim_size)
+		else:
+			px=px.scaledToHeight(shortest_dim_size)
+
+		if self.rev:
+			rm=QtGui.QMatrix()
+			rm.rotate(180)
+			px=px.transformed(rm)
+
+		self.setPixmap(px)
+
+	def reposition(self):
+		largestDim=self.posData.getparent().largetDimension()
+		shortest_dim_size=1/largestDim*self.scene().smallerD
+		offset=self.scene().calculateOffset()
+		pos=QtCore.QPointF(self.posData.x*self.scene().smallerD, \
+				self.posData.y*self.scene().smallerD)
+		if self.posData.angle != 0:
+			self.rotate(self.posData.angle)
+		self.setPos(pos+offset)
+
+	def setRev(self, rev):
+		self.setData(34,rev)
+		self.refresh()
+	def setCard(self, card):
+		self.setData(32, card)
+		self.refresh()
+	def setPosData(self, pos_data):
+		self.setData(35, pos_data)
+		self.setToolTip(self.posData.purpose.text)
+		self.refresh()
+
+	def card(self):
+		return self.data(32).toPyObject()
+	def rev(self):
+		return self.data(34).toBool()
+	def posData(self):
+		return self.data(35).toPyObject()
+
+	card = QtCore.pyqtProperty(TarotCard, card, setCard)
+	posData = QtCore.pyqtProperty(objectify.ObjectifiedElement, posData, setPosData)
+	rev = QtCore.pyqtProperty("bool", rev, setRev)
+
 	def hoverEnterEvent(self, event):
 		QtGui.QGraphicsPixmapItem.hoverEnterEvent(self,event)
 		window = self.scene().parent()
 		if window:
-			window.statusBar().showMessage(str(self.cardNumber))
+			window.statusBar().showMessage(self.card.fullname())
 	def hoverLeaveEvent(self, event):
 		QtGui.QGraphicsPixmapItem.hoverLeaveEvent(self,event)
 		window = self.scene().parent()
 		if window:
 			window.statusBar().clearMessage()
-	def cardNumber(self):
-		return self.data(32).toInt()[0]
-	def setCardNumber(self, idx):
-		#self.setGraphicsEffect(QtGui.QGraphicsDropShadowEffect())
-		self.setData(32,idx)
-	def setRev(self, rev):
-		self.setData(34,rev)
-	def rev(self):
-		return self.data(34).toBool()
-	def purpose(self):
-		return self.data(33).toString()
-	def setPurpose(self, string):
-		self.setData(33, string)
-
-	cardNumber = QtCore.pyqtProperty("int", cardNumber, setCardNumber)
-	rev = QtCore.pyqtProperty("bool", rev, setRev)
-	purpose = QtCore.pyqtProperty("QString", purpose, setPurpose)
 
 class ZPGraphicsView(QtGui.QGraphicsView):
 	def __init__(self, *args):

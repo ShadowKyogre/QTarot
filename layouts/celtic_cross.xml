@@ -1,63 +1,63 @@
 <layout name="Celtic Cross" height="8.0" width="4.0">
 	<purpose>Another answering question spread</purpose>
-	<card>
+	<pos>
 		<purpose>Your current state</purpose>
 		<x>0.25</x>
 		<y>0.4375</y>
 		<angle>0.0</angle>
-	</card>
-	<card>
+	</pos>
+	<pos>
 		<purpose>Your immediate influences</purpose>
 		<x>0.4375</x>
 		<y>0.3125</y>
 		<angle>90.0</angle>
-	</card>
-	<card>
+	</pos>
+	<pos>
 		<purpose>What you seek</purpose>
 		<x>0.25</x>
 		<y>0</y>
 		<angle>0.0</angle>
-	</card>
-	<card>
+	</pos>
+	<pos>
 		<purpose>Your roots</purpose>
 		<x>0.25</x>
 		<y>0.75</y>
 		<angle>0.0</angle>
-	</card>
-	<card>
+	</pos>
+	<pos>
 		<purpose>Your past and how it affects the present</purpose>
 		<x>0.0</x>
 		<y>0.4375</y>
 		<angle>0.0</angle>
-	</card>
-	<card>
+	</pos>
+	<pos>
 		<purpose>Your future</purpose>
 		<x>0.5</x>
 		<y>0.4375</y>
 		<angle>0.0</angle>
-	</card>
-	<card>
+	</pos>
+	<pos>
 		<purpose>Your attitude</purpose>
 		<x>0.75</x>
 		<y>0.75</y>
 		<angle>0.0</angle>
-	</card>
-	<card>
+	</pos>
+	<pos>
 		<purpose>Your influence on others</purpose>
 		<x>0.75</x>
 		<y>0.5</y>
 		<angle>0.0</angle>
-	</card>
-	<card>
+	</pos>
+	<pos>
 		<purpose>Your hopes, fears, or outside influences</purpose>
 		<x>0.75</x>
 		<y>0.25</y>
 		<angle>0.0</angle>
-	</card>
-	<card>
+	</pos>
+	<pos>
 		<purpose>The outcome</purpose>
 		<x>0.75</x>
 		<y>0.0</y>
 		<angle>0.0</angle>
-	</card>
+	</pos>
 </layout>

@@ -14,46 +14,18 @@ class QTarot(QtGui.QMainWindow):
 		self.initUI()
 
 	def updateCards(self):
-		j=0
-		offset=self.scene.calculateOffset()
 		for item in self.scene.items():
 			if isinstance(item,QTarotItem):
-				card=item.cardNumber
-				rev=item.rev
-				px=qtrcfg.deck[card]\
-				.scaledToWidth(self.scene.smallerD/\
-				self.currentLayout.largetDimension)
-				if rev:
-					rm=QtGui.QMatrix()
-					rm.rotate(180)
-					px=px.transformed(rm)
-				item.setPixmap(px)
-				i=self.currentLayout.elements[j]
-				pos=QtCore.QPointF(i[0]*self.scene.smallerD,i[1]*self.scene.smallerD)
-				item.setPos(pos+offset)
-				j+=1
+				item.refresh()
+				item.reposition()
 		self.scene.invalidate()
 
-	def updateTable(self,fn="deck:table.png"):
+	def updateTable(self,fn="skin:table.png"):
 		self.scene.table=QtGui.QPixmap(fn)
-		j=0
-		offset=self.scene.calculateOffset()
 		for item in self.scene.items():
 			if isinstance(item,QTarotItem):
-				card=item.cardNumber
-				rev=item.rev
-				px=qtrcfg.deck[card]\
-				.scaledToWidth(self.scene.smallerD/\
-				self.currentLayout.largetDimension)
-				if rev:
-					rm=QtGui.QMatrix()
-					rm.rotate(180)
-					px=px.transformed(rm)
-				item.setPixmap(px)
-				i=self.currentLayout.elements[j]
-				pos=QtCore.QPointF(i[0]*self.scene.smallerD,i[1]*self.scene.smallerD)
-				item.setPos(pos+offset)
-				j+=1
+				item.refresh()
+				item.reposition()
 		self.scene.invalidate()
 
 	def pickTable(self):
@@ -92,28 +64,18 @@ class QTarot(QtGui.QMainWindow):
 		self.scene.invalidate()
 
 		offset=self.scene.calculateOffset()
-		draws=sample(xrange(len(qtrcfg.deck)),len(lay.elements))
-		shortest_dim_size=1/lay.largetDimension*self.scene.smallerD
-		for (card,placement) in zip(draws, lay.elements):
-			#rectitem=self.scene.addRect(0,0,1/lay.largetDimension*self.scene.smallerD,\
-			#2/lay.largetDimension*self.scene.smallerD,\
+		draws=sample(qtrcfg.deck_defs[qtrcfg.deck_def]\
+			['definition'].cards(),len(lay.pos[:]))
+
+		for (card,placement) in zip(draws, lay.pos[:]):
+			#rectitem=self.scene.addRect(0,0,1/lay.largetDimension()*self.scene.smallerD,\
+			#2/lay.largetDimension()*self.scene.smallerD,\
 			#pen=QtGui.QPen(QtGui.QColor("red"),2),\
 			#brush=QtGui.QBrush(QtGui.QColor("indigo")))
 
-			if qtrcfg.deck[card].width() < qtrcfg.deck[card].height():
-				px=qtrcfg.deck[card].scaledToWidth(shortest_dim_size)
-			else:
-				px=qtrcfg.deck[card].scaledToHeight(shortest_dim_size)
-
-			rev=False
-			if random() <= qtrcfg.negativity:
-				rm=QtGui.QMatrix()
-				rm.rotate(180)
-				px=px.transformed(rm)
-				rev=True
-			pos=QtCore.QPointF(placement[0]*self.scene.smallerD,placement[1]*self.scene.smallerD)
-			rectitem=self.scene.addTarot(px,card,pos+offset,angle=placement[2],rev=rev)
-			rectitem.setToolTip(placement[3])
+			rev=(random() <= qtrcfg.negativity)
+			rectitem=self.scene.addTarot(card,placement,rev)
+			rectitem.reposition()
 
 	def settingsWrite(self):
 		self.settingsChange()
@@ -123,12 +85,18 @@ class QTarot(QtGui.QMainWindow):
 	def settingsChange(self):
 		qtrcfg.negativity=self.negativity.value()
 		reload_deck=False
-		if str(self.deck.currentText()) != qtrcfg.deck_name:
-			qtrcfg.deck_name=str(self.deck.currentText())
+		if str(self.deck_skin.currentText()) != qtrcfg.deck_skin:
+			qtrcfg.deck_skin=str(self.deck_skin.currentText())
 			reload_deck=True
+		if str(self.deck_def.currentText()) != qtrcfg.deck_def:
+			qtrcfg.deck_def=str(self.deck_defs.currentText())
+			reload_deck=False
+			#pop up a message box saying to save reading or something
 		qtrcfg.default_layout=str(self.default_layout.currentText())
+		qtrcfg.load_deck_defs()
 		qtrcfg.load_layouts()
-		qtrcfg.load_deck()
+		qtrcfg.load_skins()
+		qtrcfg.setup_skin()
 		qtrcfg.current_icon_override=str(self.ico_theme.text())
 		if reload_deck:
 			self.updateCards()
@@ -137,17 +105,29 @@ class QTarot(QtGui.QMainWindow):
 		qtrcfg.reset_settings()
 		self.updateSettingsWidgets()
 
+	def fillSkinsBox(self, new_def):
+		print new_def
+		print qtrcfg.deck_defs.keys()
+		if qtrcfg.deck_defs.has_key(str(new_def)):
+			skins_list=qtrcfg.deck_defs[str(new_def)]['skins']
+		else:
+			skins_list=[]
+		self.deck_skin.clear()
+		self.deck_skin.addItems(skins_list)
+		idx=self.deck_skin.findText(qtrcfg.deck_skin)
+		self.deck_skin.setCurrentIndex(idx)
+
 	def updateSettingsWidgets(self):
 		self.default_layout.addItems(qtrcfg.layouts.keys())
 		idx=self.default_layout.findText(qtrcfg.default_layout)
 		self.default_layout.setCurrentIndex(idx)
 		self.negativity.setValue(qtrcfg.negativity)
-		decks=list(QtCore.QDir("decks:/").entryList())
-		decks.remove(".")
-		decks.remove("..")
-		self.deck.addItems(decks)
-		idx=self.deck.findText(qtrcfg.deck_name)
-		self.deck.setCurrentIndex(idx)
+		#decks=list(QtCore.QDir("skins:/").entryList())
+		#decks.remove(".")
+		#decks.remove("..")
+		self.deck_def.addItems(qtrcfg.deck_defs.keys())
+		idx=self.deck_def.findText(qtrcfg.deck_def)
+		self.deck_def.setCurrentIndex(idx)
 		self.ico_theme.setText(qtrcfg.current_icon_override)
 
 	def settings(self):
@@ -167,7 +147,10 @@ class QTarot(QtGui.QMainWindow):
 		self.negativity.setSingleStep(0.1)
 		self.negativity.setRange(0,1)
 
-		self.deck=QtGui.QComboBox(groupbox2)
+		self.deck_def=QtGui.QComboBox(groupbox2)
+		self.connect(self.deck_def, QtCore.SIGNAL(("currentIndex"
+		"Changed(const QString&)")), self.fillSkinsBox)
+		self.deck_skin=QtGui.QComboBox(groupbox2)
 		self.ico_theme=QtGui.QLineEdit(groupbox2)
 		self.ico_theme.setToolTip(("You should only set this if Qt isn't"
 		" detecting your icon theme.\n"
@@ -179,10 +162,12 @@ class QTarot(QtGui.QMainWindow):
 		gvbox.addWidget(self.negativity,0,1)
 		gvbox.addWidget(QtGui.QLabel("Default Layout"),1,0)
 		gvbox.addWidget(self.default_layout,1,1)
-		gvbox2.addWidget(QtGui.QLabel("Deck"),0,0)
-		gvbox2.addWidget(self.deck,0,1)
-		gvbox2.addWidget(QtGui.QLabel("Override Icon Theme"),2,0)
-		gvbox2.addWidget(self.ico_theme,2,1)
+		gvbox2.addWidget(QtGui.QLabel("Deck Definitions"),0,0)
+		gvbox2.addWidget(self.deck_def,0,1)
+		gvbox2.addWidget(QtGui.QLabel("Deck Skins"),2,0)
+		gvbox2.addWidget(self.deck_skin,2,1)
+		gvbox2.addWidget(QtGui.QLabel("Override Icon Theme"),3,0)
+		gvbox2.addWidget(self.ico_theme,3,1)
 
 		buttonbox=QtGui.QDialogButtonBox(QtCore.Qt.Horizontal)
 		resetbutton=buttonbox.addButton(QtGui.QDialogButtonBox.Reset)
@@ -251,7 +236,7 @@ class QTarot(QtGui.QMainWindow):
 		toolbar.addAction(saveAction)
 		toolbar.addAction(settingsAction)
 
-		self.setGeometry(300, 300, 350, 250)
+		#self.resize(500, 400)
 		self.setWindowTitle('Main window')
 
 
@@ -285,7 +270,8 @@ def main():
 
 	parser = argparse.ArgumentParser(prog='qtarot',description="A simple")
 	parser.add_argument('-l','--layout', help='The layout to use.',default=qtrcfg.default_layout)
-	parser.add_argument('-t','--table', help='File to use as table',default="deck:table.png")
+	#should probably modified to skins:{default_skin}/table.png
+	parser.add_argument('-t','--table', help='File to use as table',default="skin:table.png")
 	parser.add_argument('-n','--negativity', help='How often cards are reversed', default=0.5,type=float)
 	parser.add_argument('-o','--output', help='Save the reading to this file', default=None)
 	args = parser.parse_args(sys.argv[1:])

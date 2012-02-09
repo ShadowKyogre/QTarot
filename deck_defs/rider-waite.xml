@@ -1,0 +1,787 @@
+<deck name="Rider Waite">
+	<preview>path/to/file.ext</preview>
+	<suit name="Wands" affinity="Fire">
+		<card name="Ace">
+			<number>1</number>
+			<file>22.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed>
+				</reversed>
+			</meaning>
+		</card>
+		<card name="2">
+			<number>2</number>
+			<file>23.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed>
+				</reversed>
+			</meaning>
+		</card>
+		<card name="3">
+			<number>3</number>
+			<file>24.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed>
+				</reversed>
+			</meaning>
+		</card>
+		<card name="4">
+			<number>4</number>
+			<file>25.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed>
+				</reversed>
+			</meaning>
+		</card>
+		<card name="5">
+			<number>5</number>
+			<file>26.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed>
+				</reversed>
+			</meaning>
+		</card>
+		<card name="6">
+			<number>6</number>
+			<file>27.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed>
+				</reversed>
+			</meaning>
+		</card>
+		<card name="7">
+			<number>7</number>
+			<file>28.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed>
+				</reversed>
+			</meaning>
+		</card>
+		<card name="8">
+			<number>8</number>
+			<file>29.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed>
+				</reversed>
+			</meaning>
+		</card>
+		<card name="9">
+			<number>9</number>
+			<file>30.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed>
+				</reversed>
+			</meaning>
+		</card>
+		<card name="10">
+			<number>10</number>
+			<file>31.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed>
+				</reversed>
+			</meaning>
+		</card>
+		<card name="Page">
+			<number />
+			<file>32.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed>
+				</reversed>
+			</meaning>
+		</card>
+		<card name="Knight">
+			<number />
+			<file>33.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed>
+				</reversed>
+			</meaning>
+		</card>
+		<card name="Queen">
+			<number />
+			<file>34.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed>
+				</reversed>
+			</meaning>
+		</card>
+		<card name="King">
+			<number />
+			<file>35.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed>
+				</reversed>
+			</meaning>
+		</card>
+	</suit>
+	<suit name="Cups" affinity="Water">
+		<card name="Ace">
+			<number>1</number>
+			<file>36.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed>
+				</reversed>
+			</meaning>
+		</card>
+		<card name="2">
+			<number>2</number>
+			<file>37.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed>
+				</reversed>
+			</meaning>
+		</card>
+		<card name="3">
+			<number>3</number>
+			<file>38.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed>
+				</reversed>
+			</meaning>
+		</card>
+		<card name="4">
+			<number>4</number>
+			<file>39.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed>
+				</reversed>
+			</meaning>
+		</card>
+		<card name="5">
+			<number>5</number>
+			<file>40.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed>
+				</reversed>
+			</meaning>
+		</card>
+		<card name="6">
+			<number>6</number>
+			<file>41.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed>
+				</reversed>
+			</meaning>
+		</card>
+		<card name="7">
+			<number>7</number>
+			<file>42.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed>
+				</reversed>
+			</meaning>
+		</card>
+		<card name="8">
+			<number>8</number>
+			<file>43.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed>
+				</reversed>
+			</meaning>
+		</card>
+		<card name="9">
+			<number>9</number>
+			<file>44.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed>
+				</reversed>
+			</meaning>
+		</card>
+		<card name="10">
+			<number>10</number>
+			<file>45.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed>
+				</reversed>
+			</meaning>
+		</card>
+		<card name="Page">
+			<number />
+			<file>46.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed>
+				</reversed>
+			</meaning>
+		</card>
+		<card name="Knight">
+			<number />
+			<file>47.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed>
+				</reversed>
+			</meaning>
+		</card>
+		<card name="Queen">
+			<number />
+			<file>48.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed>
+				</reversed>
+			</meaning>
+		</card>
+		<card name="King">
+			<number />
+			<file>49.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed>
+				</reversed>
+			</meaning>
+		</card>
+	</suit>
+	<suit name="Swords" affinity="Air">
+		<card name="Ace">
+			<number>1</number>
+			<file>50.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed>
+				</reversed>
+			</meaning>
+		</card>
+		<card name="2">
+			<number>2</number>
+			<file>51.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed>
+				</reversed>
+			</meaning>
+		</card>
+		<card name="3">
+			<number>3</number>
+			<file>52.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed>
+				</reversed>
+			</meaning>
+		</card>
+		<card name="4">
+			<number>4</number>
+			<file>53.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed>
+				</reversed>
+			</meaning>
+		</card>
+		<card name="5">
+			<number>5</number>
+			<file>54.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed>
+				</reversed>
+			</meaning>
+		</card>
+		<card name="6">
+			<number>6</number>
+			<file>55.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed>
+				</reversed>
+			</meaning>
+		</card>
+		<card name="7">
+			<number>7</number>
+			<file>56.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed>
+				</reversed>
+			</meaning>
+		</card>
+		<card name="8">
+			<number>8</number>
+			<file>57.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed>
+				</reversed>
+			</meaning>
+		</card>
+		<card name="9">
+			<number>9</number>
+			<file>58.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed>
+				</reversed>
+			</meaning>
+		</card>
+		<card name="10">
+			<number>10</number>
+			<file>59.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed>
+				</reversed>
+			</meaning>
+		</card>
+		<card name="Page">
+			<number />
+			<file>60.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed>
+				</reversed>
+			</meaning>
+		</card>
+		<card name="Knight">
+			<number />
+			<file>61.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed>
+				</reversed>
+			</meaning>
+		</card>
+		<card name="Queen">
+			<number />
+			<file>62.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed>
+				</reversed>
+			</meaning>
+		</card>
+		<card name="King">
+			<number />
+			<file>63.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed>
+				</reversed>
+			</meaning>
+		</card>
+	</suit>
+	<suit name="Pentacles" affinity="Earth">
+			<card name="Ace">
+			<number>1</number>
+			<file>64.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed>
+				</reversed>
+			</meaning>
+		</card>
+		<card name="2">
+			<number>2</number>
+			<file>65.png</file>
+		</card>
+		<card name="3">
+			<number>3</number>
+			<file>66.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed>
+				</reversed>
+			</meaning>
+		</card>
+		<card name="4">
+			<number>4</number>
+			<file>67.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed>
+				</reversed>
+			</meaning>
+		</card>
+		<card name="5">
+			<number>5</number>
+			<file>68.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed>
+				</reversed>
+			</meaning>
+		</card>
+		<card name="6">
+			<number>6</number>
+			<file>69.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed>
+				</reversed>
+			</meaning>
+		</card>
+		<card name="7">
+			<number>7</number>
+			<file>70.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed>
+				</reversed>
+			</meaning>
+		</card>
+		<card name="8">
+			<number>8</number>
+			<file>71.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed>
+				</reversed>
+			</meaning>
+		</card>
+		<card name="9">
+			<number>9</number>
+			<file>72.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed>
+				</reversed>
+			</meaning>
+		</card>
+		<card name="10">
+			<number>10</number>
+			<file>73.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed>
+				</reversed>
+			</meaning>
+		</card>
+		<card name="Page">
+			<number />
+			<file>74.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed>
+				</reversed>
+			</meaning>
+		</card>
+		<card name="Knight">
+			<number />
+			<file>75.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed>
+				</reversed>
+			</meaning>
+		</card>
+		<card name="Queen">
+			<number />
+			<file>76.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed>
+				</reversed>
+			</meaning>
+		</card>
+		<card name="King">
+			<number />
+			<file>77.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed>
+				</reversed>
+			</meaning>
+		</card>
+	</suit>
+	<suit name="Major Arcana" affinity="Concepts">
+		<card name="The Fool">
+			<number>0</number>
+			<file>0.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed>
+				</reversed>
+			</meaning>
+		</card>
+		<card name="The Magician">
+			<number>I</number>
+			<file>1.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed>
+				</reversed>
+			</meaning>
+		</card>
+		<card name="The High Priestess">
+			<number>II</number>
+			<file>2.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed>
+				</reversed>
+			</meaning>
+		</card>
+		<card name="The Empress">
+			<number>III</number>
+			<file>3.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed>
+				</reversed>
+			</meaning>
+		</card>
+		<card name="The Emperor">
+			<number>IV</number>
+			<file>4.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed>
+				</reversed>
+			</meaning>
+		</card>
+		<card name="The Hierophant">
+			<number>V</number>
+			<file>5.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed>
+				</reversed>
+			</meaning>
+		</card>
+		<card name="The Lovers">
+			<number>VI</number>
+			<file>6.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed>
+				</reversed>
+			</meaning>
+		</card>
+		<card name="The Chariot">
+			<number>VII</number>
+			<file>7.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed>
+				</reversed>
+			</meaning>
+		</card>
+		<card name="Strength">
+			<number>VIII</number>
+			<file>8.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed>
+				</reversed>
+			</meaning>
+		</card>
+		<card name="The Hermit">
+			<number>XI</number>
+			<file>9.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed>
+				</reversed>
+			</meaning>
+		</card>
+		<card name="Wheel of Fortune">
+			<number>X</number>
+			<file>10.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed>
+				</reversed>
+			</meaning>
+		</card>
+		<card name="Justice">
+			<number>XI</number>
+			<file>11.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed>
+				</reversed>
+			</meaning>
+		</card>
+		<card name="The Hanged Man">
+			<number>XII</number>
+			<file>12.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed>
+				</reversed>
+			</meaning>
+		</card>
+		<card name="Death">
+			<number>XIII</number>
+			<file>13.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed>
+				</reversed>
+			</meaning>
+		</card>
+		<card name="Temperance">
+			<number>XIV</number>
+			<file>14.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed>
+				</reversed>
+			</meaning>
+		</card>
+		<card name="The Devil">
+			<number>XV</number>
+			<file>15.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed>
+				</reversed>
+			</meaning>
+		</card>
+		<card name="The Tower">
+			<number>XVI</number>
+			<file>16.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed>
+				</reversed>
+			</meaning>
+		</card>
+		<card name="The Star">
+			<number>XVII</number>
+			<file>17.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed>
+				</reversed>
+			</meaning>
+		</card>
+		<card name="The Moon">
+			<number>XVIII</number>
+			<file>18.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed>
+				</reversed>
+			</meaning>
+		</card>
+		<card name="The Sun">
+			<number>XIX</number>
+			<file>19.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed>
+				</reversed>
+			</meaning>
+		</card>
+		<card name="Judgement">
+			<number>XX</number>
+			<file>20.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed>
+				</reversed>
+			</meaning>
+		</card>
+		<card name="The World">
+			<number>XXI</number>
+			<file>21.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed>
+				</reversed>
+			</meaning>
+		</card>
+	</suit>
+</deck>

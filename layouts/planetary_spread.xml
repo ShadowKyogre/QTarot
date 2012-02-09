@@ -1,51 +1,51 @@
 <layout name="Planetary Spread" height="6.0" width="8.0">
 	<purpose>Usually used as an answering spread, but can give a good impression of the situation</purpose>
-	<card>
+	<pos>
 		<purpose>The Mercury card, or matters of business, skill, or deceit</purpose>
 		<x>0.0625</x>
 		<y>0.416666666</y>
 		<angle>0.0</angle>
-	</card>
-	<card>
+	</pos>
+	<pos>
 		<purpose>The Venus card, representing the love life</purpose>
 		<x>0.25</x>
 		<y>0.166666666</y>
 		<angle>0.0</angle>
-	</card>
-	<card>
+	</pos>
+	<pos>
 		<purpose>The Moon card, or matters at home</purpose>
 		<x>0.25</x>
 		<y>0.666666666</y>
 		<angle>0.0</angle>
-	</card>
-	<card>
+	</pos>
+	<pos>
 		<purpose>The Mars Card, or matters of adversity or enmity</purpose>
 		<x>0.5</x>
 		<y>0.0</y>
 		<angle>0.0</angle>
-	</card>
-	<card>
+	</pos>
+	<pos>
 		<purpose>Your current state</purpose>
 		<x>0.5</x>
 		<y>0.75</y>
 		<angle>0.0</angle>
-	</card>
-	<card>
+	</pos>
+	<pos>
 		<purpose>The Jupiter card, representing gains, expansion, acquisition</purpose>
 		<x>0.75</x>
 		<y>0.166666666</y>
 		<angle>0.0</angle>
-	</card>
-	<card>
+	</pos>
+	<pos>
 		<purpose>The Mercury card, or the &quot;answer&quot;</purpose>
 		<x>0.75</x>
 		<y>0.666666666</y>
 		<angle>0.0</angle>
-	</card>
-	<card>
+	</pos>
+	<pos>
 		<purpose>The Saturn card, representing restrictions</purpose>
 		<x>0.9375</x>
 		<y>0.416666666</y>
 		<angle>0.0</angle>
-	</card>
+	</pos>
 </layout>

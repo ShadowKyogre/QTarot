@@ -1,95 +1,71 @@
 from PyQt4 import QtGui,QtCore
 import os
 from collections import OrderedDict as od
-from lxml import etree
+from lxml import etree, objectify
 
-#deck_validator = etree.XMLSchema(etree.parse(open('%s/deck.xsd' \
-#	%(os.sys.path[0]),'r')))
-#layout_validator = etree.XMLSchema(etree.parse(open('%s/layouts.xsd' \
-#	%(os.sys.path[0]),'r')))
+deck_validator = etree.XMLSchema(etree.parse(open('%s/deck.xsd' \
+	%(os.sys.path[0]),'r')))
+layout_validator = etree.XMLSchema(etree.parse(open('%s/layouts.xsd' \
+	%(os.sys.path[0]),'r')))
 
-
-class TarotDeck:
-	def __init__(self, deck_def="defs/coleman-white.xml"):
-		f=open(deck_def)
-		self.tree=etree.parse(f).getroot()
-		self.name=self.tree.attrib['name']
-		#self.preview=#some path to the pixmap :B
-		#self.cards=#get all suits' cards
-	def preview(self):
-		return self.tree.find('preview').text
-	def name(self):
-		return self.tree.attrib['name']
+class TarotDeck(objectify.ObjectifiedElement):
 	def cards(self):
-		return self.tree.xpath('suit/card')
-	def suits(self):
-		return self.tree.xpath('suit')
+		return self.xpath('suit/card')
+	def conforms(self, skin):
+		skin_dir=QtCore.QDir("skins:{skin}".format(**locals()))
 
-#print TarotDeck().preview()
-#print TarotDeck().cards()
-#print TarotDeck().suits()
+		skin_contents=set( str(i) for i in skin_dir.entryList() \
+						if str(i) not in (".","..","table.png","deck.ini"))
+		required_files=set( c.file.text for c in self.cards() )
+		#or required_files-skin_contents
+		return required_files.issubset(skin_contents)
 
-class TarotCard:
-	def __init__(self, card_elem):
-		self.card_elem=card_elem
-	def meanings(self):
-		return self.card_elem.xpath('meaning')
-	def filename(self):
-		return self.card_elem.xpath('file')
-	def number(self):
-		return self.card_elem.xpath('number')
-	def name(self):
-		parent=self.card_elem.getparent()
+class TarotCard(objectify.ObjectifiedElement):
+	def fullname(self):
+		parent=self.getparent()
 		if parent.attrib.has_key('only_literal'):
-			return self.card_elem.attrib['name']
+			return self.attrib['name']
 		else:
 			return "{name} of {suit}"\
 			.format(suit=parent.attrib['name'], \
-			name=self.card_elem.attrib['name'])
+			name=self.attrib['name'])
 
-class TarotLayout:
-	"""
-	The constructor for this object.
-	"""
-	def __init__(self,layout_file):
-		self.elements=[]
-		f=open(layout_file,'r')
-		tree=etree.parse(f).getroot()
-		self.name=tree.attrib['name']
-		self.min_height=float(tree.attrib['height'])
-		self.min_width=float(tree.attrib['width'])
-		self.purpose=tree.find('purpose').text
-		cards=tree.findall('card')
-		for i in cards:
-			x=float(i.find('x').text)
-			y=float(i.find('y').text)
-			angle=float(i.find('angle').text)
-			purpose=i.find('purpose').text
-			self.elements.append([x,y,angle,purpose])
 
-	@property
+class TarotLayout(objectify.ObjectifiedElement):
 	def largetDimension(self):
-		if self.min_height > self.min_width:
-			return self.min_height
-		else:
-			return self.min_width
+		height=float(self.attrib['height'])
+		width=float(self.attrib['width'])
+		return height if height > width else width
+
+def setup_parser():
+	global parser
+	lookup = etree.ElementNamespaceClassLookup(objectify.ObjectifyElementClassLookup())
+	parser = etree.XMLParser(remove_blank_text=True)
+	parser.set_element_class_lookup(lookup)
+
+	namespace = lookup.get_namespace('')
+	namespace['deck']=TarotDeck
+	namespace['card']=TarotCard
+	namespace['layout']=TarotLayout
 
 class QTarotConfig:
 	def __init__(self):
 		self.APPNAME="QTarot"
-		self.APPVERSION="0.2.0"
+		self.APPVERSION="0.3.0"
 		self.AUTHOR="ShadowKyogre"
 		self.DESCRIPTION="A simple tarot fortune teller."
 		self.YEAR="2012"
 		self.PAGE="http://shadowkyogre.github.com/QTarot/"
-
+		print QtGui.QDesktopServices.storageLocation\
+		(QtGui.QDesktopServices.DataLocation)
 		self.settings=QtCore.QSettings(QtCore.QSettings.IniFormat,
 						QtCore.QSettings.UserScope,
 						self.AUTHOR,
 						self.APPNAME)
 
-		#path for deck is like: "decks:<deck-name>"
-		#so default table is "deck:table.png"
+		#path for deck skins is like: "skins:<deck-name>"
+		#so default table is "skins:{skin}/table.png"
+		#deck defs are like "decks:{deck}.xml"
 		#path for layouts is like "layouts:<layout-name>.lyt"
 
 		self.__SETDIR="%s/%s" \
@@ -102,8 +78,14 @@ class QTarotConfig:
 		app_layout_path="%s/layouts" %(os.sys.path[0])
 		config_layout_path=("%s/layouts" %(self.__SETDIR)).replace('//','')
 
+		app_defs_path="%s/deck_defs" %(os.sys.path[0])
+		config_defs_path=("%s/deck_defs" %(self.__SETDIR)).replace('//','')
+
 		QtCore.QDir.setSearchPaths("layouts", [config_layout_path,app_layout_path])
-		QtCore.QDir.setSearchPaths("decks", [config_theme_path,app_theme_path])
+		QtCore.QDir.setSearchPaths("skins", [config_theme_path,app_theme_path])
+		QtCore.QDir.setSearchPaths("deckdefs", [config_defs_path,app_defs_path])
+
+		setup_parser()
 		self.sys_icotheme=QtGui.QIcon.themeName()
 		self.reset_settings()
 
@@ -113,46 +95,108 @@ class QTarotConfig:
 		for i in layouts_path.entryList():
 			if str(i) in (".",".."):
 				continue
-			lay=TarotLayout(layouts_path.absolutePath()+"/"+str(i))
-			self.layouts[lay.name]=lay
+			path=str(layouts_path.absoluteFilePath(i))
+			lay=objectify.parse(path,parser=parser)
+			try:
+				layout_validator.validate(lay)
+				lay=lay.getroot()
+				self.layouts[lay.attrib['name']]=lay
+			except etree.DocumentInvalid, e:
+				print e.message
 
-	def load_deck(self):
-		self.deck=[]
-		QtCore.QDir.setSearchPaths("deck", ["decks:%s" %(self.deck_name)])
-		self.default_table=QtGui.QPixmap("deck:table.png")
-		for i in QtCore.QDir("deck:/").entryList():
-			if str(i) in (".","..","table.png","deck.ini"):
+	def setup_skin(self):
+		QtCore.QDir.setSearchPaths("skin", ["skins:%s" %(self.deck_skin)])
+
+	def load_deck_defs(self):
+		self.deck_defs=od()
+		deck_defs_path=QtCore.QDir("deckdefs:/")
+		for i in deck_defs_path.entryList():
+			if str(i) in (".",".."):
 				continue
-			px=QtGui.QPixmap("deck:%s"%i)
-			self.deck.append(px)
+			path=str(deck_defs_path.absoluteFilePath(i))
+			deck_def=objectify.parse(path,parser=parser)
+			try:
+				deck_validator.validate(deck_def)
+				deck_def=deck_def.getroot()
+				self.deck_defs[deck_def.attrib['name']]={}
+				self.deck_defs[deck_def.attrib['name']]['definition']=deck_def
+				self.deck_defs[deck_def.attrib['name']]['skins']=[]
+			except etree.DocumentInvalid, e:
+				print e.message
+
+	def load_skins(self):
+		#self.deck_skins=od.fromkeys(self.deck_defs.keys())
+		#QtCore.QDir.setSearchPaths("deck", ["decks:%s" %(self.deck_name)])
+		#self.default_table=QtGui.QPixmap("deck:table.png")
+		deck_skins_path=QtCore.QDir("skins:/")
+		for i in deck_skins_path.entryList():
+			if str(i) in (".",".."):
+				continue
+			if deck_skins_path.exists("skins:/{i}/deck.ini".format(i=i)):
+				skin_info=QtCore.QSettings("skins:/{i}/deck.ini".format(i=i), \
+							QtCore.QSettings.IniFormat)
+				skin_info.beginGroup("Deck Skin")
+				for_deck=str(skin_info.value("definition","").toString())
+				if for_deck:
+					if self.deck_defs.has_key(for_deck):
+						if self.deck_defs[for_deck]['definition'].conforms(i):
+							self.deck_defs[for_deck]['skins'].append(str(i))
+							#copy metadata
+						else:
+							print ("Deck definition {for_deck}"
+							" is not compatible with {i}"
+							", skipping {i}...").format(**locals())
+					else:
+						print ("Deck definition {for_deck} is not installed"
+						", skipping {i}...").format(**locals())
+				else:
+					print ("Cannot confirm which deck definitions"
+					" {i} is compatible with, skipping...").format(i=i)
+				skin_info.endGroup()
+			else:
+				print ("Cannot confirm which deck definitions"
+				" {i} is compatible with, skipping...").format(i=i)
+		#for i in QtCore.QDir("deck:/").entryList():
+			#default_table=False
+			#defined=False
+			#missing_files=[]
+			#if str(i) in (".","..","table.png","deck.ini"):
+				#continue
+			#px=QtGui.QPixmap("deck:%s"%i)
+			#self.deck.append(px)
 
 	def reset_settings(self):
 		self.settings.beginGroup("Reading")
+		self.deck_def=str(self.settings.value("deck","Rider Waite").toString())
 		self.negativity=self.settings.value("negativity",0.5).toDouble()[0]
 		self.default_layout=str(self.settings.value("defaultLayout","Ellipse").toString())
 		self.settings.endGroup()
 
 		self.settings.beginGroup("Appearance")
-		self.deck_name=str(self.settings.value("deck","coleman-white").toString())
+		#deck_name is now deck_skin
+		self.deck_skin=str(self.settings.value("skin","coleman-white").toString())
 		self.current_icon_override=str(self.settings.value("stIconTheme", \
-																	QtCore.QString("")).toPyObject())
+					QtCore.QString("")).toPyObject())
 		if self.current_icon_override > "":
 			QtGui.QIcon.setThemeName(self.current_icon_override)
 		else:
 			QtGui.QIcon.setThemeName(self.sys_icotheme)
 		self.settings.endGroup()
 
-		self.load_deck()
+		self.load_deck_defs()
 		self.load_layouts()
+		self.load_skins()
+		self.setup_skin()
 
 	def save_settings(self):
 		self.settings.beginGroup("Reading")
+		self.settings.setValue("deck",self.deck_def)
 		self.settings.setValue("negativity",self.negativity)
 		self.settings.setValue("defaultLayout",self.default_layout)
 		self.settings.endGroup()
 
 		self.settings.beginGroup("Appearance")
-		self.settings.setValue("deck",self.deck_name)
+		self.settings.setValue("skin",self.deck_skin)
 		self.settings.setValue("stIconTheme",self.current_icon_override)
 		self.settings.endGroup()
 

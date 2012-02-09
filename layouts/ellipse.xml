@@ -1,45 +1,45 @@
 <layout name="Ellipse" height="5.0" width="7.0">
 	<purpose>Ask about a project</purpose>
-	<card>
+	<pos>
 		<purpose>Past or what is ending</purpose>
 		<x>0.0</x>
 		<y>0.0</y>
 		<angle>0.0</angle>
-	</card>
-	<card>
+	</pos>
+	<pos>
 		<purpose>The present</purpose>
 		<x>0.142857142857</x>
 		<y>0.2</y>
 		<angle>0.0</angle>
-	</card>
-	<card>
+	</pos>
+	<pos>
 		<purpose>The future or what is beginning</purpose>
 		<x>0.285714285714</x>
 		<y>0.4</y>
 		<angle>0.0</angle>
-	</card>
-	<card>
+	</pos>
+	<pos>
 		<purpose>The path to take</purpose>
 		<x>0.428571428571</x>
 		<y>0.6</y>
 		<angle>0.0</angle>
-	</card>
-	<card>
+	</pos>
+	<pos>
 		<purpose>Outside influences</purpose>
 		<x>0.571428571429</x>
 		<y>0.4</y>
 		<angle>0.0</angle>
-	</card>
-	<card>
+	</pos>
+	<pos>
 		<purpose>Hopes or fears</purpose>
 		<x>0.714285714286</x>
 		<y>0.2</y>
 		<angle>0.0</angle>
-	</card>
-	<card>
+	</pos>
+	<pos>
 		<purpose>Outcome</purpose>
 		<x>0.857142857143</x>
 		<y>0.0</y>
 		<angle>0.0</angle>
-	</card>
+	</pos>
 </layout>
