@@ -262,11 +262,11 @@ def main():
 		pass
 
 	app = QtGui.QApplication(sys.argv)
-	app.setApplicationName("QTarot")
+
+	app.setApplicationName(QTarotConfig.APPNAME)
+	app.setApplicationVersion(QTarotConfig.APPVERSION)
 
 	qtrcfg = QTarotConfig()
-	app.setApplicationName(qtrcfg.APPNAME)
-	app.setApplicationVersion(qtrcfg.APPVERSION)
 
 	parser = argparse.ArgumentParser(prog='qtarot',description="A simple")
 	parser.add_argument('-l','--layout', help='The layout to use.',default=qtrcfg.default_layout)

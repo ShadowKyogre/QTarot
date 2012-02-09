@@ -49,15 +49,13 @@ def setup_parser():
 	namespace['layout']=TarotLayout
 
 class QTarotConfig:
+	APPNAME="QTarot"
+	APPVERSION="0.3.0"
+	AUTHOR="ShadowKyogre"
+	DESCRIPTION="A simple tarot fortune teller."
+	YEAR="2012"
+	PAGE="http://shadowkyogre.github.com/QTarot/"
 	def __init__(self):
-		self.APPNAME="QTarot"
-		self.APPVERSION="0.3.0"
-		self.AUTHOR="ShadowKyogre"
-		self.DESCRIPTION="A simple tarot fortune teller."
-		self.YEAR="2012"
-		self.PAGE="http://shadowkyogre.github.com/QTarot/"
-		print QtGui.QDesktopServices.storageLocation\
-		(QtGui.QDesktopServices.DataLocation)
 		self.settings=QtCore.QSettings(QtCore.QSettings.IniFormat,
 						QtCore.QSettings.UserScope,
 						self.AUTHOR,
@@ -68,18 +66,17 @@ class QTarotConfig:
 		#deck defs are like "decks:{deck}.xml"
 		#path for layouts is like "layouts:<layout-name>.lyt"
 
-		self.__SETDIR="%s/%s" \
-		%(str(QtGui.QDesktopServices.storageLocation\
-		(QtGui.QDesktopServices.DataLocation)), self.APPNAME)
+		self.userconfdir=str(QtGui.QDesktopServices.storageLocation\
+		(QtGui.QDesktopServices.DataLocation)).replace('//','/')
 
-		app_theme_path="%s/decks" %(os.sys.path[0])
-		config_theme_path=("%s/decks" %(self.__SETDIR)).replace('//','')
+		app_theme_path=os.path.join(os.sys.path[0],"decks")
+		config_theme_path=os.path.join(self.userconfdir,"decks")
 
-		app_layout_path="%s/layouts" %(os.sys.path[0])
-		config_layout_path=("%s/layouts" %(self.__SETDIR)).replace('//','')
+		app_layout_path=os.path.join(os.sys.path[0],"layouts")
+		config_layout_path=os.path.join(self.userconfdir,"layouts")
 
-		app_defs_path="%s/deck_defs" %(os.sys.path[0])
-		config_defs_path=("%s/deck_defs" %(self.__SETDIR)).replace('//','')
+		app_defs_path=os.path.join(os.sys.path[0],"deck_defs")
+		config_defs_path=os.path.join(self.userconfdir,"deck_defs")
 
 		QtCore.QDir.setSearchPaths("layouts", [config_layout_path,app_layout_path])
 		QtCore.QDir.setSearchPaths("skins", [config_theme_path,app_theme_path])
