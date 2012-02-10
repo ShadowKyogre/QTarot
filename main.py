@@ -58,7 +58,7 @@ class QTarot(QtGui.QMainWindow):
 
 				import shutil
 				f2=open(os.path.join(os.sys.path[0],'export_read.html'))
-				template=f.read()
+				template=f2.read()
 				f2.close()
 
 				cards=""
@@ -119,8 +119,8 @@ class QTarot(QtGui.QMainWindow):
 		template=f.read()
 		f.close()
 
-		reading_specific=("\n\t\t\t\t<br />Current status: {status}<br />"
-		"\n\t\t\t\tPurpose in layout: {purp}") if reverse is not None \
+		reading_specific=("<br />\n\t\tCurrent status: {status}<br />"
+		"\n\t\tPurpose in layout: {purp}") if reverse is not None \
 		and purpose is not None else ""
 		if newfp:
 			oldfn=str(QtCore.QDir("skin:/")\
