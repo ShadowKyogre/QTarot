@@ -7,6 +7,8 @@ from random import sample,random
 from qtarotconfig import QTarotConfig
 from utilities import ZPGraphicsView,QTarotScene,QTarotItem
 
+#http://www.sacred-texts.com/tarot/faq.htm#US1909
+
 class QTarot(QtGui.QMainWindow):
 
 	def __init__(self):
@@ -55,17 +57,10 @@ class QTarot(QtGui.QMainWindow):
 				f=open(filename,'wb')
 
 				import shutil
+				f2=open(os.path.join(os.sys.path[0],'export_read.html'))
+				template=f.read()
+				f2.close()
 
-				template="""<html>
-<head><title>Reading with {deck} using {layout}</title></head>
-<body>
-<center><h1>Reading with {deck} using {layout}</h1></center>
-<br />
-<center><img src="{reading_px}" /></center>
-{cards}
-</body>
-<html>
-				"""
 				cards=""
 				layout="Unknown"
 				for item in self.scene.items():
@@ -120,36 +115,9 @@ class QTarot(QtGui.QMainWindow):
 			rectitem.emitter.showAllInfo.connect(self.cardInfoDialog)
 
 	def generateCardText(self, card, reverse=None, purpose=None, newfp=None):
-		template="""<table width="100%">
-			<tr>
-				<td width="50%">
-				<center><img src="{fn}" /></center>
-				</td>
-				<td width="50%">
-				<big>
-				Name: {name}<br />
-				Suit: {suit} (Affinity: {af})
-				{reading_specific}
-				</big>
-				</td>
-			</tr>
-			<tr>
-				<td width="100%" colspan=2>
-				<big><center>Meanings</center></big>
-				</td>
-			</tr>
-			<tr>
-				<td width="50%">
-				<center>Normal</center><br />
-				{normal}
-				</td>
-				<td width="50%">
-				<center>Reversed</center><br />
-				{reverse}
-				</td>
-			</tr>
-		</table>
-		"""
+		f=open(os.path.join(os.sys.path[0],'card_info_template.html'))
+		template=f.read()
+		f.close()
 
 		reading_specific=("\n\t\t\t\t<br />Current status: {status}<br />"
 		"\n\t\t\t\tPurpose in layout: {purp}") if reverse is not None \
