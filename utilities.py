@@ -108,7 +108,6 @@ class QTarotItem(QtGui.QGraphicsPixmapItem):
 				self.posData.y*self.scene().smallerD)
 		#print self.posData.angle
 		#print
-		print self.rotation(),self.posData.angle
 		if self.posData.angle != 0 and self.rotation() != self.posData.angle:
 			#self.rotate(self.posData.angle)
 			self.setRotation(self.posData.angle)
