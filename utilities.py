@@ -59,14 +59,20 @@ class QTarotScene(QtGui.QGraphicsScene):
 
 class QTarotItem(QtGui.QGraphicsPixmapItem):
 
+	class QTarotItemEmitter(QtCore.QObject):
+		showAllInfo=QtCore.pyqtSignal([TarotCard,'bool','QString'])
+		showName=QtCore.pyqtSignal(['QString'])
+		clearName=QtCore.pyqtSignal([])
+
 	def __init__(self, card, pos_data, reverse, parent=None, scene=None):
 		QtGui.QGraphicsPixmapItem.__init__(self, parent=None, scene=None)
+		#QtGui.QGraphicsObject.__init__(self, parent)
 		self.setAcceptHoverEvents(True)
 		self.card=card
 		self.posData=pos_data
 		self.rev=reverse
-		#self.reskin(skin)
-		#self.skin=skin
+
+		self.emitter = QTarotItem.QTarotItemEmitter()
 
 	def itemChange (self, change, value):
 		if change == QtGui.QGraphicsItem.ItemSceneChange:
@@ -100,8 +106,12 @@ class QTarotItem(QtGui.QGraphicsPixmapItem):
 		offset=self.scene().calculateOffset()
 		pos=QtCore.QPointF(self.posData.x*self.scene().smallerD, \
 				self.posData.y*self.scene().smallerD)
-		if self.posData.angle != 0:
-			self.rotate(self.posData.angle)
+		#print self.posData.angle
+		#print
+		print self.rotation(),self.posData.angle
+		if self.posData.angle != 0 and self.rotation() != self.posData.angle:
+			#self.rotate(self.posData.angle)
+			self.setRotation(self.posData.angle)
 		self.setPos(pos+offset)
 
 	def setRev(self, rev):
@@ -128,14 +138,19 @@ class QTarotItem(QtGui.QGraphicsPixmapItem):
 
 	def hoverEnterEvent(self, event):
 		QtGui.QGraphicsPixmapItem.hoverEnterEvent(self,event)
-		window = self.scene().parent()
-		if window:
-			window.statusBar().showMessage(self.card.fullname())
+		self.emitter.showName.emit(self.card.fullname())
+
 	def hoverLeaveEvent(self, event):
 		QtGui.QGraphicsPixmapItem.hoverLeaveEvent(self,event)
-		window = self.scene().parent()
-		if window:
-			window.statusBar().clearMessage()
+		self.emitter.clearName.emit()
+
+	#http://python.6.n6.nabble.com/GraphicsItem-QObject-Inheritance-problem-td1923392.html
+	#http://www.riverbankcomputing.co.uk/static/Docs/PyQt4/html/new_style_signals_slots.html
+	#http://www.riverbankcomputing.co.uk/static/Docs/PyQt4/html/old_style_signals_slots.html
+	def mouseDoubleClickEvent(self, event):
+		QtGui.QGraphicsPixmapItem.mouseDoubleClickEvent(self,event)
+		self.emitter.showAllInfo.emit(self.card, self.rev, \
+				self.posData.purpose.text)
 
 class ZPGraphicsView(QtGui.QGraphicsView):
 	def __init__(self, *args):

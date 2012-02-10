@@ -427,7 +427,7 @@
 		</card>
 	</suit>
 	<suit name="Pentacles" affinity="Earth">
-			<card name="Ace">
+		<card name="Ace">
 			<number>1</number>
 			<file>64.png</file>
 			<meaning>
@@ -440,6 +440,12 @@
 		<card name="2">
 			<number>2</number>
 			<file>65.png</file>
+			<meaning>
+				<normal>
+				</normal>
+				<reversed>
+				</reversed>
+			</meaning>
 		</card>
 		<card name="3">
 			<number>3</number>

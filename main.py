@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-import sys
+import os
 import argparse
 from PyQt4 import QtGui,QtCore
 from random import sample,random
@@ -36,17 +36,56 @@ class QTarot(QtGui.QMainWindow):
 
 	def saveReading(self,filename=None):
 		if filename <= "":
-			filename=QtGui.QFileDialog.getSaveFileName(self, caption="Save Current Reading",
-				filter="Images (%s)" %(' '.join(formats)))
+			filename=str(QtGui.QFileDialog.getSaveFileName(self, caption="Save Current Reading",
+				filter="Images (%s);;HTML (*.html)" %(' '.join(formats))))
 		if filename > "":
 			fmt=filename.split(".",1)[-1]
-			pixMap = QtGui.QPixmap(self.scene.sceneRect().width(),self.scene.sceneRect().height())
-			painter=QtGui.QPainter(pixMap)
-			#here=QtCore.QRectF(self.scene.sceneRect().toRect())
-			#self.scene.render(painter, here, here)
-			self.scene.render(painter)
-			painter.end()
-			pixMap.save(filename,format=fmt)
+			if fmt == 'html':
+				store_here="{}.files".format(filename.replace(".html",""))
+				if not os.path.exists(store_here):
+					os.makedirs(store_here)
+				pixMap = QtGui.QPixmap(self.scene.sceneRect().width(),self.scene.sceneRect().height())
+				painter=QtGui.QPainter(pixMap)
+				self.scene.render(painter)
+				painter.end()
+				reading_px=os.path.join(store_here,"reading.png")
+				reading_pxh=os.path.join(os.path.basename(store_here),"reading.png")
+				pixMap.save(reading_px,format='png')
+
+				f=open(filename,'wb')
+
+				import shutil
+
+				template="""<html>
+<head><title>Reading with {deck} using {layout}</title></head>
+<body>
+<center><h1>Reading with {deck} using {layout}</h1></center>
+<br />
+<center><img src="{reading_px}" /></center>
+{cards}
+</body>
+<html>
+				"""
+				cards=""
+				layout="Unknown"
+				for item in self.scene.items():
+					if isinstance(item,QTarotItem):
+						if layout == "Unknown":
+							layout=item.posData.getparent().get('name')
+						text,copy_from,save_file=self.generateCardText(item.card,\
+						item.rev,item.posData.purpose.text,newfp=store_here)
+						shutil.copy(copy_from,save_file)
+						cards=''.join([cards,text])
+				f.write(template.format(cards=cards,deck=qtrcfg.deck_def,layout=layout,reading_px=reading_pxh))
+				f.close()
+			else:
+				pixMap = QtGui.QPixmap(self.scene.sceneRect().width(),self.scene.sceneRect().height())
+				painter=QtGui.QPainter(pixMap)
+				#here=QtCore.QRectF(self.scene.sceneRect().toRect())
+				#self.scene.render(painter, here, here)
+				self.scene.render(painter)
+				painter.end()
+				pixMap.save(filename,format=fmt)
 
 	def newReading(self,item=None):
 		if item is None or item == False:
@@ -76,6 +115,74 @@ class QTarot(QtGui.QMainWindow):
 			rev=(random() <= qtrcfg.negativity)
 			rectitem=self.scene.addTarot(card,placement,rev)
 			rectitem.reposition()
+			rectitem.emitter.showName.connect(self.statusBar().showMessage)
+			rectitem.emitter.clearName.connect(self.statusBar().clearMessage)
+			rectitem.emitter.showAllInfo.connect(self.cardInfoDialog)
+
+	def generateCardText(self, card, reverse=None, purpose=None, newfp=None):
+		template="""<table width="100%">
+			<tr>
+				<td width="50%">
+				<center><img src="{fn}" /></center>
+				</td>
+				<td width="50%">
+				<big>
+				Name: {name}<br />
+				Suit: {suit} (Affinity: {af})
+				{reading_specific}
+				</big>
+				</td>
+			</tr>
+			<tr>
+				<td width="100%" colspan=2>
+				<big><center>Meanings</center></big>
+				</td>
+			</tr>
+			<tr>
+				<td width="50%">
+				<center>Normal</center><br />
+				{normal}
+				</td>
+				<td width="50%">
+				<center>Reversed</center><br />
+				{reverse}
+				</td>
+			</tr>
+		</table>
+		"""
+
+		reading_specific=("\n\t\t\t\t<br />Current status: {status}<br />"
+		"\n\t\t\t\tPurpose in layout: {purp}") if reverse is not None \
+		and purpose is not None else ""
+		if newfp:
+			oldfn=str(QtCore.QDir("skin:/")\
+			.absoluteFilePath(str(card.file.text)))
+			fn=os.path.join(os.path.basename(newfp),os.path.basename(oldfn))
+			newfn=os.path.join(newfp,os.path.basename(oldfn))
+		else:
+			fn="skin:{fn}".format(fn=str(card.file.text))
+		result=template.format(fn=fn, name=card.fullname(), \
+		n=card.number, suit=card.getparent().get('name'), \
+		af=card.getparent().get('affinity'), \
+		normal=card.meaning.normal.text, \
+		reverse=card.meaning.reversed.text,
+		reading_specific=reading_specific.format(purp=purpose,\
+		status="Reversed" if reverse else "Normal"))
+		if newfp:
+			return result,oldfn,newfn
+		else:
+			return result
+
+	def cardInfoDialog(self, card, reverse, purpose):
+		dialog=QtGui.QDialog(self)
+		layout=QtGui.QVBoxLayout(dialog)
+		full_information=self.generateCardText(card,reverse,purpose)
+		textdisplay=QtGui.QTextEdit(full_information,dialog)
+		textdisplay.setReadOnly(True)
+		textdisplay.setAcceptRichText(True)
+		layout.addWidget(textdisplay)
+		dialog.setWindowTitle("Info on {}".format(card.fullname()))
+		dialog.open()
 
 	def settingsWrite(self):
 		self.settingsChange()
@@ -106,8 +213,6 @@ class QTarot(QtGui.QMainWindow):
 		self.updateSettingsWidgets()
 
 	def fillSkinsBox(self, new_def):
-		print new_def
-		print qtrcfg.deck_defs.keys()
 		if qtrcfg.deck_defs.has_key(str(new_def)):
 			skins_list=qtrcfg.deck_defs[str(new_def)]['skins']
 		else:
@@ -148,8 +253,7 @@ class QTarot(QtGui.QMainWindow):
 		self.negativity.setRange(0,1)
 
 		self.deck_def=QtGui.QComboBox(groupbox2)
-		self.connect(self.deck_def, QtCore.SIGNAL(("currentIndex"
-		"Changed(const QString&)")), self.fillSkinsBox)
+		self.deck_def.currentIndexChanged['QString'].connect(self.fillSkinsBox)
 		self.deck_skin=QtGui.QComboBox(groupbox2)
 		self.ico_theme=QtGui.QLineEdit(groupbox2)
 		self.ico_theme.setToolTip(("You should only set this if Qt isn't"
@@ -237,7 +341,7 @@ class QTarot(QtGui.QMainWindow):
 		toolbar.addAction(settingsAction)
 
 		#self.resize(500, 400)
-		self.setWindowTitle('Main window')
+		self.setWindowTitle('QTarot')
 
 
 def main():
@@ -261,7 +365,7 @@ def main():
 	except ValueError:
 		pass
 
-	app = QtGui.QApplication(sys.argv)
+	app = QtGui.QApplication(os.sys.argv)
 
 	app.setApplicationName(QTarotConfig.APPNAME)
 	app.setApplicationVersion(QTarotConfig.APPVERSION)
@@ -274,17 +378,17 @@ def main():
 	parser.add_argument('-t','--table', help='File to use as table',default="skin:table.png")
 	parser.add_argument('-n','--negativity', help='How often cards are reversed', default=0.5,type=float)
 	parser.add_argument('-o','--output', help='Save the reading to this file', default=None)
-	args = parser.parse_args(sys.argv[1:])
+	args = parser.parse_args(os.sys.argv[1:])
 
 	ex = QTarot()
 	ex.updateTable(fn=args.table)
 	ex.newReading(item=args.layout)
 	if args.output > "":
 		ex.saveReading(filename=args.output)
-		sys.exit(app.exec_())
+		os.sys.exit(app.exec_())
 	else:
 		ex.show()
-		sys.exit(app.exec_())
+		os.sys.exit(app.exec_())
 
 
 if __name__ == '__main__':

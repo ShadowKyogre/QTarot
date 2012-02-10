@@ -122,9 +122,6 @@ class QTarotConfig:
 				print e.message
 
 	def load_skins(self):
-		#self.deck_skins=od.fromkeys(self.deck_defs.keys())
-		#QtCore.QDir.setSearchPaths("deck", ["decks:%s" %(self.deck_name)])
-		#self.default_table=QtGui.QPixmap("deck:table.png")
 		deck_skins_path=QtCore.QDir("skins:/")
 		for i in deck_skins_path.entryList():
 			if str(i) in (".",".."):
@@ -153,14 +150,6 @@ class QTarotConfig:
 			else:
 				print ("Cannot confirm which deck definitions"
 				" {i} is compatible with, skipping...").format(i=i)
-		#for i in QtCore.QDir("deck:/").entryList():
-			#default_table=False
-			#defined=False
-			#missing_files=[]
-			#if str(i) in (".","..","table.png","deck.ini"):
-				#continue
-			#px=QtGui.QPixmap("deck:%s"%i)
-			#self.deck.append(px)
 
 	def reset_settings(self):
 		self.settings.beginGroup("Reading")
