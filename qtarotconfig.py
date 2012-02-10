@@ -50,7 +50,7 @@ def setup_parser():
 
 class QTarotConfig:
 	APPNAME="QTarot"
-	APPVERSION="0.3.0"
+	APPVERSION="0.4.0"
 	AUTHOR="ShadowKyogre"
 	DESCRIPTION="A simple tarot fortune teller."
 	YEAR="2012"
