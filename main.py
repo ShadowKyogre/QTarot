@@ -63,20 +63,23 @@ class QTarot(QtGui.QMainWindow):
 
 				cards=""
 				layout="&lt;Unknown&gt;"
-				credits=""
+				deck_def_credits=""
+				layout_credits=""
 				for item in self.scene.items():
 					if isinstance(item,QTarotItem):
 						if layout == "&lt;Unknown&gt;":
 							layout=item.posData.getparent().get('name')
-						if not credits:
-							credits=self.generateCredits(item.card)
+							layout_credits=self.generateCredits(item.posData)
+						if not deck_def_credits:
+							deck_def_credits=self.generateCredits(item.card)
 						text,copy_from,save_file=self.generateCardText(item.card,\
 						item.rev,item.posData.purpose.text,newfp=store_here)
 						shutil.copy(copy_from,save_file)
 						cards=''.join([cards,text])
 
 				f.write(template.format(cards=cards,deck=qtrcfg.deck_def,\
-				layout=layout,reading_px=reading_pxh,credits=credits))
+				layout=layout,reading_px=reading_pxh,layout_credits=layout_credits,\
+				deck_def_credits=deck_def_credits))
 				f.close()
 			else:
 				pixMap = QtGui.QPixmap(self.scene.sceneRect().width(),self.scene.sceneRect().height())
@@ -120,9 +123,15 @@ class QTarot(QtGui.QMainWindow):
 			rectitem.emitter.showAllInfo.connect(self.cardInfoDialog)
 
 	def generateCredits(self, card):
-		def_data = card.getparent().getparent()
+		def_data = card.getroottree().getroot()
 		authors=[]
 		sources=[]
+		if def_data.tag == "deck":
+			copytype="Deck definition"
+		elif def_data.tag == "layout":
+			copytype="Layout"
+		else:
+			copytype="&lt;Unknown&gt;"
 
 		for a in def_data.author[:]:
 			if a.text:
@@ -143,7 +152,7 @@ class QTarot(QtGui.QMainWindow):
 
 		authors=', '.join(authors)
 		sources='<br />\n'.join(sources)
-		return ("Deck definition (c) {authors}"
+		return ("{copytype} (c) {authors}"
 		"<br />Sources consulted:<br />"
 		"\n{sources}<br />\n").format(**locals())
 
@@ -174,16 +183,18 @@ class QTarot(QtGui.QMainWindow):
 		else:
 			return result
 
-	def cardInfoDialog(self, card, reverse, purpose):
+	def cardInfoDialog(self, card, reverse, posdata):
 		dialog=QtGui.QDialog(self)
 		layout=QtGui.QVBoxLayout(dialog)
-		credits=self.generateCredits(card)
-		full_information=self.generateCardText(card,reverse,purpose)
+		deck_def_credits=self.generateCredits(card)
+		layout_credits=self.generateCredits(posdata)
+		full_information=self.generateCardText(card,reverse,posdata.purpose.text)
 
 		textdisplay=QtGui.QTextBrowser(dialog)
 		textdisplay.setReadOnly(True)
 		textdisplay.setAcceptRichText(True)
-		textdisplay.setText(("{credits}"
+		textdisplay.setText(("{deck_def_credits}"
+		"{layout_credits}"
 		"{full_information}").format(**locals()))
 		textdisplay.setOpenLinks(False)
 		textdisplay.anchorClicked.connect(lambda url: QtGui.\

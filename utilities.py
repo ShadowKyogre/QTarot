@@ -43,24 +43,12 @@ class QTarotScene(QtGui.QGraphicsScene):
 		qtarotitem.reposition()
 		return qtarotitem
 
-	"""
-	def addTarot(self, pixmap, number, pos ,angle=0.0, rev=False):
-		qtarotitem=QTarotItem(pixmap)
-		self.addItem(qtarotitem)
-		if angle != 0:
-			qtarotitem.rotate(angle)
-		qtarotitem.setPos(pos)
-		qtarotitem.cardNumber=number
-		qtarotitem.rev=rev
-		#graphicsItem->setTransform(QTransform().translate(centerX, centerY).rotate(angle).translate(-centerX, -centerY));
-		return qtarotitem
-	"""
 	table = QtCore.pyqtProperty("QPixmap", table, setTable)
 
 class QTarotItem(QtGui.QGraphicsPixmapItem):
 
 	class QTarotItemEmitter(QtCore.QObject):
-		showAllInfo=QtCore.pyqtSignal([TarotCard,'bool','QString'])
+		showAllInfo=QtCore.pyqtSignal([TarotCard,'bool',objectify.ObjectifiedElement])
 		showName=QtCore.pyqtSignal(['QString'])
 		clearName=QtCore.pyqtSignal([])
 
@@ -148,8 +136,7 @@ class QTarotItem(QtGui.QGraphicsPixmapItem):
 	#http://www.riverbankcomputing.co.uk/static/Docs/PyQt4/html/old_style_signals_slots.html
 	def mouseDoubleClickEvent(self, event):
 		QtGui.QGraphicsPixmapItem.mouseDoubleClickEvent(self,event)
-		self.emitter.showAllInfo.emit(self.card, self.rev, \
-				self.posData.purpose.text)
+		self.emitter.showAllInfo.emit(self.card, self.rev, self.posData)
 
 class ZPGraphicsView(QtGui.QGraphicsView):
 	def __init__(self, *args):
