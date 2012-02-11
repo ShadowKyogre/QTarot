@@ -62,16 +62,21 @@ class QTarot(QtGui.QMainWindow):
 				f2.close()
 
 				cards=""
-				layout="Unknown"
+				layout="&lt;Unknown&gt;"
+				credits=""
 				for item in self.scene.items():
 					if isinstance(item,QTarotItem):
-						if layout == "Unknown":
+						if layout == "&lt;Unknown&gt;":
 							layout=item.posData.getparent().get('name')
+						if not credits:
+							credits=self.generateCredits(item.card)
 						text,copy_from,save_file=self.generateCardText(item.card,\
 						item.rev,item.posData.purpose.text,newfp=store_here)
 						shutil.copy(copy_from,save_file)
 						cards=''.join([cards,text])
-				f.write(template.format(cards=cards,deck=qtrcfg.deck_def,layout=layout,reading_px=reading_pxh))
+
+				f.write(template.format(cards=cards,deck=qtrcfg.deck_def,\
+				layout=layout,reading_px=reading_pxh,credits=credits))
 				f.close()
 			else:
 				pixMap = QtGui.QPixmap(self.scene.sceneRect().width(),self.scene.sceneRect().height())
@@ -114,11 +119,38 @@ class QTarot(QtGui.QMainWindow):
 			rectitem.emitter.clearName.connect(self.statusBar().clearMessage)
 			rectitem.emitter.showAllInfo.connect(self.cardInfoDialog)
 
+	def generateCredits(self, card):
+		def_data = card.getparent().getparent()
+		authors=[]
+		sources=[]
+
+		for a in def_data.author[:]:
+			if a.text:
+				authors.append(a.text)
+			else:
+				authors.append("&lt;Unknown&gt;")
+
+		from urlparse import urlparse
+		for s in def_data.source[:]:
+			if s.text:
+				if urlparse(s.text).scheme:
+					sources.append(("<a href=\"{s.text}\">"
+					"{s.text}</a>").format(s=s))
+				else:
+					sources.append(s.text)
+			else:
+				sources.append("&lt;Unknown&gt;")
+
+		authors=', '.join(authors)
+		sources='<br />\n'.join(sources)
+		return ("Deck definition (c) {authors}"
+		"<br />Sources consulted:<br />"
+		"\n{sources}<br />\n").format(**locals())
+
 	def generateCardText(self, card, reverse=None, purpose=None, newfp=None):
 		f=open(os.path.join(os.sys.path[0],'card_info_template.html'))
 		template=f.read()
 		f.close()
-
 		reading_specific=("<br />\n\t\tCurrent status: {status}<br />"
 		"\n\t\tPurpose in layout: {purp}") if reverse is not None \
 		and purpose is not None else ""
@@ -145,10 +177,19 @@ class QTarot(QtGui.QMainWindow):
 	def cardInfoDialog(self, card, reverse, purpose):
 		dialog=QtGui.QDialog(self)
 		layout=QtGui.QVBoxLayout(dialog)
+		credits=self.generateCredits(card)
 		full_information=self.generateCardText(card,reverse,purpose)
-		textdisplay=QtGui.QTextEdit(full_information,dialog)
+
+		textdisplay=QtGui.QTextBrowser(dialog)
 		textdisplay.setReadOnly(True)
 		textdisplay.setAcceptRichText(True)
+		textdisplay.setText(("{credits}"
+		"{full_information}").format(**locals()))
+		textdisplay.setOpenLinks(False)
+		textdisplay.anchorClicked.connect(lambda url: QtGui.\
+						QDesktopServices.\
+						openUrl(QtCore.QUrl(url)))
+
 		layout.addWidget(textdisplay)
 		dialog.setWindowTitle("Info on {}".format(card.fullname()))
 		dialog.open()
