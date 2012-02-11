@@ -237,11 +237,12 @@ class ZPGraphicsView(QtGui.QGraphicsView):
 			self.scale(scaleFactor, scaleFactor)
 		else:
 			#Zooming out
-			about_to_be=self.matrix().scale(numSteps / scaleFactor,numSteps / scaleFactor)
-			about_to_be_size=about_to_be.mapRect(self.sceneRect()).size()
-			if about_to_be_size.width() >= self.sceneRect().width() and \
-			about_to_be_size.height() >= self.sceneRect().height():
-				self.setMatrix(about_to_be)
+			cursize=self.mapFromScene (self.sceneRect()).boundingRect()
+			if cursize.width() > self.width() and \
+			cursize.height() > self.height():
+				self.scale(1/abs(scaleFactor), 1/abs(scaleFactor))
+			else:
+				self.fitInView (self.sceneRect(),mode=QtCore.Qt.KeepAspectRatio)
 
 		#Get the position after scaling, in scene coords
 		pointAfterScale=QtCore.QPointF(self.mapToScene(event.pos()))
