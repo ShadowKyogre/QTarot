@@ -129,11 +129,12 @@ class QTarot(QtGui.QMainWindow):
 			newfn=os.path.join(newfp,os.path.basename(oldfn))
 		else:
 			fn="skin:{fn}".format(fn=str(card.file.text))
+		revtext=card.meaning.reversed.text if card.meaning.reversed.text else "Cannot be reversed"
 		result=template.format(fn=fn, name=card.fullname(), \
 		n=card.number, suit=card.getparent().get('name'), \
 		af=card.getparent().get('affinity'), \
 		normal=card.meaning.normal.text, \
-		reverse=card.meaning.reversed.text,
+		reverse=revtext,
 		reading_specific=reading_specific.format(purp=purpose,\
 		status="Reversed" if reverse else "Normal"))
 		if newfp:
