@@ -1,5 +1,6 @@
 <deck name="Rider Waite">
-	<preview>path/to/file.ext</preview>
+	<author>Brigit Esselmont</author>
+	<source>http://www.biddytarot.com/tarot-card-meanings</source>
 	<suit name="Wands" affinity="Fire">
 		<card name="Ace">
 			<number>1</number>

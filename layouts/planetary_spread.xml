@@ -1,5 +1,7 @@
 <layout name="Planetary Spread" height="6.0" width="8.0">
 	<purpose>Usually used as an answering spread, but can give a good impression of the situation</purpose>
+	<author>Lady Shyra</author>
+	<source>http://www.tryskelion.com/tryskelion/planetary.htm</source>
 	<pos>
 		<purpose>The Mercury card, or matters of business, skill, or deceit</purpose>
 		<x>0.0625</x>

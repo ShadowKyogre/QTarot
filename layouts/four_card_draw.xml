@@ -1,5 +1,7 @@
 <layout name="Four Card Draw" height="4.0" width="5.0">
 	<purpose>A quick, but slightly elaborate yes or no reading.</purpose>
+	<author />
+	<source />
 	<pos>
 		<purpose>You overall</purpose>
 		<x>0.0</x>

@@ -1,5 +1,7 @@
 <layout name="Celtic Cross" height="8.0" width="4.0">
 	<purpose>Another answering question spread</purpose>
+	<author>ReadTarot.com and Pam Rotella</author>
+	<source>http://www.readtarot.com/spreads.html</source>
 	<pos>
 		<purpose>Your current state</purpose>
 		<x>0.25</x>

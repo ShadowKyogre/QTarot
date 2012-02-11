@@ -1,5 +1,7 @@
 <layout name="Mandala" height="10.0" width="4.0">
 	<purpose>An overview of yourself</purpose>
+	<author>Jessica T.</author>
+	<source>http://theaceofswords.com/The_Mandala_Spread.htm</source>
 	<pos>
 		<purpose>Your desires or higher purpose</purpose>
 		<x>0.375</x>

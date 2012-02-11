@@ -1,5 +1,7 @@
 <layout name="Ellipse" height="5.0" width="7.0">
 	<purpose>Ask about a project</purpose>
+	<author>Jessica T.</author>
+	<source>http://theaceofswords.com/The_Ellipse_Spread.htm</source>
 	<pos>
 		<purpose>Past or what is ending</purpose>
 		<x>0.0</x>

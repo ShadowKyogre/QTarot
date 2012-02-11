@@ -3,12 +3,15 @@
   <xs:element name="deck">
     <xs:complexType>
       <xs:sequence>
+        <xs:element ref="author"/>
+        <xs:element ref="source"/>
         <xs:element maxOccurs="unbounded" ref="suit"/>
       </xs:sequence>
       <xs:attribute name="name" use="required"/>
-      <xs:attribute name="preview"/>
     </xs:complexType>
   </xs:element>
+  <xs:element name="author" type="xs:string"/>
+  <xs:element name="source" type="xs:string"/>
   <xs:element name="suit">
     <xs:complexType>
       <xs:sequence>
@@ -23,7 +26,7 @@
       <xs:sequence>
         <xs:element ref="number"/>
         <xs:element ref="file"/>
-        <xs:element minOccurs="0" ref="meaning"/>
+        <xs:element ref="meaning"/>
       </xs:sequence>
       <xs:attribute name="name" use="required"/>
     </xs:complexType>

@@ -1,5 +1,7 @@
 <layout name="European" height="2.0" width="12.0">
 	<purpose>A timeline of yourself</purpose>
+	<author>ReadTarot.com and Pam Rotella</author>
+	<source>http://www.readtarot.com/spreads.html</source>
 	<pos>
 		<purpose>Your past - part 1</purpose>
 		<x>0.0</x>

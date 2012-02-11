@@ -1,5 +1,6 @@
 <deck name="Elder Futhark">
-	<preview>path/to/file.ext</preview>
+	<author />
+	<source />
 	<suit name="Freyr's Aett" affinity="Things that relate to Freyr">
 		<card name="Fehu">
 			<number />
@@ -41,9 +42,9 @@
 				</reversed>
 			</meaning>
 		</card>
-		<card name="Raido">
+		<card name="Raidho">
 			<number />
-			<file>raido.png</file>
+			<file>raidho.png</file>
 			<meaning>
 				<normal>
 				</normal>
@@ -191,7 +192,7 @@
 		</card>
 		<card name="Mannaz">
 			<number />
-			<file>fehu.png</file>
+			<file>mannaz.png</file>
 			<meaning>
 				<normal>
 				</normal>

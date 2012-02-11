@@ -3,15 +3,21 @@
   <xs:element name="layout">
     <xs:complexType>
       <xs:sequence>
-        <xs:element ref="purpose"/>
-        <xs:element maxOccurs="unbounded" ref="card"/>
+        <xs:choice maxOccurs="unbounded">
+          <xs:element ref="purpose"/>
+          <xs:element ref="author"/>
+          <xs:element ref="source"/>
+        </xs:choice>
+        <xs:element maxOccurs="unbounded" ref="pos"/>
       </xs:sequence>
       <xs:attribute name="height" use="required" type="xs:decimal"/>
       <xs:attribute name="name" use="required"/>
       <xs:attribute name="width" use="required" type="xs:decimal"/>
     </xs:complexType>
   </xs:element>
-  <xs:element name="card">
+  <xs:element name="author" type="xs:string"/>
+  <xs:element name="source" type="xs:string"/>
+  <xs:element name="pos">
     <xs:complexType>
       <xs:sequence>
         <xs:element ref="purpose"/>

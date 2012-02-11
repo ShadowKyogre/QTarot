@@ -164,7 +164,7 @@ class QTarot(QtGui.QMainWindow):
 			qtrcfg.deck_skin=str(self.deck_skin.currentText())
 			reload_deck=True
 		if str(self.deck_def.currentText()) != qtrcfg.deck_def:
-			qtrcfg.deck_def=str(self.deck_defs.currentText())
+			qtrcfg.deck_def=str(self.deck_def.currentText())
 			reload_deck=False
 			#pop up a message box saying to save reading or something
 		qtrcfg.default_layout=str(self.default_layout.currentText())
