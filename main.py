@@ -427,7 +427,7 @@ def main():
 
 	app.setApplicationName(QTarotConfig.APPNAME)
 	app.setApplicationVersion(QTarotConfig.APPVERSION)
-	app.setWindowIcon(QtGui.QIcon("qtarot"))
+	app.setWindowIcon(QtGui.QIcon.fromTheme("qtarot"))
 
 	qtrcfg = QTarotConfig()
 
