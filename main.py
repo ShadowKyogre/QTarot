@@ -357,7 +357,7 @@ class QTarot(QtGui.QMainWindow):
 		exitAction.setStatusTip('Exit application')
 		exitAction.triggered.connect(self.close)
 
-		newLayAction = QtGui.QAction(QtGui.QIcon.fromTheme('document-new'), 'Reload', self)
+		newLayAction = QtGui.QAction(QtGui.QIcon.fromTheme('document-new'), 'New Reading', self)
 		newLayAction.setShortcut('Ctrl+N')
 		newLayAction.setStatusTip('Generate a new reading')
 		newLayAction.triggered.connect(self.newReading)
