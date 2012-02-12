@@ -25,9 +25,11 @@ class QDeckBrowser(QtGui.QWidget):
 		self.previewArea.setEditTriggers(QtGui.QAbstractItemView.NoEditTriggers)
 		self.previewArea.setUniformItemSizes (True)
 
-		layout.addWidget(self.deckPicker,0,0)
-		layout.addWidget(self.skinPicker,0,1)
-		layout.addWidget(self.previewArea,1,0,1,2)
+		layout.addWidget(QtGui.QLabel("Deck"),0,0)
+		layout.addWidget(QtGui.QLabel("Skin"),0,1)
+		layout.addWidget(self.deckPicker,1,0)
+		layout.addWidget(self.skinPicker,1,1)
+		layout.addWidget(self.previewArea,2,0,1,2)
 
 		self.deckSource=deck_source
 
