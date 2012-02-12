@@ -430,9 +430,8 @@ def main():
 
 	qtrcfg = QTarotConfig()
 
-	parser = argparse.ArgumentParser(prog='qtarot',description="A simple")
+	parser = argparse.ArgumentParser(prog='qtarot',description="A simple tarot fortune teller")
 	parser.add_argument('-l','--layout', help='The layout to use.',default=qtrcfg.default_layout)
-	#should probably modified to skins:{default_skin}/table.png
 	parser.add_argument('-t','--table', help='File to use as table',default="skin:table.png")
 	parser.add_argument('-n','--negativity', help='How often cards are reversed', default=0.5,type=float)
 	parser.add_argument('-o','--output', help='Save the reading to this file', default=None)
@@ -441,6 +440,7 @@ def main():
 	ex = QTarot()
 	ex.updateTable(fn=args.table)
 	ex.newReading(item=args.layout)
+
 	if args.output > "":
 		ex.saveReading(filename=args.output)
 		os.sys.exit(app.exec_())
