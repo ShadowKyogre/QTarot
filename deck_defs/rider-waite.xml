@@ -569,7 +569,7 @@
 			</meaning>
 		</card>
 	</suit>
-	<suit name="Major Arcana" affinity="Concepts">
+	<suit name="Major Arcana" affinity="Concepts" nosuitname="true">
 		<card name="The Fool">
 			<number>0</number>
 			<file>0.png</file>

@@ -2,6 +2,73 @@ from PyQt4 import QtGui,QtCore
 from qtarotconfig import TarotCard
 from lxml import objectify
 
+class QDeckBrowser(QtGui.QWidget):
+	def __init__(self, parent = None, deck_source = None):
+		QtGui.QWidget.__init__(self, parent)
+		layout = QtGui.QGridLayout(self)
+		self.deckPicker=QtGui.QComboBox(self)
+		self.skinPicker=QtGui.QComboBox(self)
+		self.deckPicker.currentIndexChanged['QString'].connect(self.populateSkins)
+		self.skinPicker.currentIndexChanged['QString'].connect(self.populatePreview)
+
+		self.previewArea=QtGui.QListView(self)
+		self.previewArea.setGridSize(QtCore.QSize(128,128))
+		self.previewArea.setViewMode (QtGui.QListView.IconMode)
+		self.previewArea.setResizeMode (QtGui.QListView.Adjust)
+		self.previewArea.setWrapping(True)
+
+		m=QtGui.QStandardItemModel(self.previewArea)
+		m.setColumnCount(1)
+
+		self.previewArea.setModel(m)
+		self.previewArea.setModelColumn(1)
+		self.previewArea.setEditTriggers(QtGui.QAbstractItemView.NoEditTriggers)
+		self.previewArea.setUniformItemSizes (True)
+
+		layout.addWidget(self.deckPicker,0,0)
+		layout.addWidget(self.skinPicker,0,1)
+		layout.addWidget(self.previewArea,1,0,1,2)
+
+		self.deckSource=deck_source
+
+	def populateSkins(self, new_def):
+		if self.deckSource.has_key(str(new_def)):
+			skins_list=self.deckSource[str(new_def)]['skins']
+		else:
+			skins_list=[]
+		self.skinPicker.clear()
+		self.skinPicker.addItems(skins_list)
+		self.skinPicker.setCurrentIndex(0)
+
+	def setDeckSource(self, new_source):
+		self._deckSource=new_source
+		self.deckPicker.addItems(self._deckSource.keys())
+		self.deckPicker.setCurrentIndex(0)
+
+	def deckSource(self):
+		return self._deckSource
+
+	def currentDeck(self):
+		return self.deckSource[str(self.deckPicker.currentText())]
+
+	def populatePreview(self, new_skin):
+		self.previewArea.model().removeRows(0,self.previewArea.model().rowCount())
+		if not new_skin:
+			return
+		model=self.previewArea.model()
+		for card in self.currentDeck()['definition'].cards():
+			f=QtCore.QFileInfo(card.file.text)
+			bf=str(f.baseName())
+			sf=str(f.completeSuffix())
+			fn="{bf}.{sf}".format(**locals())
+			item=QtGui.QStandardItem(QtGui.QIcon("skins:/{new_skin}/{fn}".format(**locals())), \
+			card.fullname())
+			item.setData(card.getroottree().getpath(card),32)
+			item.setData(new_skin,33)
+			model.appendRow(item)
+
+	deckSource = QtCore.pyqtProperty(dict, deckSource, setDeckSource)
+
 class QTarotScene(QtGui.QGraphicsScene):
 	def __init__(self,*args):
 		QtGui.QGraphicsScene.__init__(self, *args)
@@ -20,12 +87,6 @@ class QTarotScene(QtGui.QGraphicsScene):
 		return self.sceneRect().width() if \
 		self.sceneRect().width() < self.sceneRect().height() else \
 		self.sceneRect().height()
-	"""
-	def setTableFromSkin(self, skin):
-		self.setTable(QtGui.QPixmap("skins:{skin}/table.png"))
-	def setTableFromFile(self, filename):
-		self.setTable(QtGui.QPixmap(filename))
-	"""
 	def setTable(self, table):
 		self.tableitem.setPixmap(table)
 		if self.smallerD == 0:

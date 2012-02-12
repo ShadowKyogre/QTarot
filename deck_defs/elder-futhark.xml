@@ -1,9 +1,9 @@
 <deck name="Elder Futhark">
 	<author />
 	<source />
-	<suit name="Freyr's Aett" affinity="Things that relate to Freyr">
+	<suit name="Freyr's Aett" affinity="Things that relate to Freyr" nosuitname="true">
 		<card name="Fehu">
-			<number />
+			<number>1</number>
 			<file>fehu.png</file>
 			<meaning>
 				<normal>
@@ -13,7 +13,7 @@
 			</meaning>
 		</card>
 		<card name="Uruz">
-			<number />
+			<number>2</number>
 			<file>uruz.png</file>
 			<meaning>
 				<normal>
@@ -23,7 +23,7 @@
 			</meaning>
 		</card>
 		<card name="Thurisaz">
-			<number />
+			<number>3</number>
 			<file>thurisaz.png</file>
 			<meaning>
 				<normal>
@@ -33,7 +33,7 @@
 			</meaning>
 		</card>
 		<card name="Ansuz">
-			<number />
+			<number>4</number>
 			<file>ansuz.png</file>
 			<meaning>
 				<normal>
@@ -43,7 +43,7 @@
 			</meaning>
 		</card>
 		<card name="Raidho">
-			<number />
+			<number>5</number>
 			<file>raidho.png</file>
 			<meaning>
 				<normal>
@@ -53,7 +53,7 @@
 			</meaning>
 		</card>
 		<card name="Kenaz">
-			<number />
+			<number>6</number>
 			<file>kenaz.png</file>
 			<meaning>
 				<normal>
@@ -63,7 +63,7 @@
 			</meaning>
 		</card>
 		<card name="Gebo">
-			<number />
+			<number>7</number>
 			<file>gebo.png</file>
 			<meaning>
 				<normal>
@@ -72,7 +72,7 @@
 			</meaning>
 		</card>
 		<card name="Wunjo">
-			<number />
+			<number>8</number>
 			<file>wunjo.png</file>
 			<meaning>
 				<normal>
@@ -82,9 +82,9 @@
 			</meaning>
 		</card>
 	</suit>
-	<suit name="Heimdall's Aett" affinity="Things that relate to Heimdall">
+	<suit name="Heimdall's Aett" affinity="Things that relate to Heimdall" nosuitname="true">
 		<card name="Hagalaz">
-			<number />
+			<number>9</number>
 			<file>hagalaz.png</file>
 			<meaning>
 				<normal>
@@ -93,7 +93,7 @@
 			</meaning>
 		</card>
 		<card name="Nauthiz">
-			<number />
+			<number>10</number>
 			<file>nauthiz.png</file>
 			<meaning>
 				<normal>
@@ -102,7 +102,7 @@
 			</meaning>
 		</card>
 		<card name="Isa">
-			<number />
+			<number>11</number>
 			<file>isa.png</file>
 			<meaning>
 				<normal>
@@ -111,7 +111,7 @@
 			</meaning>
 		</card>
 		<card name="Jera">
-			<number />
+			<number>12</number>
 			<file>jera.png</file>
 			<meaning>
 				<normal>
@@ -120,7 +120,7 @@
 			</meaning>
 		</card>
 		<card name="Eihwaz">
-			<number />
+			<number>13</number>
 			<file>eihwaz.png</file>
 			<meaning>
 				<normal>
@@ -130,7 +130,7 @@
 			</meaning>
 		</card>
 		<card name="Pertho">
-			<number />
+			<number>14</number>
 			<file>pertho.png</file>
 			<meaning>
 				<normal>
@@ -140,7 +140,7 @@
 			</meaning>
 		</card>
 		<card name="Algiz">
-			<number />
+			<number>15</number>
 			<file>algiz.png</file>
 			<meaning>
 				<normal>
@@ -150,7 +150,7 @@
 			</meaning>
 		</card>
 		<card name="Sowilo">
-			<number />
+			<number>16</number>
 			<file>sowilo.png</file>
 			<meaning>
 				<normal>
@@ -159,9 +159,9 @@
 			</meaning>
 		</card>
 	</suit>
-	<suit name="Tyr's Aett" affinity="Things that relate to Tyr">
+	<suit name="Tyr's Aett" affinity="Things that relate to Tyr" nosuitname="true">
 		<card name="Tiwaz">
-			<number />
+			<number>17</number>
 			<file>tiwaz.png</file>
 			<meaning>
 				<normal>
@@ -171,7 +171,7 @@
 			</meaning>
 		</card>
 		<card name="Berkano">
-			<number />
+			<number>18</number>
 			<file>berkano.png</file>
 			<meaning>
 				<normal>
@@ -181,7 +181,7 @@
 			</meaning>
 		</card>
 		<card name="Ehwaz">
-			<number />
+			<number>19</number>
 			<file>ehwaz.png</file>
 			<meaning>
 				<normal>
@@ -191,7 +191,7 @@
 			</meaning>
 		</card>
 		<card name="Mannaz">
-			<number />
+			<number>20</number>
 			<file>mannaz.png</file>
 			<meaning>
 				<normal>
@@ -201,7 +201,7 @@
 			</meaning>
 		</card>
 		<card name="Laguz">
-			<number />
+			<number>21</number>
 			<file>laguz.png</file>
 			<meaning>
 				<normal>
@@ -211,7 +211,7 @@
 			</meaning>
 		</card>
 		<card name="Ingwaz">
-			<number />
+			<number>22</number>
 			<file>ingwaz.png</file>
 			<meaning>
 				<normal>
@@ -220,7 +220,7 @@
 			</meaning>
 		</card>
 		<card name="Dagaz">
-			<number />
+			<number>23</number>
 			<file>dagaz.png</file>
 			<meaning>
 				<normal>
@@ -229,7 +229,7 @@
 			</meaning>
 		</card>
 		<card name="Othala">
-			<number />
+			<number>24</number>
 			<file>othala.png</file>
 			<meaning>
 				<normal>

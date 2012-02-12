@@ -19,6 +19,7 @@
       </xs:sequence>
       <xs:attribute name="affinity" use="required"/>
       <xs:attribute name="name" use="required"/>
+      <xs:attribute name="nosuitname" type="xs:boolean"/>
     </xs:complexType>
   </xs:element>
   <xs:element name="card">

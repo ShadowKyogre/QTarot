@@ -23,7 +23,7 @@ class TarotDeck(objectify.ObjectifiedElement):
 class TarotCard(objectify.ObjectifiedElement):
 	def fullname(self):
 		parent=self.getparent()
-		if parent.attrib.has_key('only_literal'):
+		if parent.attrib.has_key('nosuitname'):
 			return self.attrib['name']
 		else:
 			return "{name} of {suit}"\

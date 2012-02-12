@@ -5,7 +5,8 @@ import argparse
 from PyQt4 import QtGui,QtCore
 from random import sample,random
 from qtarotconfig import QTarotConfig
-from utilities import ZPGraphicsView,QTarotScene,QTarotItem
+from utilities import ZPGraphicsView,QTarotScene,QTarotItem,QDeckBrowser
+from urlparse import urlparse
 
 #http://www.sacred-texts.com/tarot/faq.htm#US1909
 
@@ -139,7 +140,6 @@ class QTarot(QtGui.QMainWindow):
 			else:
 				authors.append("&lt;Unknown&gt;")
 
-		from urlparse import urlparse
 		for s in def_data.source[:]:
 			if s.text:
 				if urlparse(s.text).scheme:
@@ -156,7 +156,7 @@ class QTarot(QtGui.QMainWindow):
 		"<br />Sources consulted:<br />"
 		"\n{sources}<br />\n").format(**locals())
 
-	def generateCardText(self, card, reverse=None, purpose=None, newfp=None):
+	def generateCardText(self, card, reverse=None, purpose=None, newfp=None, skin=''):
 		f=open(os.path.join(os.sys.path[0],'card_info_template.html'))
 		template=f.read()
 		f.close()
@@ -170,6 +170,10 @@ class QTarot(QtGui.QMainWindow):
 			newfn=os.path.join(newfp,os.path.basename(oldfn))
 		else:
 			fn="skin:{fn}".format(fn=str(card.file.text))
+		if skin:
+			oldfn=str(QtCore.QDir("skin:/")\
+			.absoluteFilePath(str(card.file.text)))
+			fn=os.path.join('skins:{skin}'.format(**locals()),os.path.basename(oldfn))
 		revtext=card.meaning.reversed.text if card.meaning.reversed.text else "Cannot be reversed"
 		result=template.format(fn=fn, name=card.fullname(), \
 		n=card.number, suit=card.getparent().get('name'), \
@@ -183,12 +187,23 @@ class QTarot(QtGui.QMainWindow):
 		else:
 			return result
 
-	def cardInfoDialog(self, card, reverse, posdata):
+	def cardInfoDialog(self, card, reverse=False, posdata=None, skin=''):
 		dialog=QtGui.QDialog(self)
 		layout=QtGui.QVBoxLayout(dialog)
 		deck_def_credits=self.generateCredits(card)
-		layout_credits=self.generateCredits(posdata)
-		full_information=self.generateCardText(card,reverse,posdata.purpose.text)
+
+		if posdata is not None:
+			layout_credits=self.generateCredits(posdata)
+			if skin:
+				full_information=self.generateCardText(card,reverse,posdata.purpose.text,skin=skin)
+			else:
+				full_information=self.generateCardText(card,reverse,posdata.purpose.text)
+		else:
+			layout_credits=""
+			if skin:
+				full_information=self.generateCardText(card,skin=skin)
+			else:
+				full_information=self.generateCardText(card)
 
 		textdisplay=QtGui.QTextBrowser(dialog)
 		textdisplay.setReadOnly(True)
@@ -203,7 +218,14 @@ class QTarot(QtGui.QMainWindow):
 
 		layout.addWidget(textdisplay)
 		dialog.setWindowTitle("Info on {}".format(card.fullname()))
-		dialog.open()
+		dialog.show()
+
+	def viewCardFromDB(self, index, widget):
+		item=widget.previewArea.model().itemFromIndex(index)
+		card=str(item.data(32).toString())
+		skin=str(item.data(33).toString())
+		card=widget.currentDeck()['definition'].xpath(card)
+		self.cardInfoDialog(card[0],skin=skin)
 
 	def settingsWrite(self):
 		self.settingsChange()
@@ -242,6 +264,15 @@ class QTarot(QtGui.QMainWindow):
 		self.deck_skin.addItems(skins_list)
 		idx=self.deck_skin.findText(qtrcfg.deck_skin)
 		self.deck_skin.setCurrentIndex(idx)
+
+	def browseDecks(self):
+		dialog=QtGui.QDialog(self)
+		layout=QtGui.QVBoxLayout(dialog)
+		dialog.setWindowTitle("Browse Decks")
+		ddb=QDeckBrowser(deck_source=qtrcfg.deck_defs)
+		layout.addWidget(ddb)
+		ddb.previewArea.doubleClicked.connect(lambda idx:self.viewCardFromDB(idx,ddb))
+		dialog.exec_()
 
 	def updateSettingsWidgets(self):
 		self.default_layout.addItems(qtrcfg.layouts.keys())
@@ -307,6 +338,7 @@ class QTarot(QtGui.QMainWindow):
 		vbox.addWidget(label)
 		vbox.addWidget(groupbox)
 		vbox.addWidget(groupbox2)
+
 		vbox.addWidget(buttonbox)
 
 		self.updateSettingsWidgets()
@@ -325,9 +357,9 @@ class QTarot(QtGui.QMainWindow):
 		exitAction.setStatusTip('Exit application')
 		exitAction.triggered.connect(self.close)
 
-		newLayAction = QtGui.QAction(QtGui.QIcon.fromTheme('view-refresh'), 'Reload', self)
-		newLayAction.setShortcut('Ctrl+R')
-		newLayAction.setStatusTip('Reload')
+		newLayAction = QtGui.QAction(QtGui.QIcon.fromTheme('document-new'), 'Reload', self)
+		newLayAction.setShortcut('Ctrl+N')
+		newLayAction.setStatusTip('Generate a new reading')
 		newLayAction.triggered.connect(self.newReading)
 
 		saveAction = QtGui.QAction(QtGui.QIcon.fromTheme('document-save'), 'Save', self)
@@ -343,6 +375,10 @@ class QTarot(QtGui.QMainWindow):
 		settingsAction = QtGui.QAction(QtGui.QIcon.fromTheme('preferences-other'), 'Settings', self)
 		settingsAction.setStatusTip('Settings')
 		settingsAction.triggered.connect(self.settings)
+
+		browsingAction = QtGui.QAction(QtGui.QIcon.fromTheme('applications-graphics'), 'Browse Decks', self)
+		browsingAction.setStatusTip('Browse all deck definitions and deck skins you have')
+		browsingAction.triggered.connect(self.browseDecks)
 
 		st=self.statusBar()
 
@@ -360,6 +396,7 @@ class QTarot(QtGui.QMainWindow):
 		toolbar.addAction(openAction)
 		toolbar.addAction(saveAction)
 		toolbar.addAction(settingsAction)
+		toolbar.addAction(browsingAction)
 
 		#self.resize(500, 400)
 		self.setWindowTitle('QTarot')
