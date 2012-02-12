@@ -1,0 +1,11 @@
+[Desktop Entry]
+Exec=qtarot
+GenericName[en_US]=Simple Tarot Fortune Teller
+GenericName=Simple Tarot Fortune Teller
+Icon=qtarot
+Name[en_US]=QTarot
+Name=QTarot
+StartupNotify=true
+Terminal=false
+Category=Accessories
+Type=Application
