@@ -9,6 +9,10 @@ from utilities import ZPGraphicsView,QTarotScene,QTarotItem,QDeckBrowser
 from urlparse import urlparse
 
 #http://www.sacred-texts.com/tarot/faq.htm#US1909
+"""
+Format for Ouija session:
+me/entity,date,msg
+"""
 
 class QTarot(QtGui.QMainWindow):
 
@@ -106,7 +110,6 @@ class QTarot(QtGui.QMainWindow):
 		self.scene.clear()
 		self.scene.invalidate()
 
-		offset=self.scene.calculateOffset()
 		draws=sample(qtrcfg.deck_defs[qtrcfg.deck_def]\
 			['definition'].cards(),len(lay.pos[:]))
 
@@ -121,7 +124,7 @@ class QTarot(QtGui.QMainWindow):
 			rectitem.reposition()
 			rectitem.emitter.showName.connect(self.statusBar().showMessage)
 			rectitem.emitter.clearName.connect(self.statusBar().clearMessage)
-			rectitem.emitter.showAllInfo.connect(self.cardInfoDialog)
+			rectitem.emitter.showAllInfo.connect(self.cardInfo)
 
 	def generateCredits(self, card):
 		def_data = card.getroottree().getroot()
@@ -187,9 +190,8 @@ class QTarot(QtGui.QMainWindow):
 		else:
 			return result
 
-	def cardInfoDialog(self, card, reverse=False, posdata=None, skin=''):
-		dialog=QtGui.QDialog(self)
-		layout=QtGui.QVBoxLayout(dialog)
+	def cardInfo(self, card, reverse=False, posdata=None, skin=''):
+		dialog=QtGui.QDockWidget(self)
 		deck_def_credits=self.generateCredits(card)
 
 		if posdata is not None:
@@ -215,17 +217,18 @@ class QTarot(QtGui.QMainWindow):
 		textdisplay.anchorClicked.connect(lambda url: QtGui.\
 						QDesktopServices.\
 						openUrl(QtCore.QUrl(url)))
-
-		layout.addWidget(textdisplay)
 		dialog.setWindowTitle("Info on {}".format(card.fullname()))
+		dialog.setWidget(textdisplay)
 		dialog.show()
+		self.addDockWidget(QtCore.Qt.RightDockWidgetArea, dialog)
+
 
 	def viewCardFromDB(self, index, widget):
 		item=widget.previewArea.model().itemFromIndex(index)
 		card=str(item.data(32).toString())
 		skin=str(item.data(33).toString())
 		card=widget.currentDeck()['definition'].xpath(card)
-		self.cardInfoDialog(card[0],skin=skin)
+		self.cardInfo(card[0],skin=skin)
 
 	def settingsWrite(self):
 		self.settingsChange()
@@ -266,13 +269,13 @@ class QTarot(QtGui.QMainWindow):
 		self.deck_skin.setCurrentIndex(idx)
 
 	def browseDecks(self):
-		dialog=QtGui.QDialog(self)
-		layout=QtGui.QVBoxLayout(dialog)
+		dialog=QtGui.QDockWidget(self)
 		dialog.setWindowTitle("Browse Decks")
 		ddb=QDeckBrowser(deck_source=qtrcfg.deck_defs)
-		layout.addWidget(ddb)
 		ddb.previewArea.doubleClicked.connect(lambda idx:self.viewCardFromDB(idx,ddb))
-		dialog.exec_()
+		dialog.setWidget(ddb)
+		dialog.show()
+		self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, dialog)
 
 	def updateSettingsWidgets(self):
 		self.default_layout.addItems(qtrcfg.layouts.keys())
@@ -290,7 +293,31 @@ class QTarot(QtGui.QMainWindow):
 	def settings(self):
 		self.settings_dialog=QtGui.QDialog(self)
 		self.settings_dialog.setWindowTitle("Settings")
+		#print QtGui.QFontDialog.getFont()
+		"""
+		________________________
+		| Tarot     |   Ouija  |
+		|___________|          |
+		|                      |
+		| text        | font | |
+		|             |color | |
+		| words       | conf | |
+		| letters     | conf | |
+		+----------------------+
+		| layout      | conf | |
+		| card bar    | nnnn | |
+		|______________________|
 
+		Algorithm for creating board:
+		  1. Divide it into 25-25-50, 25-50-25, 50-25-25, or 33.3-33.3-33.3
+		  2. Using the first section, find the largest divisor for the number of letters
+		  3. So we set up a row this many and place letters
+		  4. Find the longest word and how much space it'd take up (words.sort());words[-1]
+		  5. Fill the board with words using this interval of space
+		  6. craft a string io for a ficticious layout and fill it with the needed positions
+		  7. feed this info to the cards picked out
+		  8. (there may need to be recoding in the graphicsscene calculateoffset and the card object)
+		"""
 		label=QtGui.QLabel(("Note: These will not take effect"
 		" until you make another reading"),self.settings_dialog)
 		groupbox=QtGui.QGroupBox("Reading",self.settings_dialog)
