@@ -378,6 +378,7 @@ class QTarot(QtGui.QMainWindow):
 		self.view=ZPGraphicsView(self.scene,self)
 
 		self.setCentralWidget(self.view)
+		self.setDockNestingEnabled(True)
 
 		exitAction = QtGui.QAction(QtGui.QIcon.fromTheme('application-exit'), 'Exit', self)
 		exitAction.setShortcut('Ctrl+Q')
