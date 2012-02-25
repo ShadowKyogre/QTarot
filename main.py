@@ -99,8 +99,11 @@ class QTarot(QtGui.QMainWindow):
 			fmt=filename.split(".",1)[-1]
 			if fmt == 'html':
 				self.saveReadingAsHTML(filename)
-			else:
+			elif fmt in formats:
 				self.saveReadingAsIMG(filename,fmt)
+			else:
+				QtGui.QMessageBox.critical(self, "Save Current Reading", \
+				"Invalid format ({}) specified for {}!".format(fmt,filename))
 
 	def newReading(self,item=None,neg=None,skin=None,deck=None,ask_for_deck=False):
 		neg=qtrcfg.negativity if neg is None else neg
