@@ -99,7 +99,7 @@ class QTarot(QtGui.QMainWindow):
 			fmt=filename.split(".",1)[-1]
 			if fmt == 'html':
 				self.saveReadingAsHTML(filename)
-			elif fmt in formats:
+			elif "*."+fmt in formats:
 				self.saveReadingAsIMG(filename,fmt)
 			else:
 				QtGui.QMessageBox.critical(self, "Save Current Reading", \
@@ -516,9 +516,10 @@ def main():
 
 	if args.output > "":
 		ex.saveReading(filename=args.output)
+		#os.sys.exit(app.exec_())
 	else:
 		ex.show()
-	os.sys.exit(app.exec_())
+		os.sys.exit(app.exec_())
 
 if __name__ == "__main__":
 	main()
