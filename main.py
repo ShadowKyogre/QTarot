@@ -14,6 +14,7 @@ Format for Ouija session:
 me/entity,date,msg
 """
 
+
 class QTarot(QtGui.QMainWindow):
 
 	def __init__(self):
@@ -41,6 +42,55 @@ class QTarot(QtGui.QMainWindow):
 		if filename > "":
 			self.updateTable(fn=filename)
 
+	def saveReadingAsIMG(self,filename,fmt):
+		pixMap = QtGui.QPixmap(self.scene.sceneRect().width(),self.scene.sceneRect().height())
+
+		c = QtGui.QColor(0)
+		c.setAlpha(0)
+		pixMap.fill(c)
+
+		painter=QtGui.QPainter(pixMap)
+		self.scene.render(painter)
+		painter.end()
+		pixMap.save(filename,format=fmt)
+
+	def saveReadingAsHTML(self,filename):
+		store_here="{}.files".format(filename.replace(".html",""))
+		if not os.path.exists(store_here):
+			os.makedirs(store_here)
+		reading_px=os.path.join(store_here,"reading.png")
+		reading_pxh=os.path.join(os.path.basename(store_here),"reading.png")
+		self.saveReadingAsIMG(reading_px,'png')
+
+		f=open(filename,'wb')
+		import shutil
+		f2=open(os.path.join(os.sys.path[0],'export_read.html'))
+		template=f2.read()
+		f2.close()
+
+		cards=""
+		layout="&lt;Unknown&gt;"
+		deck_def_credits=""
+		layout_credits=""
+		deck=""
+		for item in self.scene.items():
+			if isinstance(item,QTarotItem):
+				if layout == "&lt;Unknown&gt;":
+					layout=item.posData.getparent().get('name')
+					layout_credits=self.generateCredits(item.posData)
+				if not deck_def_credits:
+					deck_def_credits=self.generateCredits(item.card)
+					deck=item.card.getroottree().getroot().get('name')
+				text,copy_from,save_file=self.generateCardText(item.card,\
+				item.rev,item.posData.purpose.text,newfp=store_here)
+				shutil.copy(copy_from,save_file)
+				cards=''.join([cards,text])
+
+		f.write(template.format(cards=cards,deck=deck,\
+		layout=layout,reading_px=reading_pxh,layout_credits=layout_credits,\
+		deck_def_credits=deck_def_credits))
+		f.close()
+
 	def saveReading(self,filename=None):
 		if filename <= "":
 			filename=str(QtGui.QFileDialog.getSaveFileName(self, caption="Save Current Reading",
@@ -48,70 +98,49 @@ class QTarot(QtGui.QMainWindow):
 		if filename > "":
 			fmt=filename.split(".",1)[-1]
 			if fmt == 'html':
-				store_here="{}.files".format(filename.replace(".html",""))
-				if not os.path.exists(store_here):
-					os.makedirs(store_here)
-				pixMap = QtGui.QPixmap(self.scene.sceneRect().width(),self.scene.sceneRect().height())
-				painter=QtGui.QPainter(pixMap)
-				self.scene.render(painter)
-				painter.end()
-				reading_px=os.path.join(store_here,"reading.png")
-				reading_pxh=os.path.join(os.path.basename(store_here),"reading.png")
-				pixMap.save(reading_px,format='png')
-
-				f=open(filename,'wb')
-
-				import shutil
-				f2=open(os.path.join(os.sys.path[0],'export_read.html'))
-				template=f2.read()
-				f2.close()
-
-				cards=""
-				layout="&lt;Unknown&gt;"
-				deck_def_credits=""
-				layout_credits=""
-				for item in self.scene.items():
-					if isinstance(item,QTarotItem):
-						if layout == "&lt;Unknown&gt;":
-							layout=item.posData.getparent().get('name')
-							layout_credits=self.generateCredits(item.posData)
-						if not deck_def_credits:
-							deck_def_credits=self.generateCredits(item.card)
-						text,copy_from,save_file=self.generateCardText(item.card,\
-						item.rev,item.posData.purpose.text,newfp=store_here)
-						shutil.copy(copy_from,save_file)
-						cards=''.join([cards,text])
-
-				f.write(template.format(cards=cards,deck=qtrcfg.deck_def,\
-				layout=layout,reading_px=reading_pxh,layout_credits=layout_credits,\
-				deck_def_credits=deck_def_credits))
-				f.close()
+				self.saveReadingAsHTML(filename)
 			else:
-				pixMap = QtGui.QPixmap(self.scene.sceneRect().width(),self.scene.sceneRect().height())
-				painter=QtGui.QPainter(pixMap)
-				#here=QtCore.QRectF(self.scene.sceneRect().toRect())
-				#self.scene.render(painter, here, here)
-				self.scene.render(painter)
-				painter.end()
-				pixMap.save(filename,format=fmt)
+				self.saveReadingAsIMG(filename,fmt)
 
-	def newReading(self,item=None):
-		if item is None or item == False:
+	def newReading(self,item=None,neg=None,skin=None,deck=None,ask_for_deck=False):
+		neg=qtrcfg.negativity if neg is None else neg
+
+		if ask_for_deck:
+			deck,ok = QtGui.QInputDialog.getItem(self, "Generate new reading",
+									"Deck definition to use:", \
+									qtrcfg.deck_defs.keys(), 0, False)
+			if ok and not deck.isEmpty():
+				deck=str(deck)
+			else:
+				return
+			skin,ok = QtGui.QInputDialog.getItem(self, "Generate new reading",
+									"Skin to use (Deck: {}):".format(deck), \
+									qtrcfg.deck_defs[deck]['skins'], 0, False)
+			if ok:
+				skin=str(skin) if not skin.isEmpty() else qtrcfg.deck_defs[deck]['skins'][0]
+			else:
+				return
+		else:
+			deck=qtrcfg.deck_def if deck is None or \
+				deck not in qtrcfg.deck_defs.keys() else deck
+			skin=qtrcfg.deck_skin if skin is None or \
+				skin not in qtrcfg.deck_defs[deck]['skins'] else skin
+
+		qtrcfg.setup_skin(skin)
+
+		if item not in qtrcfg.layouts.keys():
 			item,ok = QtGui.QInputDialog.getItem(self, "Generate new reading",
 			"Layout to use:", qtrcfg.layouts.keys(), 0, False)
 			if ok and not item.isEmpty():
 				lay=qtrcfg.layouts[str(item)]
-				self.currentLayout=lay
 			else:
 				return
 		else:
 			lay=qtrcfg.layouts[str(item)]
-			self.currentLayout=lay
 		self.scene.clear()
 		self.scene.invalidate()
 
-		draws=sample(qtrcfg.deck_defs[qtrcfg.deck_def]\
-			['definition'].cards(),len(lay.pos[:]))
+		draws=sample(qtrcfg.deck_defs[deck]['definition'].cards(),len(lay.pos[:]))
 
 		for (card,placement) in zip(draws, lay.pos[:]):
 			#rectitem=self.scene.addRect(0,0,1/lay.largetDimension()*self.scene.smallerD,\
@@ -119,7 +148,7 @@ class QTarot(QtGui.QMainWindow):
 			#pen=QtGui.QPen(QtGui.QColor("red"),2),\
 			#brush=QtGui.QBrush(QtGui.QColor("indigo")))
 
-			rev=(random() <= qtrcfg.negativity)
+			rev=(random() <= neg)
 			rectitem=self.scene.addTarot(card,placement,rev)
 			rectitem.reposition()
 			rectitem.emitter.showName.connect(self.statusBar().showMessage)
@@ -222,7 +251,6 @@ class QTarot(QtGui.QMainWindow):
 		dialog.show()
 		self.addDockWidget(QtCore.Qt.RightDockWidgetArea, dialog)
 
-
 	def viewCardFromDB(self, index, widget):
 		item=widget.previewArea.model().itemFromIndex(index)
 		card=str(item.data(32).toString())
@@ -249,7 +277,6 @@ class QTarot(QtGui.QMainWindow):
 		qtrcfg.load_deck_defs()
 		qtrcfg.load_layouts()
 		qtrcfg.load_skins()
-		qtrcfg.setup_skin()
 		qtrcfg.current_icon_override=str(self.ico_theme.text())
 		if reload_deck:
 			self.updateCards()
@@ -295,6 +322,7 @@ class QTarot(QtGui.QMainWindow):
 		self.settings_dialog.setWindowTitle("Settings")
 		#print QtGui.QFontDialog.getFont()
 		"""
+		Idea for added ouija part
 		________________________
 		| Tarot     |   Ouija  |
 		|___________|          |
@@ -390,6 +418,11 @@ class QTarot(QtGui.QMainWindow):
 		newLayAction.setStatusTip('Generate a new reading')
 		newLayAction.triggered.connect(self.newReading)
 
+		newChooseAction = QtGui.QAction(QtGui.QIcon.fromTheme('document-new'), 'New Reading (Choose Deck)', self)
+		newChooseAction.setShortcut('Ctrl+Shift+N')
+		newChooseAction.setStatusTip('Generate a new reading using a deck and skin of choice')
+		newChooseAction.triggered.connect(lambda: self.newReading(ask_for_deck=True))
+
 		saveAction = QtGui.QAction(QtGui.QIcon.fromTheme('document-save'), 'Save', self)
 		saveAction.setShortcut('Ctrl+S')
 		saveAction.setStatusTip('Save')
@@ -399,6 +432,7 @@ class QTarot(QtGui.QMainWindow):
 		openAction.setShortcut('Ctrl+O')
 		openAction.setStatusTip('Change the table image')
 		openAction.triggered.connect(self.pickTable)
+		#self.findChildren(QtGui.QDockWidget, QString name = QString())
 
 		settingsAction = QtGui.QAction(QtGui.QIcon.fromTheme('preferences-other'), 'Settings', self)
 		settingsAction.setStatusTip('Settings')
@@ -414,6 +448,7 @@ class QTarot(QtGui.QMainWindow):
 		fileMenu = menubar.addMenu('&File')
 		fileMenu.addAction(exitAction)
 		fileMenu.addAction(newLayAction)
+		fileMenu.addAction(newChooseAction)
 		fileMenu.addAction(openAction)
 		fileMenu.addAction(saveAction)
 		fileMenu.addAction(settingsAction)
@@ -428,7 +463,6 @@ class QTarot(QtGui.QMainWindow):
 
 		#self.resize(500, 400)
 		self.setWindowTitle('QTarot')
-
 
 def main():
 	global formats
@@ -460,23 +494,28 @@ def main():
 	qtrcfg = QTarotConfig()
 
 	parser = argparse.ArgumentParser(prog='qtarot',description="A simple tarot fortune teller")
-	parser.add_argument('-l','--layout', help='The layout to use.',default=qtrcfg.default_layout)
+	parser.add_argument('-l','--layout', help='The layout to use.',default=qtrcfg.default_layout,choices=qtrcfg.layouts.keys())
 	parser.add_argument('-t','--table', help='File to use as table',default="skin:table.png")
-	parser.add_argument('-n','--negativity', help='How often cards are reversed', default=0.5,type=float)
+	parser.add_argument('-n','--negativity', help='How often cards are reversed', default=qtrcfg.negativity,type=float)
 	parser.add_argument('-o','--output', help='Save the reading to this file', default=None)
+	parser.add_argument('-d','--deck', help='Deck definition to use', default=qtrcfg.deck_def, choices=qtrcfg.deck_defs.keys())
+	parser.add_argument('-s','--skin', help='Deck skin to use (valid values depend on deck definition)',default=qtrcfg.deck_skin)
 	args = parser.parse_args(os.sys.argv[1:])
 
 	ex = QTarot()
 	ex.updateTable(fn=args.table)
-	ex.newReading(item=args.layout)
+	if args.deck != qtrcfg.deck_def or  args.skin != qtrcfg.deck_skin:
+		if args.skin not in qtrcfg.deck_defs[args.deck]['skins']:
+			print ("Invalid skin \"{}\" for {}!\n"
+			"Valid skins: {}").format(args.skin,args.deck,qtrcfg.deck_defs[args.deck]['skins'])
+			exit(1)
+	ex.newReading(item=args.layout,neg=args.negativity,skin=args.skin,deck=args.deck)
 
 	if args.output > "":
 		ex.saveReading(filename=args.output)
-		os.sys.exit(app.exec_())
 	else:
 		ex.show()
-		os.sys.exit(app.exec_())
+	os.sys.exit(app.exec_())
 
-
-if __name__ == '__main__':
+if __name__ == "__main__":
 	main()

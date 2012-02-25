@@ -101,8 +101,8 @@ class QTarotConfig:
 			except etree.DocumentInvalid, e:
 				print e.message
 
-	def setup_skin(self):
-		QtCore.QDir.setSearchPaths("skin", ["skins:%s" %(self.deck_skin)])
+	def setup_skin(self,skin):
+		QtCore.QDir.setSearchPaths("skin", ["skins:%s" %(skin)])
 
 	def load_deck_defs(self):
 		self.deck_defs=od()
@@ -172,7 +172,6 @@ class QTarotConfig:
 		self.load_deck_defs()
 		self.load_layouts()
 		self.load_skins()
-		self.setup_skin()
 
 	def save_settings(self):
 		self.settings.beginGroup("Reading")
