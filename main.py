@@ -224,6 +224,7 @@ class QTarot(QtGui.QMainWindow):
 
 	def cardInfo(self, card, reverse=False, posdata=None, skin=''):
 		dialog=QtGui.QDockWidget(self)
+		dialog.setAttribute(QtCore.Qt.WA_DeleteOnClose,True)
 		deck_def_credits=self.generateCredits(card)
 
 		if posdata is not None:
@@ -300,6 +301,7 @@ class QTarot(QtGui.QMainWindow):
 
 	def browseDecks(self):
 		dialog=QtGui.QDockWidget(self)
+		dialog.setAttribute(QtCore.Qt.WA_DeleteOnClose,True)
 		dialog.setWindowTitle("Browse Decks")
 		ddb=QDeckBrowser(deck_source=qtrcfg.deck_defs)
 		ddb.previewArea.doubleClicked.connect(lambda idx:self.viewCardFromDB(idx,ddb))
