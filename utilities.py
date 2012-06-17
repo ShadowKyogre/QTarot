@@ -34,7 +34,7 @@ class QDeckBrowser(QtGui.QWidget):
 		self.deckSource=deck_source
 
 	def populateSkins(self, new_def):
-		if self.deckSource.has_key(str(new_def)):
+		if str(new_def) in self.deckSource:
 			skins_list=self.deckSource[str(new_def)]['skins']
 		else:
 			skins_list=[]
@@ -44,7 +44,7 @@ class QDeckBrowser(QtGui.QWidget):
 
 	def setDeckSource(self, new_source):
 		self._deckSource=new_source
-		self.deckPicker.addItems(self._deckSource.keys())
+		self.deckPicker.addItems(list(self._deckSource.keys()))
 		self.deckPicker.setCurrentIndex(0)
 
 	def deckSource(self):
@@ -176,11 +176,11 @@ class QTarotItem(QtGui.QGraphicsPixmapItem):
 		self.refresh()
 
 	def card(self):
-		return self.data(32).toPyObject()
+		return self.data(32)
 	def rev(self):
-		return self.data(34).toBool()
+		return self.data(34)
 	def posData(self):
-		return self.data(35).toPyObject()
+		return self.data(35)
 
 	card = QtCore.pyqtProperty(TarotCard, card, setCard)
 	posData = QtCore.pyqtProperty(objectify.ObjectifiedElement, posData, setPosData)

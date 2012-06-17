@@ -6,7 +6,7 @@ from PyQt4 import QtGui,QtCore
 from random import sample,random
 from qtarotconfig import QTarotConfig
 from utilities import ZPGraphicsView,QTarotScene,QTarotItem,QDeckBrowser
-from urlparse import urlparse
+from urllib.parse import urlparse
 
 #http://www.sacred-texts.com/tarot/faq.htm#US1909
 """
@@ -22,7 +22,7 @@ class QTarot(QtGui.QMainWindow):
 		self.initUI()
 
 	def updateCards(self):
-		for item in self.scene.items():
+		for item in list(self.scene.items()):
 			if isinstance(item,QTarotItem):
 				item.refresh()
 				item.reposition()
@@ -30,7 +30,7 @@ class QTarot(QtGui.QMainWindow):
 
 	def updateTable(self,fn="skin:table.png"):
 		self.scene.table=QtGui.QPixmap(fn)
-		for item in self.scene.items():
+		for item in list(self.scene.items()):
 			if isinstance(item,QTarotItem):
 				item.refresh()
 				item.reposition()
@@ -73,7 +73,7 @@ class QTarot(QtGui.QMainWindow):
 		deck_def_credits=""
 		layout_credits=""
 		deck=""
-		for item in self.scene.items():
+		for item in list(self.scene.items()):
 			if isinstance(item,QTarotItem):
 				if layout == "&lt;Unknown&gt;":
 					layout=item.posData.getparent().get('name')
@@ -111,7 +111,7 @@ class QTarot(QtGui.QMainWindow):
 		if ask_for_deck:
 			deck,ok = QtGui.QInputDialog.getItem(self, "Generate new reading",
 									"Deck definition to use:", \
-									qtrcfg.deck_defs.keys(), 0, False)
+									list(qtrcfg.deck_defs.keys()), 0, False)
 			if ok and not deck.isEmpty():
 				deck=str(deck)
 			else:
@@ -125,15 +125,15 @@ class QTarot(QtGui.QMainWindow):
 				return
 		else:
 			deck=qtrcfg.deck_def if deck is None or \
-				deck not in qtrcfg.deck_defs.keys() else deck
+				deck not in list(qtrcfg.deck_defs.keys()) else deck
 			skin=qtrcfg.deck_skin if skin is None or \
 				skin not in qtrcfg.deck_defs[deck]['skins'] else skin
 
 		qtrcfg.setup_skin(skin)
 
-		if item not in qtrcfg.layouts.keys():
+		if item not in list(qtrcfg.layouts.keys()):
 			item,ok = QtGui.QInputDialog.getItem(self, "Generate new reading",
-			"Layout to use:", qtrcfg.layouts.keys(), 0, False)
+			"Layout to use:", list(qtrcfg.layouts.keys()), 0, False)
 			if ok and not item.isEmpty():
 				lay=qtrcfg.layouts[str(item)]
 			else:
@@ -290,7 +290,7 @@ class QTarot(QtGui.QMainWindow):
 		self.updateSettingsWidgets()
 
 	def fillSkinsBox(self, new_def):
-		if qtrcfg.deck_defs.has_key(str(new_def)):
+		if str(new_def) in qtrcfg.deck_defs:
 			skins_list=qtrcfg.deck_defs[str(new_def)]['skins']
 		else:
 			skins_list=[]
@@ -310,14 +310,14 @@ class QTarot(QtGui.QMainWindow):
 		self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, dialog)
 
 	def updateSettingsWidgets(self):
-		self.default_layout.addItems(qtrcfg.layouts.keys())
+		self.default_layout.addItems(list(qtrcfg.layouts.keys()))
 		idx=self.default_layout.findText(qtrcfg.default_layout)
 		self.default_layout.setCurrentIndex(idx)
 		self.negativity.setValue(qtrcfg.negativity)
 		#decks=list(QtCore.QDir("skins:/").entryList())
 		#decks.remove(".")
 		#decks.remove("..")
-		self.deck_def.addItems(qtrcfg.deck_defs.keys())
+		self.deck_def.addItems(list(qtrcfg.deck_defs.keys()))
 		idx=self.deck_def.findText(qtrcfg.deck_def)
 		self.deck_def.setCurrentIndex(idx)
 		self.ico_theme.setText(qtrcfg.current_icon_override)
@@ -474,8 +474,9 @@ def main():
 	global app
 	global qtrcfg
 
-	formats=set(["*."+str(QtCore.QString(i)).lower() for i in \
-	QtGui.QImageWriter.supportedImageFormats ()])
+	formats=set(["*."+''.join(i).lower() for i in \
+		QtGui.QImageWriter.supportedImageFormats()])
+
 	formats=sorted(list(formats),key=str.lower)
 	try:
 		formats.remove('*.bw')
@@ -499,11 +500,11 @@ def main():
 	qtrcfg = QTarotConfig()
 
 	parser = argparse.ArgumentParser(prog='qtarot',description="A simple tarot fortune teller")
-	parser.add_argument('-l','--layout', help='The layout to use.',default=qtrcfg.default_layout,choices=qtrcfg.layouts.keys())
+	parser.add_argument('-l','--layout', help='The layout to use.',default=qtrcfg.default_layout,choices=list(qtrcfg.layouts.keys()))
 	parser.add_argument('-t','--table', help='File to use as table',default="skin:table.png")
 	parser.add_argument('-n','--negativity', help='How often cards are reversed', default=qtrcfg.negativity,type=float)
 	parser.add_argument('-o','--output', help='Save the reading to this file', default=None)
-	parser.add_argument('-d','--deck', help='Deck definition to use', default=qtrcfg.deck_def, choices=qtrcfg.deck_defs.keys())
+	parser.add_argument('-d','--deck', help='Deck definition to use', default=qtrcfg.deck_def, choices=list(qtrcfg.deck_defs.keys()))
 	parser.add_argument('-s','--skin', help='Deck skin to use (valid values depend on deck definition)',default=qtrcfg.deck_skin)
 	args = parser.parse_args(os.sys.argv[1:])
 
@@ -511,12 +512,12 @@ def main():
 	ex.updateTable(fn=args.table)
 	if args.deck != qtrcfg.deck_def or  args.skin != qtrcfg.deck_skin:
 		if args.skin not in qtrcfg.deck_defs[args.deck]['skins']:
-			print ("Invalid skin \"{}\" for {}!\n"
-			"Valid skins: {}").format(args.skin,args.deck,qtrcfg.deck_defs[args.deck]['skins'])
+			print(("Invalid skin \"{}\" for {}!\n"
+			"Valid skins: {}").format(args.skin,args.deck,qtrcfg.deck_defs[args.deck]['skins']))
 			exit(1)
 	ex.newReading(item=args.layout,neg=args.negativity,skin=args.skin,deck=args.deck)
 
-	if args.output > "":
+	if args.output is not None and args.output > "":
 		ex.saveReading(filename=args.output)
 		#os.sys.exit(app.exec_())
 	else:
