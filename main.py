@@ -62,7 +62,7 @@ class QTarot(QtGui.QMainWindow):
 		reading_pxh=os.path.join(os.path.basename(store_here),"reading.png")
 		self.saveReadingAsIMG(reading_px,'png')
 
-		f=open(filename,'wb')
+		f=open(filename,'w')
 		import shutil
 		f2=open(os.path.join(os.sys.path[0],'export_read.html'))
 		template=f2.read()
@@ -86,33 +86,34 @@ class QTarot(QtGui.QMainWindow):
 				shutil.copy(copy_from,save_file)
 				cards=''.join([cards,text])
 
-		f.write(template.format(cards=cards,deck=deck,\
+		f.write(template.format(cards=cards,deck=deck,
 		layout=layout,reading_px=reading_pxh,layout_credits=layout_credits,\
 		deck_def_credits=deck_def_credits))
 		f.close()
 
 	def saveReading(self,filename=None):
-		if filename <= "":
+		if not filename:
 			filename=str(QtGui.QFileDialog.getSaveFileName(self, caption="Save Current Reading",
 				filter="Images (%s);;HTML (*.html)" %(' '.join(formats))))
-		if filename > "":
+		if filename:
 			fmt=filename.split(".",1)[-1]
 			if fmt == 'html':
 				self.saveReadingAsHTML(filename)
-			elif "*."+fmt in formats:
+			elif "*.{}".format(fmt) in formats:
 				self.saveReadingAsIMG(filename,fmt)
 			else:
 				QtGui.QMessageBox.critical(self, "Save Current Reading", \
 				"Invalid format ({}) specified for {}!".format(fmt,filename))
 
-	def newReading(self,item=None,neg=None,skin=None,deck=None,ask_for_deck=False):
+	def newReading(self,item=None,neg=None,skin=None,
+			deck=None,ask_for_deck=False):
 		neg=qtrcfg.negativity if neg is None else neg
 
 		if ask_for_deck:
 			deck,ok = QtGui.QInputDialog.getItem(self, "Generate new reading",
 									"Deck definition to use:", \
 									list(qtrcfg.deck_defs.keys()), 0, False)
-			if ok and not deck.isEmpty():
+			if ok and deck:
 				deck=str(deck)
 			else:
 				return
@@ -120,7 +121,7 @@ class QTarot(QtGui.QMainWindow):
 									"Skin to use (Deck: {}):".format(deck), \
 									qtrcfg.deck_defs[deck]['skins'], 0, False)
 			if ok:
-				skin=str(skin) if not skin.isEmpty() else qtrcfg.deck_defs[deck]['skins'][0]
+				skin=str(skin) if skin else qtrcfg.deck_defs[deck]['skins'][0]
 			else:
 				return
 		else:
@@ -134,7 +135,7 @@ class QTarot(QtGui.QMainWindow):
 		if item not in list(qtrcfg.layouts.keys()):
 			item,ok = QtGui.QInputDialog.getItem(self, "Generate new reading",
 			"Layout to use:", list(qtrcfg.layouts.keys()), 0, False)
-			if ok and not item.isEmpty():
+			if ok and item:
 				lay=qtrcfg.layouts[str(item)]
 			else:
 				return
@@ -517,7 +518,7 @@ def main():
 			exit(1)
 	ex.newReading(item=args.layout,neg=args.negativity,skin=args.skin,deck=args.deck)
 
-	if args.output is not None and args.output > "":
+	if args.output:
 		ex.saveReading(filename=args.output)
 		#os.sys.exit(app.exec_())
 	else:
