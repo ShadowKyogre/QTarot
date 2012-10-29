@@ -28,7 +28,9 @@ class QTarot(QtGui.QMainWindow):
 				item.reposition()
 		self.scene.invalidate()
 
-	def updateTable(self,fn="skin:table.png"):
+	def updateTable(self,fn=None):
+		if fn is None:
+			fn = qtrcfg.table
 		self.scene.table=QtGui.QPixmap(fn)
 		for item in list(self.scene.items()):
 			if isinstance(item,QTarotItem):
@@ -283,6 +285,7 @@ class QTarot(QtGui.QMainWindow):
 		qtrcfg.load_layouts()
 		qtrcfg.load_skins()
 		qtrcfg.current_icon_override=str(self.ico_theme.text())
+		qtrcfg.table=str(self.table.text())
 		if reload_deck:
 			self.updateCards()
 
@@ -318,40 +321,25 @@ class QTarot(QtGui.QMainWindow):
 		#decks=list(QtCore.QDir("skins:/").entryList())
 		#decks.remove(".")
 		#decks.remove("..")
+		self.table.setText(qtrcfg.table)
 		self.deck_def.addItems(list(qtrcfg.deck_defs.keys()))
 		idx=self.deck_def.findText(qtrcfg.deck_def)
 		self.deck_def.setCurrentIndex(idx)
 		self.ico_theme.setText(qtrcfg.current_icon_override)
 
+	def getTableName(self):
+		text = QtGui.QFileDialog.getOpenFileName(self, caption="Save Current Reading",
+			directory=QtCore.QDir.homePath(), filter="Images ({})".format(' '.join(formats)))
+		if text > "":
+			self.table.setText(text)
+		else:
+			self.table.setText(qtrcfg.table)
+
 	def settings(self):
 		self.settings_dialog=QtGui.QDialog(self)
 		self.settings_dialog.setWindowTitle("Settings")
 		#print QtGui.QFontDialog.getFont()
-		"""
-		Idea for added ouija part
-		________________________
-		| Tarot     |   Ouija  |
-		|___________|          |
-		|                      |
-		| text        | font | |
-		|             |color | |
-		| words       | conf | |
-		| letters     | conf | |
-		+----------------------+
-		| layout      | conf | |
-		| card bar    | nnnn | |
-		|______________________|
 
-		Algorithm for creating board:
-		  1. Divide it into 25-25-50, 25-50-25, 50-25-25, or 33.3-33.3-33.3
-		  2. Using the first section, find the largest divisor for the number of letters
-		  3. So we set up a row this many and place letters
-		  4. Find the longest word and how much space it'd take up (words.sort());words[-1]
-		  5. Fill the board with words using this interval of space
-		  6. craft a string io for a ficticious layout and fill it with the needed positions
-		  7. feed this info to the cards picked out
-		  8. (there may need to be recoding in the graphicsscene calculateoffset and the card object)
-		"""
 		label=QtGui.QLabel(("Note: These will not take effect"
 		" until you make another reading"),self.settings_dialog)
 		groupbox=QtGui.QGroupBox("Reading",self.settings_dialog)
@@ -369,22 +357,28 @@ class QTarot(QtGui.QMainWindow):
 		self.deck_def.currentIndexChanged['QString'].connect(self.fillSkinsBox)
 		self.deck_skin=QtGui.QComboBox(groupbox2)
 		self.ico_theme=QtGui.QLineEdit(groupbox2)
+		self.table=QtGui.QLineEdit(groupbox2)
+		button=QtGui.QPushButton(groupbox2)
+		button.setIcon(QtGui.QIcon.fromTheme("document-open"))
+		button.clicked.connect(self.getTableName)
 		self.ico_theme.setToolTip(("You should only set this if Qt isn't"
 		" detecting your icon theme.\n"
-		"Currently detected icon theme: %s\n"
-		"Settings will take effect after a restart") \
-		% (qtrcfg.sys_icotheme))
+		"Currently detected icon theme: {}\n"
+		"Settings will take effect after a restart").format(qtrcfg.sys_icotheme))
 
-		gvbox.addWidget(QtGui.QLabel("Negativity"),0,0)
-		gvbox.addWidget(self.negativity,0,1)
-		gvbox.addWidget(QtGui.QLabel("Default Layout"),1,0)
-		gvbox.addWidget(self.default_layout,1,1)
-		gvbox2.addWidget(QtGui.QLabel("Deck Definitions"),0,0)
-		gvbox2.addWidget(self.deck_def,0,1)
-		gvbox2.addWidget(QtGui.QLabel("Deck Skins"),2,0)
-		gvbox2.addWidget(self.deck_skin,2,1)
-		gvbox2.addWidget(QtGui.QLabel("Override Icon Theme"),3,0)
-		gvbox2.addWidget(self.ico_theme,3,1)
+		gvbox.addWidget(QtGui.QLabel("Negativity"),0,0,1,2)
+		gvbox.addWidget(self.negativity,0,2,1,2)
+		gvbox.addWidget(QtGui.QLabel("Default Layout"),1,0,1,2)
+		gvbox.addWidget(self.default_layout,1,2,1,2)
+		gvbox2.addWidget(QtGui.QLabel("Deck Definitions"),0,0,1,2)
+		gvbox2.addWidget(self.deck_def,0,2,1,2)
+		gvbox2.addWidget(QtGui.QLabel("Deck Skins"),2,0,1,2)
+		gvbox2.addWidget(self.deck_skin,2,2,1,2)
+		gvbox2.addWidget(QtGui.QLabel("Table"),3,0,1,2)
+		gvbox2.addWidget(self.table,3,2,1,1)
+		gvbox2.addWidget(button,3,3,1,1)
+		gvbox2.addWidget(QtGui.QLabel("Override Icon Theme"),4,0,1,2)
+		gvbox2.addWidget(self.ico_theme,4,2,1,2)
 
 		buttonbox=QtGui.QDialogButtonBox(QtCore.Qt.Horizontal)
 		resetbutton=buttonbox.addButton(QtGui.QDialogButtonBox.Reset)
@@ -502,7 +496,7 @@ def main():
 
 	parser = argparse.ArgumentParser(prog='qtarot',description="A simple tarot fortune teller")
 	parser.add_argument('-l','--layout', help='The layout to use.',default=qtrcfg.default_layout,choices=list(qtrcfg.layouts.keys()))
-	parser.add_argument('-t','--table', help='File to use as table',default="skin:table.png")
+	parser.add_argument('-t','--table', help='File to use as table',default=qtrcfg.table)
 	parser.add_argument('-n','--negativity', help='How often cards are reversed', default=qtrcfg.negativity,type=float)
 	parser.add_argument('-o','--output', help='Save the reading to this file', default=None)
 	parser.add_argument('-d','--deck', help='Deck definition to use', default=qtrcfg.deck_def, choices=list(qtrcfg.deck_defs.keys()))

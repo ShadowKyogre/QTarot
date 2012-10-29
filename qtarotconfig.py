@@ -167,6 +167,7 @@ class QTarotConfig:
 			QtGui.QIcon.setThemeName(self.current_icon_override)
 		else:
 			QtGui.QIcon.setThemeName(self.sys_icotheme)
+		self.table=self.settings.value("table","skin:table.png")
 		self.settings.endGroup()
 
 		self.load_deck_defs()
@@ -183,6 +184,7 @@ class QTarotConfig:
 		self.settings.beginGroup("Appearance")
 		self.settings.setValue("skin",self.deck_skin)
 		self.settings.setValue("stIconTheme",self.current_icon_override)
+		self.settings.setValue("table",self.table)
 		self.settings.endGroup()
 
 		self.settings.sync()

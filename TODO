@@ -1,6 +1,6 @@
-*Layout editor to add new layouts
-*Deck editor to make new deck definitions
-*A panel to navigate the cards and to highlight the card of current interest
-*Allow overriding default table
-*Add Ouija mode, which'll allow both text responses and tarot card responses (note: special layout files can indicate whether they're primed for this mode. These layout files can also define additional responses, the text responses, and put out whether the cards they are laying out are face-down)
-*DOX. ALWAYS DOX.
+* Layout editor to add new layouts
+* Deck editor to make new deck definitions
+* A panel to navigate the cards and to highlight the card of current interest
+* Allow browsing all layouts and saving those as image files to make mats
+* Add Ouija mode, which'll allow both text responses and tarot card responses (note: special layout files can indicate whether they're primed for this mode. These layout files can also define additional responses, the text responses, and put out whether the cards they are laying out are face-down)
+* DOX. ALWAYS DOX.
