@@ -7,5 +7,5 @@ Name[en_US]=QTarot
 Name=QTarot
 StartupNotify=true
 Terminal=false
-Category=Accessories
+Categories=Application;Accessories;Utility
 Type=Application
