@@ -71,10 +71,10 @@ def globby_decks():
 	return file_pairs
 
 data_files = [('share/qtarot/validators',glob.glob(os.path.join('validators', '*'))),
-  			  ('share/qtarot/deck_defs',glob.glob(os.path.join('decks_defs', '*'))),
-			  ('share/qtarot/htmltpl',glob.glob(os.path.join('htmltpl', '*'))),
-			  ('share/applications',['QTarot.desktop']),
-			  ('share/icons/hicolor/scalable/apps', ['hicolor/scalable/apps/qtarot.svg'])]
+  		  ('share/qtarot/deck_defs',glob.glob(os.path.join('deck_defs', '*'))),
+		  ('share/qtarot/htmltpl',glob.glob(os.path.join('htmltpl', '*'))),
+		  ('share/applications',['QTarot.desktop']),
+		  ('share/icons/hicolor/scalable/apps', ['hicolor/scalable/apps/qtarot.svg'])]
 data_files.extend(globby_decks())
 
 setup(
