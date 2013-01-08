@@ -3,17 +3,14 @@
 import os
 import argparse
 from PyQt4 import QtGui,QtCore
-from random import sample,random
-from qtarotconfig import QTarotConfig
-from utilities import ZPGraphicsView,QTarotScene,QTarotItem,QDeckBrowser
 from urllib.parse import urlparse
+from random import sample,random
+
+from .guiconfig import QTarotConfig
+from .utilities import ZPGraphicsView,QTarotScene,QTarotItem,QDeckBrowser
+from . import APPVERSION, APPNAME
 
 #http://www.sacred-texts.com/tarot/faq.htm#US1909
-"""
-Format for Ouija session:
-me/entity,date,msg
-"""
-
 
 class QTarot(QtGui.QMainWindow):
 
@@ -66,7 +63,8 @@ class QTarot(QtGui.QMainWindow):
 
 		f=open(filename,'w')
 		import shutil
-		f2=open(os.path.join(os.sys.path[0],'export_read.html'))
+		htmltpl=QtCore.QDir("htmltpl:/").absoluteFilePath('export_read.html')
+		f2=open(htmltpl)
 		template=f2.read()
 		f2.close()
 
@@ -195,22 +193,21 @@ class QTarot(QtGui.QMainWindow):
 		"\n{sources}<br />\n").format(**locals())
 
 	def generateCardText(self, card, reverse=None, purpose=None, newfp=None, skin=''):
-		f=open(os.path.join(os.sys.path[0],'card_info_template.html'))
+		htmltpl=QtCore.QDir("htmltpl:/").absoluteFilePath('card_info_template.html')
+		f=open(htmltpl)
 		template=f.read()
 		f.close()
 		reading_specific=("<br />\n\t\tCurrent status: {status}<br />"
 		"\n\t\tPurpose in layout: {purp}") if reverse is not None \
 		and purpose is not None else ""
 		if newfp:
-			oldfn=str(QtCore.QDir("skin:/")\
-			.absoluteFilePath(str(card.file.text)))
+			oldfn=QtCore.QDir("skin:/").absoluteFilePath(card.file.text)
 			fn=os.path.join(os.path.basename(newfp),os.path.basename(oldfn))
 			newfn=os.path.join(newfp,os.path.basename(oldfn))
 		else:
-			fn="skin:{fn}".format(fn=str(card.file.text))
+			fn="skin:{fn}".format(fn=card.file.text)
 		if skin:
-			oldfn=str(QtCore.QDir("skin:/")\
-			.absoluteFilePath(str(card.file.text)))
+			oldfn=QtCore.QDir("skin:/").absoluteFilePath(card.file.text)
 			fn=os.path.join('skins:{skin}'.format(**locals()),os.path.basename(oldfn))
 		revtext=card.meaning.reversed.text if card.meaning.reversed.text else "Cannot be reversed"
 		result=template.format(fn=fn, name=card.fullname(), \
@@ -488,8 +485,8 @@ def main():
 
 	app = QtGui.QApplication(os.sys.argv)
 
-	app.setApplicationName(QTarotConfig.APPNAME)
-	app.setApplicationVersion(QTarotConfig.APPVERSION)
+	app.setApplicationName(APPNAME)
+	app.setApplicationVersion(APPVERSION)
 	app.setWindowIcon(QtGui.QIcon.fromTheme("qtarot"))
 
 	qtrcfg = QTarotConfig()

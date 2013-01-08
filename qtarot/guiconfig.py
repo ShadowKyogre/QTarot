@@ -1,88 +1,41 @@
 from PyQt4 import QtGui,QtCore
 import os
 from collections import OrderedDict as od
-from lxml import etree, objectify
-
-deck_validator = etree.XMLSchema(etree.parse(open('%s/deck.xsd' \
-	%(os.sys.path[0]),'r')))
-layout_validator = etree.XMLSchema(etree.parse(open('%s/layouts.xsd' \
-	%(os.sys.path[0]),'r')))
-
-class TarotDeck(objectify.ObjectifiedElement):
-	def cards(self):
-		return self.xpath('suit/card')
-	def conforms(self, skin):
-		skin_dir=QtCore.QDir("skins:{skin}".format(**locals()))
-
-		skin_contents=set( str(i) for i in skin_dir.entryList() \
-						if str(i) not in (".","..","table.png","deck.ini"))
-		required_files=set( c.file.text for c in self.cards() )
-		#or required_files-skin_contents
-		return required_files.issubset(skin_contents)
-
-class TarotCard(objectify.ObjectifiedElement):
-	def fullname(self):
-		parent=self.getparent()
-		if 'nosuitname' in parent.attrib:
-			return self.attrib['name']
-		else:
-			return "{name} of {suit}"\
-			.format(suit=parent.attrib['name'], \
-			name=self.attrib['name'])
-
-
-class TarotLayout(objectify.ObjectifiedElement):
-	def largetDimension(self):
-		height=float(self.attrib['height'])
-		width=float(self.attrib['width'])
-		return height if height > width else width
-
-def setup_parser():
-	global parser
-	lookup = etree.ElementNamespaceClassLookup(objectify.ObjectifyElementClassLookup())
-	parser = etree.XMLParser(remove_blank_text=True)
-	parser.set_element_class_lookup(lookup)
-
-	namespace = lookup.get_namespace('')
-	namespace['deck']=TarotDeck
-	namespace['card']=TarotCard
-	namespace['layout']=TarotLayout
+from .xmlobjects import objectify, layout_validator, deck_validator, parser
+from . import APPVERSION, AUTHOR, APPNAME, DECKS, DECK_DEFS, LAYOUTS, HTMLTPL
 
 class QTarotConfig:
-	APPNAME="QTarot"
-	APPVERSION="0.5.1"
-	AUTHOR="ShadowKyogre"
-	DESCRIPTION="A simple tarot fortune teller."
-	YEAR="2012"
-	PAGE="http://shadowkyogre.github.com/QTarot/"
 	def __init__(self):
 		self.settings=QtCore.QSettings(QtCore.QSettings.IniFormat,
 						QtCore.QSettings.UserScope,
-						self.AUTHOR,
-						self.APPNAME)
+						AUTHOR,
+						APPNAME)
 
 		#path for deck skins is like: "skins:<deck-name>"
 		#so default table is "skins:{skin}/table.png"
 		#deck defs are like "decks:{deck}.xml"
 		#path for layouts is like "layouts:<layout-name>.lyt"
 
-		self.userconfdir=str(QtGui.QDesktopServices.storageLocation\
-		(QtGui.QDesktopServices.DataLocation)).replace('//','/')
+		self.userconfdir=QtGui.QDesktopServices.storageLocation\
+		(QtGui.QDesktopServices.DataLocation).replace('//','/')
 
-		app_theme_path=os.path.join(os.sys.path[0],"decks")
+		app_theme_path=DECKS
 		config_theme_path=os.path.join(self.userconfdir,"decks")
 
-		app_layout_path=os.path.join(os.sys.path[0],"layouts")
+		app_layout_path=LAYOUTS
 		config_layout_path=os.path.join(self.userconfdir,"layouts")
 
-		app_defs_path=os.path.join(os.sys.path[0],"deck_defs")
+		app_defs_path=DECK_DEFS
 		config_defs_path=os.path.join(self.userconfdir,"deck_defs")
+
+		app_htmltpl_path=HTMLTPL
+		config_htmltpl_path=os.path.join(self.userconfdir,"htmltpl")
 
 		QtCore.QDir.setSearchPaths("layouts", [config_layout_path,app_layout_path])
 		QtCore.QDir.setSearchPaths("skins", [config_theme_path,app_theme_path])
 		QtCore.QDir.setSearchPaths("deckdefs", [config_defs_path,app_defs_path])
+		QtCore.QDir.setSearchPaths("htmltpl", [config_htmltpl_path,app_htmltpl_path])
 
-		setup_parser()
 		self.sys_icotheme=QtGui.QIcon.themeName()
 		self.reset_settings()
 

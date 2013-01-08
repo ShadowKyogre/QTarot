@@ -1,6 +1,6 @@
 from PyQt4 import QtGui,QtCore
-from qtarotconfig import TarotCard
 from lxml import objectify
+from .xmlobjects import TarotCard
 
 class QDeckBrowser(QtGui.QWidget):
 	def __init__(self, parent = None, deck_source = None):
