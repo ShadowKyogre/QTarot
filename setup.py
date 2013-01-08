@@ -45,8 +45,8 @@ class install(_install):
 						replace_me = os.path.join(self.install_data,'share/qtarot')
 					elif self.prefix:
 						replace_me = os.path.join(self.prefix,'share/qtarot')
-					if self.root.endswidth('/'):
-						consts = [['DATA_DIR', replace_me.replace(self.root[:-1],'')]]
+					if self.root[-1] == '/':
+						consts = [['DATA_DIR', replace_me.replace(self.root[:-2],'')]]
 					else:
 						consts = [['DATA_DIR', replace_me.replace(self.root,'')]]
 					script = open(f, 'w', encoding='utf-8')
