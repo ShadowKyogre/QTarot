@@ -84,7 +84,7 @@ setup(
 	author_email = EMAIL,
 	description = DESCRIPTION,
 	url = PAGE,
-	packages = ['qtarot'],
+	packages = ['qtarotlib'],
 	cmdclass={'install': install},
 	data_files = data_files,
 	scripts=['qtarot.py']
