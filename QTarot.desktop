@@ -1,5 +1,5 @@
 [Desktop Entry]
-Exec=qtarot
+Exec=qtarot.py
 GenericName[en_US]=Simple Tarot Fortune Teller
 GenericName=Simple Tarot Fortune Teller
 Icon=qtarot
