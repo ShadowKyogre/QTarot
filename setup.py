@@ -6,6 +6,9 @@ import os, glob, sys
 from qtarot import APPNAME,APPVERSION,AUTHOR,DESCRIPTION,YEAR,PAGE,EMAIL
 
 # http://mammique.net/distutils_setup/
+if sys.version_info < (3,0,0):
+	print("Python 3.x is required!",file=sys.stderr)
+	exit(1)
 
 class install(_install):
 	description = """Install and set constants"""
