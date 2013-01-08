@@ -8,7 +8,7 @@ from random import sample,random
 
 from .guiconfig import QTarotConfig
 from .utilities import ZPGraphicsView,QTarotScene,QTarotItem,QDeckBrowser
-from . import APPVERSION, APPNAME
+from . import APPNAME,APPVERSION,AUTHOR,DESCRIPTION,YEAR,PAGE,EMAIL
 
 #http://www.sacred-texts.com/tarot/faq.htm#US1909
 
@@ -396,6 +396,13 @@ class QTarot(QtGui.QMainWindow):
 		self.updateSettingsWidgets()
 		self.settings_dialog.exec_()
 
+	def about(self):
+		QtGui.QMessageBox.about (self, "About {}".format(APPNAME),
+		("<center><big><b>{0} {1}</b></big>"
+		"<br />{2}<br />(C) <a href=\"mailto:{3}\">{4}</a> {5}<br />"
+		"<a href=\"{6}\">{0} Homepage</a></center>")\
+		.format(APPNAME,APPVERSION,DESCRIPTION,EMAIL,AUTHOR,YEAR,PAGE))
+
 	def initUI(self):
 		self.setWindowTitle(app.applicationName())
 		self.scene=QTarotScene(self)
@@ -439,6 +446,9 @@ class QTarot(QtGui.QMainWindow):
 		browsingAction.setStatusTip('Browse all deck definitions and deck skins you have')
 		browsingAction.triggered.connect(self.browseDecks)
 
+		aboutAction=QtGui.QAction(QtGui.QIcon.fromTheme('help-about'), 'About', self)
+		aboutAction.triggered.connect(self.about)
+
 		st=self.statusBar()
 
 		menubar = self.menuBar()
@@ -455,8 +465,9 @@ class QTarot(QtGui.QMainWindow):
 		toolbar.addAction(newLayAction)
 		toolbar.addAction(openAction)
 		toolbar.addAction(saveAction)
-		toolbar.addAction(settingsAction)
 		toolbar.addAction(browsingAction)
+		toolbar.addAction(settingsAction)
+		toolbar.addAction(aboutAction)
 
 		#self.resize(500, 400)
 		self.setWindowTitle('QTarot')
