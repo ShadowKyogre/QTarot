@@ -3,7 +3,7 @@ from distutils.command.install import install as _install
 from distutils import log
 from stat import ST_ATIME, ST_MTIME, S_IMODE, ST_MODE
 import os, glob, sys
-from qtarot import APPNAME,APPVERSION,AUTHOR,DESCRIPTION,YEAR,PAGE,EMAIL
+from qtarotlib import APPNAME,APPVERSION,AUTHOR,DESCRIPTION,YEAR,PAGE,EMAIL
 
 # http://mammique.net/distutils_setup/
 if sys.version_info < (3,0,0):
