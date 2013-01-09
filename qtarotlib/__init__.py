@@ -2,7 +2,7 @@ from os import path
 
 ## METADATA ##
 APPNAME="QTarot"
-APPVERSION="0.5.4"
+APPVERSION="0.5.5"
 AUTHOR="ShadowKyogre"
 DESCRIPTION="A simple tarot fortune teller."
 YEAR="2013"
