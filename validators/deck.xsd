@@ -28,6 +28,7 @@
         <xs:element ref="number"/>
         <xs:element ref="file"/>
         <xs:element ref="meaning"/>
+        <xs:element minOccurs="0" ref="source"/>
       </xs:sequence>
       <xs:attribute name="name" use="required"/>
     </xs:complexType>
