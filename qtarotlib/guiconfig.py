@@ -75,7 +75,6 @@ class QTarotConfig:
 				self.deck_defs[deck_def.attrib['name']]['skins']=[]
 			except DocumentInvalid as e:
 				print('File',path,'is invalid for these reason(s):',e,file=os.sys.stderr)
-		print(self.deck_defs)
 
 	def load_skins(self):
 		deck_skins_path=QtCore.QDir("skins:/")
