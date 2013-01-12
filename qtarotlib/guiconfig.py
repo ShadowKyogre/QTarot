@@ -1,6 +1,8 @@
 from PyQt4 import QtGui,QtCore
 import os
+from lxml.etree import DocumentInvalid
 from collections import OrderedDict as od
+
 from .xmlobjects import objectify, layout_validator, deck_validator, parser
 from . import APPVERSION, AUTHOR, APPNAME, DECKS, DECK_DEFS, LAYOUTS, HTMLTPL
 
@@ -48,11 +50,11 @@ class QTarotConfig:
 			path=str(layouts_path.absoluteFilePath(i))
 			lay=objectify.parse(path,parser=parser)
 			try:
-				layout_validator.validate(lay)
+				layout_validator.assertValid(lay)
 				lay=lay.getroot()
 				self.layouts[lay.attrib['name']]=lay
-			except etree.DocumentInvalid as e:
-				print(e.message)
+			except DocumentInvalid as e:
+				print('File',lay,'is invalid for these reason(s):',e,file=os.sys.stderr)
 
 	def setup_skin(self,skin):
 		QtCore.QDir.setSearchPaths("skin", ["skins:%s" %(skin)])
@@ -66,13 +68,13 @@ class QTarotConfig:
 			path=deck_defs_path.absoluteFilePath(i)
 			deck_def=objectify.parse(path,parser=parser)
 			try:
-				deck_validator.validate(deck_def)
+				deck_validator.assertValid(deck_def)
 				deck_def=deck_def.getroot()
 				self.deck_defs[deck_def.attrib['name']]={}
 				self.deck_defs[deck_def.attrib['name']]['definition']=deck_def
 				self.deck_defs[deck_def.attrib['name']]['skins']=[]
-			except etree.DocumentInvalid as e:
-				print(e.message)
+			except DocumentInvalid as e:
+				print('File',path,'is invalid for these reason(s):',e,file=os.sys.stderr)
 		print(self.deck_defs)
 
 	def load_skins(self):
