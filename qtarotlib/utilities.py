@@ -34,8 +34,8 @@ class QDeckBrowser(QtGui.QWidget):
 		self.deckSource=deck_source
 
 	def populateSkins(self, new_def):
-		if str(new_def) in self.deckSource:
-			skins_list=self.deckSource[str(new_def)]['skins']
+		if new_def in self.deckSource:
+			skins_list=self.deckSource[new_def]['skins']
 		else:
 			skins_list=[]
 		self.skinPicker.clear()
@@ -51,7 +51,7 @@ class QDeckBrowser(QtGui.QWidget):
 		return self._deckSource
 
 	def currentDeck(self):
-		return self.deckSource[str(self.deckPicker.currentText())]
+		return self.deckSource[self.deckPicker.currentText()]
 
 	def populatePreview(self, new_skin):
 		self.previewArea.model().removeRows(0,self.previewArea.model().rowCount())
@@ -60,8 +60,8 @@ class QDeckBrowser(QtGui.QWidget):
 		model=self.previewArea.model()
 		for card in self.currentDeck()['definition'].cards():
 			f=QtCore.QFileInfo(card.file.text)
-			bf=str(f.baseName())
-			sf=str(f.completeSuffix())
+			bf=f.baseName()
+			sf=f.completeSuffix()
 			fn="{bf}.{sf}".format(**locals())
 			item=QtGui.QStandardItem(QtGui.QIcon("skins:/{new_skin}/{fn}".format(**locals())), \
 			card.fullname())

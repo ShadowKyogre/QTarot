@@ -257,8 +257,8 @@ class QTarot(QtGui.QMainWindow):
 
 	def viewCardFromDB(self, index, widget):
 		item=widget.previewArea.model().itemFromIndex(index)
-		card=str(item.data(32).toString())
-		skin=str(item.data(33).toString())
+		card=item.data(32)
+		skin=item.data(33)
 		card=widget.currentDeck()['definition'].xpath(card)
 		self.cardInfo(card[0],skin=skin)
 
