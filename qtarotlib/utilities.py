@@ -2,9 +2,70 @@ from PyQt4 import QtGui,QtCore
 from lxml import objectify
 from .xmlobjects import TarotCard
 
+class QSuitEdit(QtGui.QWidget):
+	def __init__(self, parent = None):
+		super().__init__(parent)
+		layout = QtGui.QGridLayout(self)
+		layout.addWidget(QtGui.QLabel("Name:"),0,0)
+		layout.addWidget(QtGui.QLabel("Affinity:"),1,0)
+		self.nameEdit=QtGui.QLineEdit(self)
+		self.affnEdit=QtGui.QLineEdit(self)
+		self.noSuitNEdit=QtGui.QCheckBox("No suit name in card name?:",self)
+		layout.addWidget(self.nameEdit,0,1)
+		layout.addWidget(self.affnEdit,1,1)
+		layout.addWidget(self.noSuitNEdit,2,0,1,2)
+
+class QCardEdit(QtGui.QWidget):
+	def __init__(self, parent = None):
+		super().__init__(parent)
+		layout = QtGui.QGridLayout(self)
+		layout.addWidget(QtGui.QLabel("Name:"),0,0)
+		layout.addWidget(QtGui.QLabel("Number:"),1,0)
+		layout.addWidget(QtGui.QLabel("Filepath:"),2,0)
+		layout.addWidget(QtGui.QLabel("Source:"),3,0)
+		self.nameEdit=QtGui.QLineEdit()
+		self.numberEdit=QtGui.QLineEdit()
+		self.fpEdit=QtGui.QLineEdit()
+		self.srcEdit=QtGui.QLineEdit()
+		layout.addWidget(self.nameEdit,0,1)
+		layout.addWidget(self.numberEdit,1,1)
+		layout.addWidget(self.fpEdit,2,1)
+		layout.addWidget(self.srcEdit,3,1)
+
+		tabs=QtGui.QTabWidget()
+		self.nmeaningEdit=QtGui.QTextEdit()
+		self.rmeaningEdit=QtGui.QTextEdit()
+		tabs.addTab(self.nmeaningEdit,"Normal")
+		tabs.addTab(self.rmeaningEdit,"Reversed")
+		layout.addWidget(tabs,4,0,1,2)
+
+
+class QDeckEdit(QtGui.QWidget):
+	def __init__(self, parent = None):
+		super().__init__(parent)
+		layout = QtGui.QGridLayout(self)
+		layout.addWidget(QtGui.QLabel("Author:"),0,0)
+		layout.addWidget(QtGui.QLabel("Source:"),1,0)
+		self.authorEdit=QtGui.QLineEdit()
+		self.sourceEdit=QtGui.QLineEdit()
+		layout.addWidget(self.authorEdit,0,1,1,2)
+		layout.addWidget(self.sourceEdit,1,1,1,2)
+		self.suitView=QtGui.QListView()
+		self.cardView=QtGui.QListView()
+		layout.addWidget(self.suitView,2,0)
+		layout.addWidget(self.cardView,2,1)
+		self.stack=QtGui.QStackedLayout()
+		self.suitedit=QSuitEdit()
+		self.cardedit=QCardEdit()
+		self.stack.addWidget(self.suitedit)
+		self.stack.addWidget(self.cardedit)
+		self.stack.setCurrentIndex(1)
+		layout.addLayout(self.stack,3,0,1,2)
+		
+
 class QDeckBrowser(QtGui.QWidget):
 	def __init__(self, parent = None, deck_source = None):
-		QtGui.QWidget.__init__(self, parent)
+		super().__init__(parent)
 		layout = QtGui.QGridLayout(self)
 		self.deckPicker=QtGui.QComboBox(self)
 		self.skinPicker=QtGui.QComboBox(self)
@@ -73,7 +134,7 @@ class QDeckBrowser(QtGui.QWidget):
 
 class QTarotScene(QtGui.QGraphicsScene):
 	def __init__(self,*args):
-		QtGui.QGraphicsScene.__init__(self, *args)
+		super().__init__(*args)
 		self.tableitem=self.addPixmap(QtGui.QPixmap())
 		self.tableitem.setZValue(-1000.0)
 	def calculateOffset(self):
@@ -116,7 +177,7 @@ class QTarotItem(QtGui.QGraphicsPixmapItem):
 		clearName=QtCore.pyqtSignal([])
 
 	def __init__(self, card, pos_data, reverse, parent=None, scene=None):
-		QtGui.QGraphicsPixmapItem.__init__(self, parent=None, scene=None)
+		super().__init__(parent=None, scene=None)
 		#QtGui.QGraphicsObject.__init__(self, parent)
 		self.setAcceptHoverEvents(True)
 		self.card=card
@@ -203,7 +264,7 @@ class QTarotItem(QtGui.QGraphicsPixmapItem):
 
 class ZPGraphicsView(QtGui.QGraphicsView):
 	def __init__(self, *args):
-		QtGui.QGraphicsView.__init__(self, *args)
+		super().__init__(*args)
 		self.lastPanPoint=QtCore.QPoint()
 		self.setCenter(QtCore.QPointF(self.sceneRect().width()/2.0, \
 		self.sceneRect().height()/2.0))
