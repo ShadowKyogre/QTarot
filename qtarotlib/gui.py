@@ -15,7 +15,8 @@ from . import APPNAME,APPVERSION,AUTHOR,DESCRIPTION,YEAR,PAGE,EMAIL
 class QTarot(QtGui.QMainWindow):
 
 	def __init__(self):
-		super(QTarot, self).__init__()
+		super().__init__()
+		self.last_layout=0
 		self.initUI()
 
 	def updateCards(self):
@@ -132,15 +133,18 @@ class QTarot(QtGui.QMainWindow):
 
 		qtrcfg.setup_skin(skin)
 
+		layouts=list(qtrcfg.layouts.keys())
 		if item not in list(qtrcfg.layouts.keys()):
 			item,ok = QtGui.QInputDialog.getItem(self, "Generate new reading",
-			"Layout to use:", list(qtrcfg.layouts.keys()), 0, False)
+			"Layout to use:", layouts, self.last_layout, False)
 			if ok and item:
-				lay=qtrcfg.layouts[str(item)]
+				lay=qtrcfg.layouts[item]
+				self.last_layout=layouts.index(item)
 			else:
 				return
 		else:
-			lay=qtrcfg.layouts[str(item)]
+			lay=qtrcfg.layouts[item]
+			self.last_layout=layouts.index(item)
 		self.scene.clear()
 		self.scene.invalidate()
 
