@@ -88,6 +88,7 @@ setup(
 	author_email = EMAIL,
 	description = DESCRIPTION,
 	url = PAGE,
+	license = "GPLv3",
 	packages = ['qtarotlib'],
 	cmdclass={'install': install},
 	data_files = data_files,
