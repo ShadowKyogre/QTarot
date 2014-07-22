@@ -7,7 +7,8 @@ from urllib.parse import urlparse
 from random import sample,random
 
 from .guiconfig import QTarotConfig
-from .utilities import QDeckEdit
+from .utilities import QDeckEdit, LXMLModel
+from .xmlobjects import objectify, parser
 from . import APPNAME,APPVERSION,AUTHOR,DESCRIPTION,YEAR,PAGE,EMAIL
 
 #http://www.sacred-texts.com/tarot/faq.htm#US1909
@@ -91,7 +92,26 @@ class QTarotDeckEdit(QtGui.QMainWindow):
 
 	def initUI(self):
 		self.setWindowTitle(app.applicationName())
-		self.view = QDeckEdit(self)
+		#self.view = QDeckEdit(self)
+		self.view = QtGui.QTreeView(self)
+		blub=objectify.fromstring("""
+		<deck>
+			<author>me</author>
+			<source>yeep</source>
+			<suit name='them' affinity='durp'>
+				<card name='you'>
+					<file>selfie.png</file>
+					<meaning>
+						<normal>normal self</normal>
+						<reversed>a&lt;i&gt;e&lt;/i&gt;a</reversed>
+					</meaning>
+					<source>yeep/you</source>
+				</card>
+			</suit>
+		</deck>
+		""",parser=parser)
+		model = LXMLModel(blub)
+		self.view.setModel(model)
 
 		self.setCentralWidget(self.view)
 		self.setDockNestingEnabled(True)

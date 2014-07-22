@@ -1,9 +1,68 @@
 from PyQt4 import QtGui,QtCore
-from lxml import objectify
-from .xmlobjects import TarotCard
+from lxml import objectify, etree
+from .xmlobjects import TarotCard, objectify, parser
+
+#http://www.hardcoded.net/articles/using_qtreeview_with_qabstractitemmodel
+
+class LXMLModel(QtCore.QAbstractItemModel):
+	def __init__(self, xmlobj):
+		QtCore.QAbstractItemModel.__init__(self)
+		self.xmlobj=xmlobj
+		self.cache=list(self.xmlobj.iter())
+
+	def index(self, row, column, parent):
+		print(row, column, parent, parent.isValid())
+		if not parent.isValid():
+			data=self.xmlobj.getchildren()[row]
+			return self.createIndex(row, column, data)
+		parentNode = parent.internalPointer()
+		print(parentNode.getchildren())
+		return self.createIndex(row, column, parentNode.getchildren()[row])
+
+	def parent(self, index):
+		#print('child', index)
+		if not index.isValid():
+			return QtCore.QModelIndex()
+		node = index.internalPointer()
+		if node.getparent() is None:
+			return QtCore.QModelIndex()
+		else:
+			parent=node.getparent()
+			grandparent=parent.getparent()
+			if grandparent is None:
+				return self.createIndex(parent.index(node), 0, parent)
+			else:
+				return self.createIndex(grandparent.index(parent), 0, parent)
+
+	def reset(self):
+		for i in self.xmlobject.iterchildren():
+			self.xmlobject.remove(i)
+		QtCore.QAbstractItemModel.reset(self)
+
+	def rowCount(self, parent):
+		#print('rowcount', parent, parent.isValid())
+		if not parent.isValid():
+			#print('counting root stuff', self.xmlobj.countchildren())
+			return self.xmlobj.countchildren()
+		#print('bx')
+		node = parent.internalPointer()
+		#print(node)
+		return node.countchildren()
+	
+	def data(self, index, role):
+		#print('data', index, role)
+		if not index.isValid():
+			return None
+		node = index.internalPointer()
+		if role == QtCore.Qt.DisplayRole:
+			return node.tag+' - '+node.attrib.get('name', str(node.text))
+		return None
+
+	def columnCount(self, parent):
+		return 1
 
 class QSuitEdit(QtGui.QWidget):
-	def __init__(self, parent = None):
+	def __init__(self, parent = None, xmlobj=None):
 		super().__init__(parent)
 		layout = QtGui.QGridLayout(self)
 		layout.addWidget(QtGui.QLabel("Name:"),0,0)
@@ -16,7 +75,7 @@ class QSuitEdit(QtGui.QWidget):
 		layout.addWidget(self.noSuitNEdit,2,0,1,2)
 
 class QCardEdit(QtGui.QWidget):
-	def __init__(self, parent = None):
+	def __init__(self, parent = None, xmlobj=None):
 		super().__init__(parent)
 		layout = QtGui.QGridLayout(self)
 		layout.addWidget(QtGui.QLabel("Name:"),0,0)
@@ -41,13 +100,13 @@ class QCardEdit(QtGui.QWidget):
 
 
 class QDeckEdit(QtGui.QWidget):
-	def __init__(self, parent = None):
+	def __init__(self, parent = None, xmlobj=None):
 		super().__init__(parent)
 		layout = QtGui.QGridLayout(self)
 		layout.addWidget(QtGui.QLabel("Author:"),0,0)
 		layout.addWidget(QtGui.QLabel("Source:"),1,0)
 		self.authorEdit=QtGui.QLineEdit()
-		self.sourceEdit=QtGui.QLineEdit()
+		self.sourceEdit=QtGui.QLineEdit() 
 		layout.addWidget(self.authorEdit,0,1,1,2)
 		layout.addWidget(self.sourceEdit,1,1,1,2)
 		self.suitView=QtGui.QListView()
@@ -61,6 +120,11 @@ class QDeckEdit(QtGui.QWidget):
 		self.stack.addWidget(self.cardedit)
 		self.stack.setCurrentIndex(1)
 		layout.addLayout(self.stack,3,0,1,2)
+
+		if xmlobj is None:
+			self.xmlobj = xmlobj
+		else:
+			self.xmlobj = objectify.parse('<deck />', parser=parser)
 		
 
 class QDeckBrowser(QtGui.QWidget):
