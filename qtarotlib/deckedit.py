@@ -5,9 +5,10 @@ import argparse
 from PyQt4 import QtGui,QtCore
 from urllib.parse import urlparse
 from random import sample,random
+from pyqt_lxml_utils import LXMLModel
 
 from .guiconfig import QTarotConfig
-from .utilities import QDeckEdit, LXMLModel
+from .utilities import QDeckEdit
 from .xmlobjects import objectify, parser
 from . import APPNAME,APPVERSION,AUTHOR,DESCRIPTION,YEAR,PAGE,EMAIL
 
