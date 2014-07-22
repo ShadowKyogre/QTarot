@@ -24,7 +24,6 @@ class install(_install):
 
 	def run (self):
 		_install.run(self)
-
 		# Rewrite with constants if needed
 		for f in self.get_outputs():
 			# If is package __init__.py file holding some constants
@@ -45,10 +44,14 @@ class install(_install):
 						replace_me = os.path.join(self.install_data,'share/qtarot')
 					elif self.prefix:
 						replace_me = os.path.join(self.prefix,'share/qtarot')
-					if self.root[-1] == '/':
+
+					if self.root == None:
+						consts = [['DATA_DIR', replace_me.replace(os.sep,'/')]]
+					elif self.root[-1] == '/':
 						consts = [['DATA_DIR', replace_me.replace(self.root[:-2],'')]]
 					else:
 						consts = [['DATA_DIR', replace_me.replace(self.root,'')]]
+
 					script = open(f, 'w', encoding='utf-8')
 					script.write(content[:const_begin] + \
 								 "### CONSTANTS BEGIN ###")
