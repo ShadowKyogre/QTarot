@@ -1,9 +1,9 @@
 from PyQt4 import QtGui,QtCore
-from lxml import objectify
-from .xmlobjects import TarotCard
+from lxml import objectify, etree
+from .xmlobjects import TarotCard, objectify, parser
 
 class QSuitEdit(QtGui.QWidget):
-	def __init__(self, parent = None):
+	def __init__(self, parent = None, xmlobj=None):
 		super().__init__(parent)
 		layout = QtGui.QGridLayout(self)
 		layout.addWidget(QtGui.QLabel("Name:"),0,0)
@@ -16,7 +16,7 @@ class QSuitEdit(QtGui.QWidget):
 		layout.addWidget(self.noSuitNEdit,2,0,1,2)
 
 class QCardEdit(QtGui.QWidget):
-	def __init__(self, parent = None):
+	def __init__(self, parent = None, xmlobj=None):
 		super().__init__(parent)
 		layout = QtGui.QGridLayout(self)
 		layout.addWidget(QtGui.QLabel("Name:"),0,0)
@@ -41,13 +41,13 @@ class QCardEdit(QtGui.QWidget):
 
 
 class QDeckEdit(QtGui.QWidget):
-	def __init__(self, parent = None):
+	def __init__(self, parent = None, xmlobj=None):
 		super().__init__(parent)
 		layout = QtGui.QGridLayout(self)
 		layout.addWidget(QtGui.QLabel("Author:"),0,0)
 		layout.addWidget(QtGui.QLabel("Source:"),1,0)
 		self.authorEdit=QtGui.QLineEdit()
-		self.sourceEdit=QtGui.QLineEdit()
+		self.sourceEdit=QtGui.QLineEdit() 
 		layout.addWidget(self.authorEdit,0,1,1,2)
 		layout.addWidget(self.sourceEdit,1,1,1,2)
 		self.suitView=QtGui.QListView()
@@ -61,6 +61,11 @@ class QDeckEdit(QtGui.QWidget):
 		self.stack.addWidget(self.cardedit)
 		self.stack.setCurrentIndex(1)
 		layout.addLayout(self.stack,3,0,1,2)
+
+		if xmlobj is None:
+			self.xmlobj = xmlobj
+		else:
+			self.xmlobj = objectify.parse('<deck />', parser=parser)
 		
 
 class QDeckBrowser(QtGui.QWidget):

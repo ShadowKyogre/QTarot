@@ -129,6 +129,9 @@ class QTarotConfig:
 		self.table=self.settings.value("table","skin:table.png")
 		self.settings.endGroup()
 
+		self.refreshData()
+
+	def refreshData(self):
 		self.load_deck_defs()
 		self.load_layouts()
 		self.load_skins()

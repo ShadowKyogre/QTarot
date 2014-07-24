@@ -15,7 +15,8 @@ from . import APPNAME,APPVERSION,AUTHOR,DESCRIPTION,YEAR,PAGE,EMAIL
 class QTarot(QtGui.QMainWindow):
 
 	def __init__(self):
-		super(QTarot, self).__init__()
+		super().__init__()
+		self.last_layout=None
 		self.initUI()
 
 	def updateCards(self):
@@ -132,15 +133,22 @@ class QTarot(QtGui.QMainWindow):
 
 		qtrcfg.setup_skin(skin)
 
-		if item not in list(qtrcfg.layouts.keys()):
+		layouts=list(qtrcfg.layouts.keys())
+		if item not in layouts:
+			try:
+				idx = layouts.index(self.last_layout)
+			except ValueError as e:
+				idx = 0
 			item,ok = QtGui.QInputDialog.getItem(self, "Generate new reading",
-			"Layout to use:", list(qtrcfg.layouts.keys()), 0, False)
+			"Layout to use:", layouts, idx, False)
 			if ok and item:
-				lay=qtrcfg.layouts[str(item)]
+				lay=qtrcfg.layouts[item]
+				self.last_layout=item
 			else:
 				return
 		else:
-			lay=qtrcfg.layouts[str(item)]
+			lay=qtrcfg.layouts[item]
+			self.last_layout=item
 		self.scene.clear()
 		self.scene.invalidate()
 
@@ -427,6 +435,16 @@ class QTarot(QtGui.QMainWindow):
 		newChooseAction.setStatusTip('Generate a new reading using a deck and skin of choice')
 		newChooseAction.triggered.connect(lambda: self.newReading(ask_for_deck=True))
 
+		reloadDataAction = QtGui.QAction(QtGui.QIcon.fromTheme('document-new'), 'Reload data', self)
+		reloadDataAction.setShortcut('Ctrl+Shift+R')
+		reloadDataAction.setStatusTip('Generate a new reading using a deck and skin of choice')
+		reloadDataAction.triggered.connect(qtrcfg.refreshData)
+
+		reloadReadingAction = QtGui.QAction(QtGui.QIcon.fromTheme('document-new'), 'Reload reading', self)
+		reloadReadingAction.setShortcut('Ctrl+R')
+		reloadReadingAction.setStatusTip('Generate a new reading using the last layout')
+		reloadReadingAction.triggered.connect(lambda: self.newReading(item=self.last_layout))
+
 		saveAction = QtGui.QAction(QtGui.QIcon.fromTheme('document-save'), 'Save', self)
 		saveAction.setShortcut('Ctrl+S')
 		saveAction.setStatusTip('Save')
@@ -456,6 +474,8 @@ class QTarot(QtGui.QMainWindow):
 		fileMenu.addAction(exitAction)
 		fileMenu.addAction(newLayAction)
 		fileMenu.addAction(newChooseAction)
+		fileMenu.addAction(reloadReadingAction)
+		fileMenu.addAction(reloadDataAction)
 		fileMenu.addAction(openAction)
 		fileMenu.addAction(saveAction)
 		fileMenu.addAction(settingsAction)
@@ -463,6 +483,7 @@ class QTarot(QtGui.QMainWindow):
 		toolbar = self.addToolBar('Exit')
 		toolbar.addAction(exitAction)
 		toolbar.addAction(newLayAction)
+		toolbar.addAction(reloadReadingAction)
 		toolbar.addAction(openAction)
 		toolbar.addAction(saveAction)
 		toolbar.addAction(browsingAction)
