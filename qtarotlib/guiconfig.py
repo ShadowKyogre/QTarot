@@ -41,13 +41,22 @@ class QTarotConfig:
 		self.sys_icotheme=QtGui.QIcon.themeName()
 		self.reset_settings()
 
+	def get_bases(self, prefix):
+		paths=QtCore.QDir.searchPaths(prefix)
+		seen = {}
+		results = []
+		for path in paths:
+			if os.path.exists(path):
+				for f in os.listdir(path):
+					if f in seen: continue
+					results.append(f)
+		return results
+
 	def load_layouts(self):
 		self.layouts=od()
 		layouts_path=QtCore.QDir("layouts:/")
-		for i in layouts_path.entryList():
-			if str(i) in (".",".."):
-				continue
-			path=str(layouts_path.absoluteFilePath(i))
+		for i in self.get_bases("layouts"):
+			path=QtCore.QFile("layouts:/{}".format(i)).fileName()
 			lay=objectify.parse(path,parser=parser)
 			try:
 				layout_validator.assertValid(lay)
@@ -62,10 +71,8 @@ class QTarotConfig:
 	def load_deck_defs(self):
 		self.deck_defs=od()
 		deck_defs_path=QtCore.QDir("deckdefs:/")
-		for i in deck_defs_path.entryList():
-			if i in (".",".."):
-				continue
-			path=deck_defs_path.absoluteFilePath(i)
+		for i in self.get_bases("deckdefs"):
+			path=QtCore.QFile("deckdefs:/{}".format(i)).fileName()
 			deck_def=objectify.parse(path,parser=parser)
 			try:
 				deck_validator.assertValid(deck_def)
@@ -78,11 +85,9 @@ class QTarotConfig:
 
 	def load_skins(self):
 		deck_skins_path=QtCore.QDir("skins:/")
-		for i in deck_skins_path.entryList():
-			if str(i) in (".",".."):
-				continue
-			if deck_skins_path.exists("skins:/{i}/deck.ini".format(i=i)):
-				skin_info=QtCore.QSettings("skins:/{i}/deck.ini".format(i=i), \
+		for i in self.get_bases("skins"):
+			if deck_skins_path.exists("skins:/{}/deck.ini".format(i)):
+				skin_info=QtCore.QSettings("skins:/{}/deck.ini".format(i), \
 							QtCore.QSettings.IniFormat)
 				skin_info.beginGroup("Deck Skin")
 				for_deck=skin_info.value("definition","")
