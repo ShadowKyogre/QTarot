@@ -212,13 +212,36 @@ class QTarotLayoutEdit(QtGui.QMainWindow):
 	def syncView(self, item):
 		canvas_item = item.data(QtCore.Qt.UserRole)
 		canvas_item.setToolTip(item.text())
+	
+	def updateGrid(self):
+		self.view.scene().setSceneRect(0, 0, self.widthBox.value()*30, self.heightBox.value()*30,)
 
 	def initUI(self):
 		self.setWindowTitle(app.applicationName())
 		self.view = ZPGraphicsView()
 		self.setCentralWidget(self.view)
 		scene = MoveRotateScene(x=0, y=0, width=90, height=90)
+		self.widthBox = QtGui.QSpinBox()
+		self.widthBox.setValue(3)
+		self.heightBox = QtGui.QSpinBox()
+		self.heightBox.setValue(3)
 		self.view.setScene(scene)
+
+		self.widthBox.valueChanged.connect(self.updateGrid)
+		self.heightBox.valueChanged.connect(self.updateGrid)
+
+		dockwidget = QtGui.QDockWidget(self)
+		self.listview = QtGui.QListWidget()
+		self.listview.setSelectionMode(QtGui.QAbstractItemView.MultiSelection)
+		self.listview.itemSelectionChanged.connect(self.updateView)
+		self.listview.setEditTriggers(QtGui.QAbstractItemView.DoubleClicked)
+		print(self.listview.editTriggers())
+		self.listview.itemChanged.connect(self.syncView)
+		dockwidget.setWidget(self.listview)
+		dockwidget.show()
+		self.addDockWidget(QtCore.Qt.RightDockWidgetArea, dockwidget)
+		
+		scene.selectionChanged.connect(self.updateListView)
 
 		newLayAction = QtGui.QAction(QtGui.QIcon.fromTheme('document-new'), 'New Card', self)
 		newLayAction.setShortcut('N')
@@ -233,22 +256,11 @@ class QTarotLayoutEdit(QtGui.QMainWindow):
 		aboutAction=QtGui.QAction(QtGui.QIcon.fromTheme('help-about'), 'About', self)
 		aboutAction.triggered.connect(self.about)
 		
-		dockwidget = QtGui.QDockWidget(self)
-		self.listview = QtGui.QListWidget()
-		self.listview.setSelectionMode(QtGui.QAbstractItemView.MultiSelection)
-		self.listview.itemSelectionChanged.connect(self.updateView)
-		self.listview.setEditTriggers(QtGui.QAbstractItemView.DoubleClicked)
-		print(self.listview.editTriggers())
-		self.listview.itemChanged.connect(self.syncView)
-		dockwidget.setWidget(self.listview)
-		dockwidget.show()
-		self.addDockWidget(QtCore.Qt.RightDockWidgetArea, dockwidget)
-		
-		scene.selectionChanged.connect(self.updateListView)
-		
 		toolbar = self.addToolBar('Exit')
 		toolbar.addAction(newLayAction)
 		toolbar.addAction(delAction)
+		toolbar.addWidget(self.widthBox)
+		toolbar.addWidget(self.heightBox)
 		toolbar.addAction(aboutAction)
 
 def main():

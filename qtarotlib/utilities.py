@@ -268,8 +268,8 @@ class QTarotItem(QtGui.QGraphicsPixmapItem):
 		self.emitter.showAllInfo.emit(self.card, self.rev, self.posData)
 
 class ZPGraphicsView(QtGui.QGraphicsView):
-	def __init__(self, *args):
-		super().__init__(*args)
+	def __init__(self, *args, **kwargs):
+		super().__init__(*args, **kwargs)
 		self.lastPanPoint=QtCore.QPoint()
 		self.setCenter(QtCore.QPointF(self.sceneRect().width()/2.0, \
 		self.sceneRect().height()/2.0))
@@ -329,7 +329,7 @@ class ZPGraphicsView(QtGui.QGraphicsView):
 
 	def mouseMoveEvent(self, event):
 		QtGui.QGraphicsView.mouseMoveEvent(self,event)
-		if not self.lastPanPoint.isNull():
+		if not self.lastPanPoint.isNull() and not event.modifiers()&QtCore.Qt.ShiftModifier:
 			#Get how much we panned
 			delta = self.mapToScene(self.lastPanPoint) - self.mapToScene(event.pos())
 			self.lastPanPoint = event.pos()
