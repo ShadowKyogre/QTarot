@@ -124,6 +124,12 @@ class QTarotLayoutEdit(QtGui.QMainWindow):
 		litem.setData(QtCore.Qt.UserRole, item)
 		litem.setFlags(litem.flags() | QtCore.Qt.ItemIsEditable)
 		item.emitter.tooltipChanged.connect(litem.setText)
+
+	def delCard(self):
+		for item in self.listview.selectedItems():
+			canvas_item = item.data(QtCore.Qt.UserRole)
+			self.view.scene().removeItem(canvas_item)
+			self.listview.takeItem(self.listview.row(item))
 	
 	def updateListView(self):
 		for i in range(self.listview.count()):
@@ -158,7 +164,12 @@ class QTarotLayoutEdit(QtGui.QMainWindow):
 		newLayAction.setShortcut('N')
 		newLayAction.setStatusTip('Add a new card position to the layout')
 		newLayAction.triggered.connect(self.newCard)
-		
+
+		delAction = QtGui.QAction(QtGui.QIcon.fromTheme('edit-delete'), 'Delete Card', self)
+		delAction.setShortcut('Delete')
+		delAction.setStatusTip('Delete selected card positions')
+		delAction.triggered.connect(self.delCard)
+
 		aboutAction=QtGui.QAction(QtGui.QIcon.fromTheme('help-about'), 'About', self)
 		aboutAction.triggered.connect(self.about)
 		
@@ -177,6 +188,7 @@ class QTarotLayoutEdit(QtGui.QMainWindow):
 		
 		toolbar = self.addToolBar('Exit')
 		toolbar.addAction(newLayAction)
+		toolbar.addAction(delAction)
 		toolbar.addAction(aboutAction)
 
 def main():
