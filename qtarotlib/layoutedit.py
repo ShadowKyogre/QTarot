@@ -119,6 +119,14 @@ class QTarotLayoutEdit(QtGui.QMainWindow):
 
 	def newCard(self):
 		item = InteractableRectItem(x=15,y=15,width=30,height=30, purpose="Neeep! {}")
+		col = self.palette().highlight().color()
+		col.setAlphaF(0.6)
+		brush = QtGui.QBrush(col)
+		pen = QtGui.QPen(self.palette().highlightedText().color())
+		pen.setWidth(2)
+		item.setBrush(brush)
+		item.setPen(pen)
+		
 		self.view.scene().addItem(item)
 		litem = QtGui.QListWidgetItem(item.toolTip(), self.listview)
 		litem.setData(QtCore.Qt.UserRole, item)
