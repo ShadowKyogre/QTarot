@@ -108,7 +108,7 @@ class QTarotLayoutEdit(QtGui.QMainWindow):
 
 	def about(self):
 		QtGui.QMessageBox.about (self, "About {}".format(APPNAME),
-		("<center><big><b>{0} Deck Editor {1}</b></big>"
+		("<center><big><b>{0} Layout Editor {1}</b></big>"
 		"<br />{2}<br />(C) <a href=\"mailto:{3}\">{4}</a> {5}<br />"
 		"<a href=\"{6}\">{0} Homepage</a></center>")\
 		.format(APPNAME,APPVERSION,DESCRIPTION,EMAIL,AUTHOR,YEAR,PAGE))
@@ -142,6 +142,9 @@ class QTarotLayoutEdit(QtGui.QMainWindow):
 		newLayAction.setStatusTip('Add a new card position to the layout')
 		newLayAction.triggered.connect(self.newCard)
 		
+		aboutAction=QtGui.QAction(QtGui.QIcon.fromTheme('help-about'), 'About', self)
+		aboutAction.triggered.connect(self.about)
+		
 		dockwidget = QtGui.QDockWidget(self)
 		self.listview = QtGui.QListWidget()
 		self.listview.setSelectionMode(QtGui.QAbstractItemView.MultiSelection)
@@ -152,6 +155,7 @@ class QTarotLayoutEdit(QtGui.QMainWindow):
 		
 		toolbar = self.addToolBar('Exit')
 		toolbar.addAction(newLayAction)
+		toolbar.addAction(aboutAction)
 
 def main():
 	global app
