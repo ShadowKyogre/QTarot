@@ -8,6 +8,8 @@ def _counterClockwise(a, b, c):
 	return ((b.x() - a.x())*(c.y() - a.y()) - (b.y() - a.y())*(c.x() - a.x())) > 0
 
 class InteractableRectItem(QtGui.QGraphicsRectItem):
+	class ItemEmitter(QtCore.QObject):
+		tooltipChanged = QtCore.pyqtSignal(['QString'])
 	def __init__(self, purpose=None, rect=None, x=None, y=None, width=None, height=None, parent=None):
 		if isinstance(rect, QtCore.QRectF):
 			super().__init__(rect, parent=parent)
@@ -22,6 +24,7 @@ class InteractableRectItem(QtGui.QGraphicsRectItem):
 		self.setFlags(self.flags() | QtGui.QGraphicsItem.ItemIsSelectable)
 		self._initialPos = None
 		self._rotation = 0
+		self.emitter = InteractableRectItem.ItemEmitter()
 		if isinstance(purpose, str):
 			self.setToolTip(purpose)
 	
@@ -33,6 +36,7 @@ class InteractableRectItem(QtGui.QGraphicsRectItem):
 		purpose, ok = QtGui.QInputDialog.getText(None, "Testing Rect", "Type in a new purpose", text=self.toolTip())
 		if ok:
 			self.setToolTip(purpose)
+			self.emitter.tooltipChanged.emit(purpose)
 		super().mouseDoubleClickEvent(event)
 	
 	def mouseMoveEvent(self, event):
@@ -118,10 +122,20 @@ class QTarotLayoutEdit(QtGui.QMainWindow):
 		self.view.scene().addItem(item)
 		litem = QtGui.QListWidgetItem(item.toolTip(), self.listview)
 		litem.setData(QtCore.Qt.UserRole, item)
+		litem.setFlags(litem.flags() | QtCore.Qt.ItemIsEditable)
+		item.emitter.tooltipChanged.connect(litem.setText)
 	
-	def updateSelection(self):
+	def updateListView(self):
+		for i in range(self.listview.count()):
+			item = self.listview.item(i)
+			canvas_item = item.data(QtCore.Qt.UserRole)
+			if canvas_item.isSelected():
+				item.setSelected(True)
+			else:
+				item.setSelected(False)
+	
+	def updateView(self):
 		sel = self.listview.selectedItems()
-		print(sel)
 		for i in range(self.listview.count()):
 			item = self.listview.item(i)
 			if item in sel:
@@ -129,12 +143,15 @@ class QTarotLayoutEdit(QtGui.QMainWindow):
 			else:
 				item.data(QtCore.Qt.UserRole).setSelected(False)
 
+	def syncView(self, item):
+		canvas_item = item.data(QtCore.Qt.UserRole)
+		canvas_item.setToolTip(item.text())
+
 	def initUI(self):
 		self.setWindowTitle(app.applicationName())
 		self.view = QtGui.QGraphicsView()
 		self.setCentralWidget(self.view)
 		scene = MoveRotateScene()
-		#scene.changed.connect(self.updateListView)
 		self.view.setScene(scene)
 
 		newLayAction = QtGui.QAction(QtGui.QIcon.fromTheme('document-new'), 'New Card', self)
@@ -148,10 +165,15 @@ class QTarotLayoutEdit(QtGui.QMainWindow):
 		dockwidget = QtGui.QDockWidget(self)
 		self.listview = QtGui.QListWidget()
 		self.listview.setSelectionMode(QtGui.QAbstractItemView.MultiSelection)
-		self.listview.itemSelectionChanged.connect(self.updateSelection)
+		self.listview.itemSelectionChanged.connect(self.updateView)
+		self.listview.setEditTriggers(QtGui.QAbstractItemView.DoubleClicked)
+		print(self.listview.editTriggers())
+		self.listview.itemChanged.connect(self.syncView)
 		dockwidget.setWidget(self.listview)
 		dockwidget.show()
 		self.addDockWidget(QtCore.Qt.RightDockWidgetArea, dockwidget)
+		
+		scene.selectionChanged.connect(self.updateListView)
 		
 		toolbar = self.addToolBar('Exit')
 		toolbar.addAction(newLayAction)
