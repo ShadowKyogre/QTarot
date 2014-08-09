@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 from PyQt4 import QtCore, QtGui
+from .utilities import ZPGraphicsView
 from . import APPNAME,APPVERSION,AUTHOR,DESCRIPTION,YEAR,PAGE,EMAIL
 
 def _counterClockwise(a, b, c):
@@ -21,52 +22,103 @@ class InteractableRectItem(QtGui.QGraphicsRectItem):
 		else:
 			super().__init__(parent=parent)
 		
-		self.setFlags(self.flags() | QtGui.QGraphicsItem.ItemIsSelectable)
+		self.setFlags(self.flags() | QtGui.QGraphicsItem.ItemIsSelectable | QtGui.QGraphicsItem.ItemSendsGeometryChanges)
 		self._initialPos = None
-		self._rotation = 0
 		self.emitter = InteractableRectItem.ItemEmitter()
 		if isinstance(purpose, str):
 			self.setToolTip(purpose)
+	
+	def itemChange(self, change, value):
+		#print(change, value)
+		if change == QtGui.QGraphicsItem.ItemPositionChange and self.scene():
+			#print(self.sceneBoundingRect(), self._rotation)
+			half_width = self.sceneBoundingRect().width()/2
+			half_height = self.sceneBoundingRect().height()/2
+			if self.rotation() != 0:
+				if self.x() < -half_width/2:
+					value.setX(-half_width/2)
+				elif self.x() > self.scene().width()-2.5*half_width:
+					value.setX(self.scene().width()-2.5*half_width)
+
+				if self.y() < -half_height/2:
+					value.setY(-half_height/2)
+				elif self.y() > self.scene().height()-2.5*half_height:
+					value.setY(self.scene().height()-2.5*half_height)
+			else:
+				if self.x() < -half_width:
+					value.setX(-half_width)
+				elif self.x() > self.scene().width()-3*half_width:
+					value.setX(self.scene().width()-3*half_width)
+
+				if self.y() < -half_height:
+					value.setY(-half_height)
+				elif self.y() > self.scene().height()-3*half_height:
+					value.setY(self.scene().height()-3*half_height)
+			
+			return value
+		return super().itemChange(change, value)
 	
 	def mousePressEvent(self, event):
 		self._initialPos = self.mapToScene(event.pos())
 		super().mousePressEvent(event)
 	
 	def mouseDoubleClickEvent(self, event):
-		purpose, ok = QtGui.QInputDialog.getText(None, "Testing Rect", "Type in a new purpose", text=self.toolTip())
-		if ok:
-			self.setToolTip(purpose)
-			self.emitter.tooltipChanged.emit(purpose)
+		if not event.modifiers()&QtCore.Qt.ShiftModifier:
+			purpose, ok = QtGui.QInputDialog.getText(None, "Testing Rect", "Type in a new purpose", text=self.toolTip())
+			if ok:
+				self.setToolTip(purpose)
+				self.emitter.tooltipChanged.emit(purpose)
+		else:
+			rotation, ok = QtGui.QInputDialog.getDouble(None, "Testing Rect", "Type a new rotation value", value=self.rotation(), min=0, max=360)
+			if ok:
+				self.setTransformOriginPoint(self.boundingRect().center())
+				self.setRotation(rotation)
 		super().mouseDoubleClickEvent(event)
 	
 	def mouseMoveEvent(self, event):
 		pos = self.mapToScene(event.pos())
-		if _counterClockwise(self.boundingRect().center(), self._initialPos, pos):
-			self._rotation +=1
-		else:
-			self._rotation -=1
 		self.setTransformOriginPoint(self.boundingRect().center())
 		if event.modifiers()&QtCore.Qt.ShiftModifier:
 			self.setPos(self.pos()+(pos-self._initialPos))
 		else:
-			self.setRotation(self._rotation)
+			tmprot = self.rotation()
+			if _counterClockwise(self.boundingRect().center(), self._initialPos, pos):
+				tmprot +=1
+			else:
+				tmprot -=1
+			self.setRotation(tmprot)
 		self._initialPos = pos
 		super().mouseMoveEvent(event)
 
 class MoveRotateScene(QtGui.QGraphicsScene):
-	def __init__(self, purpose=None, rect=None, x=None, y=None, width=None, height=None, parent=None):
+	def __init__(self, grid_x=None, grid_y=None, rect=None, x=None, y=None, width=None, height=None, parent=None):
 		if isinstance(rect, QtCore.QRectF):
 			super().__init__(rect, parent=parent)
 		elif all((isinstance(x, int) or isinstance(x, float),
 		         isinstance(y, int) or isinstance(y, float),
 		         isinstance(width, int) or isinstance(width, float),
 		         isinstance(height, int) or isinstance(height, float))):
+				print("Initting here!")
 				super().__init__(x, y, width, height, parent=parent)
 		else:
 			super().__init__(parent=parent)
 
 		self._initialPos = None
 		self._rotation = 0
+		#self._grid_x = grid_x
+		#self._grid_y = grid_y
+
+	def drawBackground(self, painter, rect):
+		#if None not in (self._grid_x, self._grid_y):
+		recty = rect.intersect(self.sceneRect())
+		left = int(recty.left()) - int(recty.left()) % 30
+		top = int(recty.top()) - int(recty.top()) % 30
+		lines=[]
+		for x in range(left, int(recty.right())+1, 30):
+			lines.append(QtCore.QLineF(x, recty.top(), x, recty.bottom()))
+		for y in range(top, int(recty.bottom())+1, 30):
+			lines.append(QtCore.QLineF(recty.left(), y, recty.right(), y))
+		painter.drawLines(lines)
 
 	def mousePressEvent(self, event):
 		pitem = self.itemAt(event.scenePos())
@@ -123,7 +175,7 @@ class QTarotLayoutEdit(QtGui.QMainWindow):
 		col.setAlphaF(0.6)
 		brush = QtGui.QBrush(col)
 		pen = QtGui.QPen(self.palette().highlightedText().color())
-		pen.setWidth(2)
+		pen.setWidth(0)
 		item.setBrush(brush)
 		item.setPen(pen)
 		
@@ -163,9 +215,9 @@ class QTarotLayoutEdit(QtGui.QMainWindow):
 
 	def initUI(self):
 		self.setWindowTitle(app.applicationName())
-		self.view = QtGui.QGraphicsView()
+		self.view = ZPGraphicsView()
 		self.setCentralWidget(self.view)
-		scene = MoveRotateScene()
+		scene = MoveRotateScene(x=0, y=0, width=90, height=90)
 		self.view.setScene(scene)
 
 		newLayAction = QtGui.QAction(QtGui.QIcon.fromTheme('document-new'), 'New Card', self)
