@@ -27,7 +27,7 @@ class InteractableRectItem(QtGui.QGraphicsRectItem):
 				super().__init__(x, y, width, height, parent=parent)
 		else:
 			super().__init__(parent=parent)
-		
+		self.setTransformOriginPoint(self.boundingRect().center())
 		self.setFlags(self.flags() | QtGui.QGraphicsItem.ItemIsSelectable | QtGui.QGraphicsItem.ItemSendsGeometryChanges)
 		self._initialPos = None
 		self.emitter = InteractableRectItem.ItemEmitter()
@@ -83,7 +83,9 @@ class InteractableRectItem(QtGui.QGraphicsRectItem):
 	
 	def mouseMoveEvent(self, event):
 		pos = self.mapToScene(event.pos())
-		self.setTransformOriginPoint(self.boundingRect().center())
+		#print(self.scenePos())
+		#print(self.scenePos())
+		print("---")
 		if event.modifiers()&QtCore.Qt.ShiftModifier:
 			self.setPos(self.pos()+(pos-self._initialPos))
 		else:
@@ -332,14 +334,15 @@ class QTarotLayoutEdit(QtGui.QMainWindow):
 		for i in range(self.listview.count()):
 			item = self.listview.item(i)
 			canvas_item = item.data(QtCore.Qt.UserRole)
+			true_pos = canvas_item.scenePos()
 			pos = etree.SubElement(xmlobj, 'pos')
 			purpose = etree.SubElement(pos, 'purpose')
 			x = etree.SubElement(pos, 'x')
 			y = etree.SubElement(pos, 'y')
 			angle = etree.SubElement(pos, 'angle')
 			purpose.text = canvas_item.toolTip()
-			x.text = str(canvas_item.x()/canvas_item.scene().width())
-			y.text = str(canvas_item.y()/canvas_item.scene().height())
+			x.text = str(true_pos.x()/canvas_item.scene().width())
+			y.text = str(true_pos.y()/canvas_item.scene().height())
 			angle.text = str(canvas_item.rotation())
 		tree_string = etree.tostring(xmlobj, pretty_print=True).decode('utf-8')
 		if not filename:
@@ -348,10 +351,6 @@ class QTarotLayoutEdit(QtGui.QMainWindow):
 		if filename:
 			with open(filename, 'w', encoding='utf-8') as f:
 				f.write(tree_string)
-
-	def closeEvent(self, event):
-		self.saveFile()
-		event.accept()
 
 def main():
 	global app
