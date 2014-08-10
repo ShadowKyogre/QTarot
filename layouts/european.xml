@@ -1,60 +1,60 @@
-<layout name="European" height="2.0" width="12.0">
+<layout name="European" height="2" width="12">
 	<purpose>A timeline of yourself</purpose>
 	<author>ReadTarot.com and Pam Rotella</author>
 	<source>http://www.readtarot.com/spreads.html</source>
 	<pos>
 		<purpose>Your past - part 1</purpose>
-		<x>0.0</x>
-		<y>0.375</y>
+		<x>0.041666666666666664</x>
+		<y>0.2916666666666667</y>
 		<angle>0.0</angle>
 	</pos>
 	<pos>
 		<purpose>Your past - part 2</purpose>
-		<x>0.0833333333333</x>
-		<y>0.375</y>
+		<x>0.12499999999996667</x>
+		<y>0.2916666666666667</y>
 		<angle>0.0</angle>
 	</pos>
 	<pos>
 		<purpose>Your past - part 3</purpose>
-		<x>0.166666666667</x>
-		<y>0.375</y>
+		<x>0.20833333333366666</x>
+		<y>0.2916666666666667</y>
 		<angle>0.0</angle>
 	</pos>
 	<pos>
 		<purpose>Your present - part 1</purpose>
-		<x>0.333333333333</x>
-		<y>0.375</y>
+		<x>0.37499999999966666</x>
+		<y>0.2916666666666667</y>
 		<angle>0.0</angle>
 	</pos>
 	<pos>
 		<purpose>Your present - part 2
 (probably your most recent experience)</purpose>
-		<x>0.416666666667</x>
-		<y>0.375</y>
+		<x>0.45833333333366666</x>
+		<y>0.2916666666666667</y>
 		<angle>0.0</angle>
 	</pos>
 	<pos>
 		<purpose>Your present - part 3</purpose>
-		<x>0.5</x>
-		<y>0.375</y>
+		<x>0.5416666666666666</x>
+		<y>0.2916666666666667</y>
 		<angle>0.0</angle>
 	</pos>
 	<pos>
 		<purpose>Your future - part 1</purpose>
-		<x>0.666666666667</x>
-		<y>0.375</y>
+		<x>0.7083333333336667</x>
+		<y>0.2916666666666667</y>
 		<angle>0.0</angle>
 	</pos>
 	<pos>
 		<purpose>Your future - part 2</purpose>
-		<x>0.75</x>
-		<y>0.375</y>
+		<x>0.7916666666666666</x>
+		<y>0.2916666666666667</y>
 		<angle>0.0</angle>
 	</pos>
 	<pos>
 		<purpose>Your future - part 3</purpose>
-		<x>0.833333333333</x>
-		<y>0.375</y>
+		<x>0.8749999999996667</x>
+		<y>0.2916666666666667</y>
 		<angle>0.0</angle>
 	</pos>
 </layout>
