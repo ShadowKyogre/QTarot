@@ -297,7 +297,7 @@ class QTarotLayoutEdit(QtGui.QMainWindow):
 			angle = etree.SubElement(pos, 'angle')
 			purpose.text = canvas_item.toolTip()
 			x.text = str(canvas_item.x()/canvas_item.scene().width())
-			y.text = str(canvas_item.y()/canvas_item.scene().width())
+			y.text = str(canvas_item.y()/canvas_item.scene().height())
 			angle.text = str(canvas_item.rotation())
 		tree_string = etree.tostring(xmlobj, pretty_print=True).decode('utf-8')
 		if filename is not None:
