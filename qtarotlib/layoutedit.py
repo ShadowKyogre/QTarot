@@ -1,11 +1,14 @@
 #!/usr/bin/python
+import os
+#import argparse
 
 from PyQt4 import QtCore, QtGui
 from lxml import objectify, etree
+from lxml.etree import DocumentInvalid
 
 from .utilities import ZPGraphicsView
 from . import APPNAME,APPVERSION,AUTHOR,DESCRIPTION,YEAR,PAGE,EMAIL
-from .xmlobjects import layout_validator
+from .xmlobjects import parser, layout_validator
 
 def _counterClockwise(a, b, c):
 	#http://gamedev.stackexchange.com/questions/22133/how-to-detect-if-object-is-moving-in-clockwise-or-counterclockwise-direction
@@ -279,7 +282,23 @@ class QTarotLayoutEdit(QtGui.QMainWindow):
 		toolbar.addAction(delAction)
 		toolbar.addAction(aboutAction)
 
-	def toFile(self, filename=None):
+	def openFile(self, filename=None):
+		if filename is None:
+			filename = QtGui.QFileDialog.getOpenFileName (self, 
+						caption="Open a layout file", 
+						directory=QtCore.QDir.homePath(), 
+						filter="*.xml")
+		if filename != "":
+			print("Opening file...")
+			try:
+				lay = objectify.parse(filename, parser=parser)
+				layout_validator.assertValid(lay)
+			except DocumentInvalid as e:
+				print(filename, "was an invalid layout xml file, starting empty.")
+			except OSError as e:
+				print(filename, "doesn't exist, starting empty.")
+
+	def saveFile(self, filename=None):
 		xmlobj = etree.fromstring('<layout></layout>')
 		xmlobj.attrib['name']=self.nameEdit.text()
 		xmlobj.attrib['height']=str(self.heightBox.value())
@@ -307,14 +326,22 @@ class QTarotLayoutEdit(QtGui.QMainWindow):
 			print(tree_string)
 
 	def closeEvent(self, event):
-		self.toFile()
+		self.saveFile()
 		event.accept()
 
 def main():
 	global app
-	app = QtGui.QApplication([])
+
+	app = QtGui.QApplication(os.sys.argv)
+	app.setApplicationName(APPNAME)
+	app.setApplicationVersion(APPVERSION)
+	app.setWindowIcon(QtGui.QIcon.fromTheme("qtarot"))
+
 	editor = QTarotLayoutEdit()
 	editor.show()
+	
+	if len(os.sys.argv) == 2:
+		editor.openFile(os.sys.argv[1])
 	exit(app.exec_())
 
 if __name__ == "__main__":
