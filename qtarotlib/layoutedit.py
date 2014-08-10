@@ -41,25 +41,25 @@ class InteractableRectItem(QtGui.QGraphicsRectItem):
 			half_width = self.sceneBoundingRect().width()/2
 			half_height = self.sceneBoundingRect().height()/2
 			if self.rotation() != 0:
-				if self.x() < -half_width/2:
-					value.setX(-half_width/2)
-				elif self.x() > self.scene().width()-2.5*half_width:
-					value.setX(self.scene().width()-2.5*half_width)
+				if self.x() < half_width/4:
+					value.setX(half_width/4)
+				elif self.x() > self.scene().width()-1.75*half_width:
+					value.setX(self.scene().width()-1.75*half_width)
 
-				if self.y() < -half_height/2:
-					value.setY(-half_height/2)
-				elif self.y() > self.scene().height()-2.5*half_height:
-					value.setY(self.scene().height()-2.5*half_height)
+				if self.y() < half_height/4:
+					value.setY(half_height/4)
+				elif self.y() > self.scene().height()-1.75*half_height:
+					value.setY(self.scene().height()-1.75*half_height)
 			else:
-				if self.x() < -half_width:
-					value.setX(-half_width)
-				elif self.x() > self.scene().width()-3*half_width:
-					value.setX(self.scene().width()-3*half_width)
+				if self.x() < 0:
+					value.setX(0)
+				elif self.x() > self.scene().width()-2*half_width:
+					value.setX(self.scene().width()-2*half_width)
 
-				if self.y() < -half_height:
-					value.setY(-half_height)
-				elif self.y() > self.scene().height()-3*half_height:
-					value.setY(self.scene().height()-3*half_height)
+				if self.y() < 0:
+					value.setY(0)
+				elif self.y() > self.scene().height()-2*half_height:
+					value.setY(self.scene().height()-2*half_height)
 			
 			return value
 		return super().itemChange(change, value)
@@ -175,8 +175,9 @@ class QTarotLayoutEdit(QtGui.QMainWindow):
 		"<a href=\"{6}\">{0} Homepage</a></center>")\
 		.format(APPNAME,APPVERSION,DESCRIPTION,EMAIL,AUTHOR,YEAR,PAGE))
 
-	def newCard(self, checked=False, x=None, y=None, width=None, height=None):
-		item = InteractableRectItem(x=15,y=15,width=30,height=30, purpose="Neeep! {}")
+	def newCard(self, checked=False, x=15, y=15, width=None, height=None, angle=None, purpose="Neeep! {}"):
+		item = InteractableRectItem(x=0, y=0, width=30, height=30, purpose=purpose)
+		item.setPos(x, y)
 		col = self.palette().highlight().color()
 		col.setAlphaF(0.6)
 		brush = QtGui.QBrush(col)
@@ -184,6 +185,8 @@ class QTarotLayoutEdit(QtGui.QMainWindow):
 		pen.setWidth(0)
 		item.setBrush(brush)
 		item.setPen(pen)
+		if angle is not None:
+			item.setRotation(angle)
 		
 		self.view.scene().addItem(item)
 		litem = QtGui.QListWidgetItem(item.toolTip(), self.listview)
@@ -269,6 +272,16 @@ class QTarotLayoutEdit(QtGui.QMainWindow):
 		newLayAction.setStatusTip('Add a new card position to the layout')
 		newLayAction.triggered.connect(self.newCard)
 
+		openAction = QtGui.QAction(QtGui.QIcon.fromTheme('document-open'), 'Open Layout', self)
+		openAction.setShortcut('Ctrl+O')
+		openAction.setStatusTip('Open another file')
+		openAction.triggered.connect(self.openFile)
+
+		saveAction = QtGui.QAction(QtGui.QIcon.fromTheme('document-save'), 'Save', self)
+		saveAction.setShortcut('Ctrl+S')
+		saveAction.setStatusTip('Save')
+		saveAction.triggered.connect(self.saveFile)
+
 		delAction = QtGui.QAction(QtGui.QIcon.fromTheme('edit-delete'), 'Delete Card', self)
 		delAction.setShortcut('Delete')
 		delAction.setStatusTip('Delete selected card positions')
@@ -279,10 +292,12 @@ class QTarotLayoutEdit(QtGui.QMainWindow):
 		
 		toolbar = self.addToolBar('Exit')
 		toolbar.addAction(newLayAction)
+		toolbar.addAction(openAction)
+		toolbar.addAction(saveAction)
 		toolbar.addAction(delAction)
 		toolbar.addAction(aboutAction)
 
-	def openFile(self, filename=None):
+	def openFile(self, checked=False, filename=None):
 		if filename is None:
 			filename = QtGui.QFileDialog.getOpenFileName (self, 
 						caption="Open a layout file", 
@@ -291,14 +306,22 @@ class QTarotLayoutEdit(QtGui.QMainWindow):
 		if filename != "":
 			print("Opening file...")
 			try:
-				lay = objectify.parse(filename, parser=parser)
+				lay = objectify.parse(filename, parser=parser).getroot()
 				layout_validator.assertValid(lay)
+				self.nameEdit.setText(lay.attrib['name'])
+				self.heightBox.setValue(float(lay.attrib['height']))
+				self.widthBox.setValue(float(lay.attrib['width']))
+				self.purposeEdit.setText(lay.purpose.text)
+				self.authorEdit.setText(lay.author.text)
+				self.sourceEdit.setText(lay.source.text)
+				for i in lay.iterchildren(tag='pos'):
+					self.newCard(x=i.x*self.view.scene().width(), y=i.y*self.view.scene().height(), angle=i.angle, purpose=i.purpose.text)
 			except DocumentInvalid as e:
 				print(filename, "was an invalid layout xml file, starting empty.")
 			except OSError as e:
 				print(filename, "doesn't exist, starting empty.")
 
-	def saveFile(self, filename=None):
+	def saveFile(self, checked=False, filename=None):
 		xmlobj = etree.fromstring('<layout></layout>')
 		xmlobj.attrib['name']=self.nameEdit.text()
 		xmlobj.attrib['height']=str(self.heightBox.value())
@@ -319,11 +342,12 @@ class QTarotLayoutEdit(QtGui.QMainWindow):
 			y.text = str(canvas_item.y()/canvas_item.scene().height())
 			angle.text = str(canvas_item.rotation())
 		tree_string = etree.tostring(xmlobj, pretty_print=True).decode('utf-8')
-		if filename is not None:
+		if not filename:
+			filename = QtGui.QFileDialog.getSaveFileName(self, 
+						caption="Save Layout", filter="*.xml" )
+		if filename:
 			with open(filename, 'w', encoding='utf-8') as f:
 				f.write(tree_string)
-		else:
-			print(tree_string)
 
 	def closeEvent(self, event):
 		self.saveFile()
@@ -341,7 +365,7 @@ def main():
 	editor.show()
 	
 	if len(os.sys.argv) == 2:
-		editor.openFile(os.sys.argv[1])
+		editor.openFile(filename=os.sys.argv[1])
 	exit(app.exec_())
 
 if __name__ == "__main__":
