@@ -1,8 +1,11 @@
 #!/usr/bin/python
 
 from PyQt4 import QtCore, QtGui
+from lxml import objectify, etree
+
 from .utilities import ZPGraphicsView
 from . import APPNAME,APPVERSION,AUTHOR,DESCRIPTION,YEAR,PAGE,EMAIL
+from .xmlobjects import layout_validator
 
 def _counterClockwise(a, b, c):
 	#http://gamedev.stackexchange.com/questions/22133/how-to-detect-if-object-is-moving-in-clockwise-or-counterclockwise-direction
@@ -98,7 +101,7 @@ class MoveRotateScene(QtGui.QGraphicsScene):
 		         isinstance(y, int) or isinstance(y, float),
 		         isinstance(width, int) or isinstance(width, float),
 		         isinstance(height, int) or isinstance(height, float))):
-				print("Initting here!")
+				#print("Initting here!")
 				super().__init__(x, y, width, height, parent=parent)
 		else:
 			super().__init__(parent=parent)
@@ -169,7 +172,7 @@ class QTarotLayoutEdit(QtGui.QMainWindow):
 		"<a href=\"{6}\">{0} Homepage</a></center>")\
 		.format(APPNAME,APPVERSION,DESCRIPTION,EMAIL,AUTHOR,YEAR,PAGE))
 
-	def newCard(self):
+	def newCard(self, checked=False, x=None, y=None, width=None, height=None):
 		item = InteractableRectItem(x=15,y=15,width=30,height=30, purpose="Neeep! {}")
 		col = self.palette().highlight().color()
 		col.setAlphaF(0.6)
@@ -214,7 +217,7 @@ class QTarotLayoutEdit(QtGui.QMainWindow):
 		canvas_item.setToolTip(item.text())
 	
 	def updateGrid(self):
-		self.view.scene().setSceneRect(0, 0, self.widthBox.value()*30, self.heightBox.value()*30,)
+		self.view.scene().setSceneRect(0, 0, self.widthBox.value()*30, self.heightBox.value()*30)
 
 	def initUI(self):
 		self.setWindowTitle(app.applicationName())
@@ -230,17 +233,32 @@ class QTarotLayoutEdit(QtGui.QMainWindow):
 		self.widthBox.valueChanged.connect(self.updateGrid)
 		self.heightBox.valueChanged.connect(self.updateGrid)
 
-		dockwidget = QtGui.QDockWidget(self)
+		dockwidget = QtGui.QDockWidget("Layout Editor", parent=self)
+		holder = QtGui.QWidget()
+		layout = QtGui.QFormLayout(holder)
+		self.nameEdit = QtGui.QLineEdit()
+		self.authorEdit = QtGui.QLineEdit()
+		self.sourceEdit = QtGui.QLineEdit()
+		self.purposeEdit = QtGui.QLineEdit()
 		self.listview = QtGui.QListWidget()
 		self.listview.setSelectionMode(QtGui.QAbstractItemView.MultiSelection)
-		self.listview.itemSelectionChanged.connect(self.updateView)
 		self.listview.setEditTriggers(QtGui.QAbstractItemView.DoubleClicked)
-		print(self.listview.editTriggers())
+
+		self.listview.itemSelectionChanged.connect(self.updateView)
 		self.listview.itemChanged.connect(self.syncView)
-		dockwidget.setWidget(self.listview)
+		
+		layout.addRow("Name", self.nameEdit)
+		layout.addRow("Width", self.widthBox)
+		layout.addRow("Height", self.heightBox)
+		layout.addRow("Purpose", self.purposeEdit)
+		layout.addRow("Author", self.authorEdit)
+		layout.addRow("Source", self.sourceEdit)
+		layout.addRow(self.listview)
+
+		dockwidget.setWidget(holder)
 		dockwidget.show()
 		self.addDockWidget(QtCore.Qt.RightDockWidgetArea, dockwidget)
-		
+
 		scene.selectionChanged.connect(self.updateListView)
 
 		newLayAction = QtGui.QAction(QtGui.QIcon.fromTheme('document-new'), 'New Card', self)
@@ -259,9 +277,38 @@ class QTarotLayoutEdit(QtGui.QMainWindow):
 		toolbar = self.addToolBar('Exit')
 		toolbar.addAction(newLayAction)
 		toolbar.addAction(delAction)
-		toolbar.addWidget(self.widthBox)
-		toolbar.addWidget(self.heightBox)
 		toolbar.addAction(aboutAction)
+
+	def toFile(self, filename=None):
+		xmlobj = etree.fromstring('<layout></layout>')
+		xmlobj.attrib['name']=self.nameEdit.text()
+		xmlobj.attrib['height']=str(self.heightBox.value())
+		xmlobj.attrib['width']=str(self.widthBox.value())
+		etree.SubElement(xmlobj, 'purpose').text = self.purposeEdit.text()
+		etree.SubElement(xmlobj, 'author').text = self.authorEdit.text()
+		etree.SubElement(xmlobj, 'source').text = self.sourceEdit.text()
+		for i in range(self.listview.count()):
+			item = self.listview.item(i)
+			canvas_item = item.data(QtCore.Qt.UserRole)
+			pos = etree.SubElement(xmlobj, 'pos')
+			purpose = etree.SubElement(pos, 'purpose')
+			x = etree.SubElement(pos, 'x')
+			y = etree.SubElement(pos, 'y')
+			angle = etree.SubElement(pos, 'angle')
+			purpose.text = canvas_item.toolTip()
+			x.text = str(canvas_item.x()/canvas_item.scene().width())
+			y.text = str(canvas_item.y()/canvas_item.scene().width())
+			angle.text = str(canvas_item.rotation())
+		tree_string = etree.tostring(xmlobj, pretty_print=True).decode('utf-8')
+		if filename is not None:
+			with open(filename, 'w', encoding='utf-8') as f:
+				f.write(tree_string)
+		else:
+			print(tree_string)
+
+	def closeEvent(self, event):
+		self.toFile()
+		event.accept()
 
 def main():
 	global app
