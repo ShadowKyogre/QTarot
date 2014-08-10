@@ -85,7 +85,7 @@ class InteractableRectItem(QtGui.QGraphicsRectItem):
 		pos = self.mapToScene(event.pos())
 		#print(self.scenePos())
 		#print(self.scenePos())
-		print("---")
+		#print("---")
 		if event.modifiers()&QtCore.Qt.ShiftModifier:
 			self.setPos(self.pos()+(pos-self._initialPos))
 		else:
@@ -227,6 +227,11 @@ class QTarotLayoutEdit(QtGui.QMainWindow):
 	def updateGrid(self):
 		self.view.scene().setSceneRect(0, 0, self.widthBox.value()*30, self.heightBox.value()*30)
 
+	def allSel(self, selected=False):
+		for i in range(self.listview.count()):
+			item = self.listview.item(i)
+			item.setSelected(selected)
+
 	def initUI(self):
 		self.setWindowTitle(app.applicationName())
 		self.view = ZPGraphicsView()
@@ -288,6 +293,16 @@ class QTarotLayoutEdit(QtGui.QMainWindow):
 		delAction.setShortcut('Delete')
 		delAction.setStatusTip('Delete selected card positions')
 		delAction.triggered.connect(self.delCard)
+		
+		unselectAllAction = QtGui.QAction(QtGui.QIcon.fromTheme('durp'), 'Unselect all card positions', self)
+		unselectAllAction.setShortcut('Ctrl+Shift+A')
+		unselectAllAction.setStatusTip('Unselect all card positions')
+		unselectAllAction.triggered.connect(lambda: self.allSel(False))
+
+		selectAllAction = QtGui.QAction(QtGui.QIcon.fromTheme('durp'), 'Select all card positions', self)
+		selectAllAction.setShortcut('Ctrl+A')
+		selectAllAction.setStatusTip('Select all card positions')
+		selectAllAction.triggered.connect(lambda: self.allSel(True))
 
 		aboutAction=QtGui.QAction(QtGui.QIcon.fromTheme('help-about'), 'About', self)
 		aboutAction.triggered.connect(self.about)
@@ -296,6 +311,8 @@ class QTarotLayoutEdit(QtGui.QMainWindow):
 		toolbar.addAction(newLayAction)
 		toolbar.addAction(openAction)
 		toolbar.addAction(saveAction)
+		toolbar.addAction(selectAllAction)
+		toolbar.addAction(unselectAllAction)
 		toolbar.addAction(delAction)
 		toolbar.addAction(aboutAction)
 
