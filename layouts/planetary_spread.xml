@@ -1,52 +1,52 @@
-<layout name="Planetary Spread" height="6.0" width="8.0">
+<layout name="Planetary Spread" height="6" width="9">
 	<purpose>Usually used as an answering spread, but can give a good impression of the situation</purpose>
 	<author>Lady Shyra</author>
 	<source>http://www.tryskelion.com/tryskelion/planetary.htm</source>
 	<pos>
 		<purpose>The Mercury card, or matters of business, skill, or deceit</purpose>
-		<x>0.0625</x>
+		<x>0.05555555555555555</x>
 		<y>0.416666666</y>
 		<angle>0.0</angle>
 	</pos>
 	<pos>
 		<purpose>The Venus card, representing the love life</purpose>
-		<x>0.25</x>
+		<x>0.2222222222222222</x>
 		<y>0.166666666</y>
 		<angle>0.0</angle>
 	</pos>
 	<pos>
 		<purpose>The Moon card, or matters at home</purpose>
-		<x>0.25</x>
+		<x>0.2222222222222222</x>
 		<y>0.666666666</y>
 		<angle>0.0</angle>
 	</pos>
 	<pos>
 		<purpose>The Mars Card, or matters of adversity or enmity</purpose>
-		<x>0.5</x>
+		<x>0.4444444444444444</x>
 		<y>0.0</y>
 		<angle>0.0</angle>
 	</pos>
 	<pos>
 		<purpose>Your current state</purpose>
-		<x>0.5</x>
+		<x>0.4444444444444444</x>
 		<y>0.75</y>
 		<angle>0.0</angle>
 	</pos>
 	<pos>
 		<purpose>The Jupiter card, representing gains, expansion, acquisition</purpose>
-		<x>0.75</x>
+		<x>0.6666666666666666</x>
 		<y>0.166666666</y>
 		<angle>0.0</angle>
 	</pos>
 	<pos>
-		<purpose>The Mercury card, or the &quot;answer&quot;</purpose>
-		<x>0.75</x>
+		<purpose>The Mercury card, or the "answer"</purpose>
+		<x>0.6666666666666666</x>
 		<y>0.666666666</y>
 		<angle>0.0</angle>
 	</pos>
 	<pos>
 		<purpose>The Saturn card, representing restrictions</purpose>
-		<x>0.9375</x>
+		<x>0.8333333333333334</x>
 		<y>0.416666666</y>
 		<angle>0.0</angle>
 	</pos>
