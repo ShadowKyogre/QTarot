@@ -1,29 +1,29 @@
-<layout name="Four Card Draw" height="4.0" width="5.0">
+<layout name="Four Card Draw" height="2" width="5">
 	<purpose>A quick, but slightly elaborate yes or no reading.</purpose>
-	<author />
-	<source />
+	<author></author>
+	<source></source>
 	<pos>
 		<purpose>You overall</purpose>
-		<x>0.0</x>
-		<y>0.25</y>
+		<x>0.02688172043010752</x>
+		<y>0.25675675675675674</y>
 		<angle>0.0</angle>
 	</pos>
 	<pos>
 		<purpose>The unknown</purpose>
-		<x>0.25</x>
-		<y>0.25</y>
+		<x>0.2768817204301076</x>
+		<y>0.25675675675675674</y>
 		<angle>0.0</angle>
 	</pos>
 	<pos>
 		<purpose>The known</purpose>
-		<x>0.5</x>
-		<y>0.25</y>
+		<x>0.5268817204301075</x>
+		<y>0.25675675675675674</y>
 		<angle>0.0</angle>
 	</pos>
 	<pos>
 		<purpose>Outcome</purpose>
-		<x>0.75</x>
-		<y>0.25</y>
+		<x>0.7729729729729731</x>
+		<y>0.25675675675675674</y>
 		<angle>0.0</angle>
 	</pos>
 </layout>
