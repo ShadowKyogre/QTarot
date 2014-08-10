@@ -163,6 +163,7 @@ class QTarot(QtGui.QMainWindow):
 			rev=(random() <= neg)
 			rectitem=self.scene.addTarot(card,placement,rev)
 			rectitem.reposition()
+			print(rectitem.scenePos(), rectitem.sceneBoundingRect().topLeft())
 			rectitem.emitter.showName.connect(self.statusBar().showMessage)
 			rectitem.emitter.clearName.connect(self.statusBar().clearMessage)
 			rectitem.emitter.showAllInfo.connect(self.cardInfo)

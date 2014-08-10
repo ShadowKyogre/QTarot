@@ -334,7 +334,7 @@ class QTarotLayoutEdit(QtGui.QMainWindow):
 		for i in range(self.listview.count()):
 			item = self.listview.item(i)
 			canvas_item = item.data(QtCore.Qt.UserRole)
-			true_pos = canvas_item.scenePos()
+			true_pos = canvas_item.pos()
 			pos = etree.SubElement(xmlobj, 'pos')
 			purpose = etree.SubElement(pos, 'purpose')
 			x = etree.SubElement(pos, 'x')

@@ -188,6 +188,7 @@ class QTarotItem(QtGui.QGraphicsPixmapItem):
 		self.card=card
 		self.posData=pos_data
 		self.rev=reverse
+		self.setFlags(self.flags() | QtGui.QGraphicsItem.ItemIsSelectable)
 
 		self.emitter = QTarotItem.QTarotItemEmitter()
 
@@ -228,6 +229,8 @@ class QTarotItem(QtGui.QGraphicsPixmapItem):
 		if self.posData.angle != 0 and self.rotation() != self.posData.angle:
 			#self.rotate(self.posData.angle)
 			self.setRotation(self.posData.angle)
+			self.setFlags(self.flags() | QtGui.QGraphicsItem.ItemIsSelectable)
+		self.setTransformOriginPoint(self.boundingRect().center())
 		self.setPos(pos+offset)
 
 	def setRev(self, rev):
