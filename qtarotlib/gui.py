@@ -518,6 +518,9 @@ def main():
 
 	app = QtGui.QApplication(os.sys.argv)
 
+	if os.name == 'nt':
+		QtGui.QIcon.setThemeSearchPaths(['/icons'])
+
 	app.setApplicationName(APPNAME)
 	app.setApplicationVersion(APPVERSION)
 	app.setWindowIcon(QtGui.QIcon.fromTheme("qtarot"))
