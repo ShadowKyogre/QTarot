@@ -5,7 +5,7 @@ import argparse
 from PyQt4 import QtGui,QtCore
 from urllib.parse import urlparse
 from random import sample,random
-from pyqt_lxml_utils import LXMLModel
+from pyqt_lxml_utils.models import NodeModel
 
 from .guiconfig import QTarotConfig
 from .utilities import QDeckEdit
@@ -20,69 +20,21 @@ class QTarotDeckEdit(QtGui.QMainWindow):
 		super().__init__()
 		self.initUI()
 
-	def saveReadingAsIMG(self,filename,fmt):
-		pixMap = QtGui.QPixmap(self.scene.sceneRect().width(),self.scene.sceneRect().height())
+	def newDeck(self):
+		pass
 
-		c = QtGui.QColor(0)
-		c.setAlpha(0)
-		pixMap.fill(c)
+	def openDeck(self, filename=None):
+		if not filename:
+			filename = str(QtGui.QFileDialog.getOpenFileName(self, caption="Open deck", filter="XML (*.xml)"))
+		if filename:
+			print("opening deck def " + filename)
 
-		painter=QtGui.QPainter(pixMap)
-		self.scene.render(painter)
-		painter.end()
-		pixMap.save(filename,format=fmt)
-
-	def saveReadingAsHTML(self,filename):
-		store_here="{}.files".format(filename.replace(".html",""))
-		if not os.path.exists(store_here):
-			os.makedirs(store_here)
-		reading_px=os.path.join(store_here,"reading.png")
-		reading_pxh=os.path.join(os.path.basename(store_here),"reading.png")
-		self.saveReadingAsIMG(reading_px,'png')
-
-		f=open(filename,'w')
-		import shutil
-		htmltpl=QtCore.QDir("htmltpl:/").absoluteFilePath('export_read.html')
-		f2=open(htmltpl)
-		template=f2.read()
-		f2.close()
-
-		cards=""
-		layout="&lt;Unknown&gt;"
-		deck_def_credits=""
-		layout_credits=""
-		deck=""
-		for item in list(self.scene.items()):
-			if isinstance(item,QTarotItem):
-				if layout == "&lt;Unknown&gt;":
-					layout=item.posData.getparent().get('name')
-					layout_credits=self.generateCredits(item.posData)
-				if not deck_def_credits:
-					deck_def_credits=self.generateCredits(item.card)
-					deck=item.card.getroottree().getroot().get('name')
-				text,copy_from,save_file=self.generateCardText(item.card,\
-				item.rev,item.posData.purpose.text,newfp=store_here)
-				shutil.copy(copy_from,save_file)
-				cards=''.join([cards,text])
-
-		f.write(template.format(cards=cards,deck=deck,
-		layout=layout,reading_px=reading_pxh,layout_credits=layout_credits,\
-		deck_def_credits=deck_def_credits))
-		f.close()
-
-	def saveReading(self,filename=None):
+	def saveDeck(self, filename=None):
 		if not filename:
 			filename=str(QtGui.QFileDialog.getSaveFileName(self, caption="Save Current Reading",
-				filter="Images (%s);;HTML (*.html)" %(' '.join(formats))))
+				filter="XML (*.xml)"))
 		if filename:
-			fmt=filename.split(".",1)[-1]
-			if fmt == 'html':
-				self.saveReadingAsHTML(filename)
-			elif "*.{}".format(fmt) in formats:
-				self.saveReadingAsIMG(filename,fmt)
-			else:
-				QtGui.QMessageBox.critical(self, "Save Current Reading", \
-				"Invalid format ({}) specified for {}!".format(fmt,filename))
+			print("saving deck def " + filename)
 
 	def about(self):
 		QtGui.QMessageBox.about (self, "About {}".format(APPNAME),
@@ -111,7 +63,7 @@ class QTarotDeckEdit(QtGui.QMainWindow):
 			</suit>
 		</deck>
 		""",parser=parser)
-		model = LXMLModel(blub)
+		model = NodeModel(blub)
 		self.view.setModel(model)
 
 		self.setCentralWidget(self.view)
@@ -125,17 +77,17 @@ class QTarotDeckEdit(QtGui.QMainWindow):
 		newLayAction = QtGui.QAction(QtGui.QIcon.fromTheme('document-new'), 'Create a new deck definition', self)
 		newLayAction.setShortcut('Ctrl+N')
 		newLayAction.setStatusTip('Create a new deck definition')
-		#newLayAction.triggered.connect(self.newReading)
+		newLayAction.triggered.connect(self.newDeck)
 
 		saveAction = QtGui.QAction(QtGui.QIcon.fromTheme('document-save'), 'Save', self)
 		saveAction.setShortcut('Ctrl+S')
 		saveAction.setStatusTip('Save')
-		#saveAction.triggered.connect(self.saveReading)
+		saveAction.triggered.connect(self.saveDeck)
 
 		openAction = QtGui.QAction(QtGui.QIcon.fromTheme('document-open'), 'Edit another deck definition', self)
 		openAction.setShortcut('Ctrl+O')
 		openAction.setStatusTip('Edit another deck definition')
-		#openAction.triggered.connect(self.pickTable)
+		openAction.triggered.connect(self.openDeck)
 		#self.findChildren(QtGui.QDockWidget, QString name = QString())
 
 		'''
