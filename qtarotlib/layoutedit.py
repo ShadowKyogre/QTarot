@@ -306,7 +306,7 @@ class QTarotLayoutEdit(QtGui.QMainWindow):
 
 		aboutAction=QtGui.QAction(QtGui.QIcon.fromTheme('help-about'), 'About', self)
 		aboutAction.triggered.connect(self.about)
-		
+
 		toolbar = self.addToolBar('Exit')
 		toolbar.addAction(newLayAction)
 		toolbar.addAction(openAction)
@@ -363,8 +363,8 @@ class QTarotLayoutEdit(QtGui.QMainWindow):
 			angle.text = str(canvas_item.rotation())
 		tree_string = etree.tostring(xmlobj, pretty_print=True).decode('utf-8')
 		if not filename:
-			filename = QtGui.QFileDialog.getSaveFileName(self, 
-						caption="Save Layout", filter="*.xml" )
+			filename = QtGui.QFileDialog.getSaveFileName(self, caption="Save Layout", 
+			                                             filter="*.xml" )
 		if filename:
 			with open(filename, 'w', encoding='utf-8') as f:
 				f.write(tree_string)
