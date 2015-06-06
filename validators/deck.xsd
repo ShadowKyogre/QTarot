@@ -28,13 +28,13 @@
         <xs:element ref="number"/>
         <xs:element ref="file"/>
         <xs:element ref="meaning"/>
-        <xs:element minOccurs="0" ref="source"/>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="source"/>
       </xs:sequence>
       <xs:attribute name="name" use="required"/>
     </xs:complexType>
   </xs:element>
   <xs:element name="number" type="xs:string"/>
-  <xs:element name="file" type="xs:NMTOKEN"/>
+  <xs:element name="file" type="xs:anyURI"/>
   <xs:element name="meaning">
     <xs:complexType>
       <xs:sequence>
