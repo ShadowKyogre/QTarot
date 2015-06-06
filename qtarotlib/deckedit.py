@@ -11,7 +11,6 @@ from random import sample,random
 from collections import OrderedDict as od
 
 from .guiconfig import QTarotConfig
-from .utilities import QDeckEdit
 from .xmlobjects import parser, deck_validator 
 from . import APPNAME,APPVERSION,AUTHOR,DESCRIPTION,YEAR,PAGE,EMAIL
 
@@ -455,7 +454,6 @@ class QTarotDeckEdit(QtGui.QMainWindow):
 
 	def initUI(self):
 		self.setWindowTitle(app.applicationName())
-		#self.view = QDeckEdit(self)
 		self.view = DeckEditWidget(parent=self)
 		self.setCentralWidget(self.view)
 		self.setDockNestingEnabled(True)
