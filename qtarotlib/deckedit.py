@@ -1,7 +1,9 @@
 #!/usr/bin/python
 
 import os
+import re
 import argparse
+
 from PyQt4 import QtGui,QtCore
 from lxml import objectify, etree, html
 from lxml.etree import DocumentInvalid
@@ -18,6 +20,7 @@ DECK_IMAGE_ROLE = QtCore.Qt.UserRole
 NUMBER_ROLE = QtCore.Qt.UserRole + 1
 NORMAL_MEANING_ROLE = QtCore.Qt.UserRole + 2
 REVERSED_MEANING_ROLE = QtCore.Qt.UserRole + 3
+NO_BODY = re.compile('</?body[^>]*>')
 
 #http://www.sacred-texts.com/tarot/faq.htm#US1909
 
@@ -326,14 +329,14 @@ class ItemPreviewWidget(QtGui.QWidget):
 		if self._idx is not None and self._idx.isValid():
 			dirty_html = self.reversed_meaning.toHtml()
 			htmlbase = html.fromstring(dirty_html).cssselect('body')[0]
-			clean_html = etree.tostring(htmlbase, pretty_print=True).decode('utf-8')
+			clean_html = NO_BODY.sub("", etree.tostring(htmlbase, pretty_print=True).decode('utf-8'))
 			self._idx.model().itemFromIndex(self._idx).setData(clean_html, REVERSED_MEANING_ROLE)
 
 	def editNormalText(self):
 		if self._idx is not None and self._idx.isValid():
 			dirty_html = self.normal_meaning.toHtml()
 			htmlbase = html.fromstring(dirty_html).cssselect('body')[0]
-			clean_html = etree.tostring(htmlbase, pretty_print=True).decode('utf-8')
+			clean_html = NO_BODY.sub("", etree.tostring(htmlbase, pretty_print=True).decode('utf-8'))
 			self._idx.model().itemFromIndex(self._idx).setData(clean_html, NORMAL_MEANING_ROLE)
 
 	def editNameText(self, text):
