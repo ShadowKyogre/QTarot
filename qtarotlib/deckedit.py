@@ -3,7 +3,7 @@
 import os
 import argparse
 from PyQt4 import QtGui,QtCore
-from lxml import objectify, etree
+from lxml import objectify, etree, html
 from lxml.etree import DocumentInvalid
 
 from urllib.parse import quote as urlquote
@@ -324,11 +324,17 @@ class ItemPreviewWidget(QtGui.QWidget):
 
 	def editReversedText(self):
 		if self._idx is not None and self._idx.isValid():
-			self.combobox.model().itemFromIndex(self._idx).setData(self.normal_meaning.toHtml(), REVERSED_MEANING_ROLE)
+			dirty_html = self.reversed_meaning.toHtml()
+			htmlbase = html.fromstring(dirty_html).cssselect('body')[0]
+			clean_html = etree.tostring(htmlbase, pretty_print=True).decode('utf-8')
+			self._idx.model().itemFromIndex(self._idx).setData(clean_html, REVERSED_MEANING_ROLE)
 
 	def editNormalText(self):
 		if self._idx is not None and self._idx.isValid():
-			self.combobox.model().itemFromIndex(self._idx).setData(self.normal_meaning.toHtml(), NORMAL_MEANING_ROLE)
+			dirty_html = self.normal_meaning.toHtml()
+			htmlbase = html.fromstring(dirty_html).cssselect('body')[0]
+			clean_html = etree.tostring(htmlbase, pretty_print=True).decode('utf-8')
+			self._idx.model().itemFromIndex(self._idx).setData(clean_html, NORMAL_MEANING_ROLE)
 
 	def editNameText(self, text):
 		if self._idx is not None and self._idx.isValid():
