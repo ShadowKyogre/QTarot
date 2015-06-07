@@ -549,7 +549,20 @@ def main():
 	app.setApplicationVersion(APPVERSION)
 	app.setWindowIcon(QtGui.QIcon.fromTheme("qtarot"))
 
-	#qtrcfg = QTarotConfig()
+	sys_icotheme = QtGui.QIcon.themeName()
+
+	qtrcfg = QtCore.QSettings(QtCore.QSettings.IniFormat, QtCore.QSettings.UserScope,
+	                          AUTHOR, APPNAME)
+
+	qtrcfg.beginGroup("Appearance")
+	#deck_name is now deck_skin
+	current_icon_override = qtrcfg.value("stIconTheme", "")
+	if current_icon_override > "":
+		QtGui.QIcon.setThemeName(current_icon_override)
+	else:
+		QtGui.QIcon.setThemeName(sys_icotheme)
+	qtrcfg.endGroup()
+
 	'''
 	parser = argparse.ArgumentParser(prog='qtarot',description="A simple tarot fortune teller")
 	parser.add_argument('-l','--layout', help='The layout to use.',default=qtrcfg.default_layout,choices=list(qtrcfg.layouts.keys()))

@@ -377,6 +377,18 @@ def main():
 	app.setApplicationVersion(APPVERSION)
 	app.setWindowIcon(QtGui.QIcon.fromTheme("qtarot"))
 
+	qtrcfg = QtCore.QSettings(QtCore.QSettings.IniFormat, QtCore.QSettings.UserScope,
+	                          AUTHOR, APPNAME)
+
+	qtrcfg.beginGroup("Appearance")
+	#deck_name is now deck_skin
+	current_icon_override = qtrcfg.value("stIconTheme", "")
+	if current_icon_override > "":
+		QtGui.QIcon.setThemeName(current_icon_override)
+	else:
+		QtGui.QIcon.setThemeName(sys_icotheme)
+	qtrcfg.endGroup()
+
 	editor = QTarotLayoutEdit()
 	editor.show()
 	
