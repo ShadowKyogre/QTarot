@@ -93,6 +93,6 @@ setup(
 	packages = ['qtarotlib'],
 	cmdclass={'install': install},
 	data_files = data_files,
-	scripts=['qtarot.py']
+	scripts=['qtarot.py', 'qtarot-layoutedit.py', 'qtarot-deckedit.py']
 )
 
