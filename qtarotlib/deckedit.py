@@ -5,7 +5,7 @@ import re
 import argparse
 
 from PyQt4 import QtGui,QtCore
-from lxml import objectify, etree, html
+from lxml import objectify, etree
 from lxml.etree import DocumentInvalid
 
 from urllib.parse import quote as urlquote
@@ -273,9 +273,9 @@ class ItemPreviewWidget(QtGui.QWidget):
 		self.edit_card_name.textEdited.connect(self.editNameText)
 		self.edit_card_num.textEdited.connect(self.editNumText)
 
-		self.normal_meaning = QtGui.QTextEdit()
+		self.normal_meaning = QtGui.QPlainTextEdit()
 		self.normal_meaning.textChanged.connect(self.editNormalText)
-		self.reversed_meaning = QtGui.QTextEdit()
+		self.reversed_meaning = QtGui.QPlainTextEdit()
 		self.reversed_meaning.textChanged.connect(self.editReversedText)
 
 		self.sources_list = QtGui.QListView()
@@ -327,17 +327,13 @@ class ItemPreviewWidget(QtGui.QWidget):
 
 	def editReversedText(self):
 		if self._idx is not None and self._idx.isValid():
-			dirty_html = self.reversed_meaning.toHtml()
-			htmlbase = html.fromstring(dirty_html).cssselect('body')[0]
-			clean_html = NO_BODY.sub("", etree.tostring(htmlbase, pretty_print=True).decode('utf-8'))
-			self._idx.model().itemFromIndex(self._idx).setData(clean_html, REVERSED_MEANING_ROLE)
+			clean_txt = self.reversed_meaning.toPlainText()
+			self._idx.model().itemFromIndex(self._idx).setData(clean_txt, REVERSED_MEANING_ROLE)
 
 	def editNormalText(self):
 		if self._idx is not None and self._idx.isValid():
-			dirty_html = self.normal_meaning.toHtml()
-			htmlbase = html.fromstring(dirty_html).cssselect('body')[0]
-			clean_html = NO_BODY.sub("", etree.tostring(htmlbase, pretty_print=True).decode('utf-8'))
-			self._idx.model().itemFromIndex(self._idx).setData(clean_html, NORMAL_MEANING_ROLE)
+			clean_txt = self.normal_meaning.toPlainText()
+			self._idx.model().itemFromIndex(self._idx).setData(clean_txt, NORMAL_MEANING_ROLE)
 
 	def editNameText(self, text):
 		if self._idx is not None and self._idx.isValid():
@@ -385,8 +381,8 @@ class ItemPreviewWidget(QtGui.QWidget):
 		self.edit_card_name.hide()
 		self.edit_card_num.setText("")
 		self.edit_card_num.hide()
-		self.normal_meaning.setText("")
-		self.reversed_meaning.setText("")
+		self.normal_meaning.setPlainText("")
+		self.reversed_meaning.setPlainText("")
 		self.combobox.hide()
 		self.splitty.hide()
 		self.sources_list.setModel(None)
@@ -411,8 +407,8 @@ class ItemPreviewWidget(QtGui.QWidget):
 			self.edit_card_num.show()
 			self.splitty.show()
 
-			self.normal_meaning.setHtml(idx.data(NORMAL_MEANING_ROLE))
-			self.reversed_meaning.setHtml(idx.data(REVERSED_MEANING_ROLE))
+			self.normal_meaning.setPlainText(idx.data(NORMAL_MEANING_ROLE))
+			self.reversed_meaning.setPlainText(idx.data(REVERSED_MEANING_ROLE))
 		else:
 			self.combobox.setCurrentIndex(idx.parent().row())
 			self.blankOut()
