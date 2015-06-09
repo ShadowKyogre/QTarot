@@ -1,6 +1,8 @@
 from PyQt4 import QtGui,QtCore
-import os
 from lxml.etree import DocumentInvalid
+
+import os
+
 from collections import OrderedDict as od
 
 from .xmlobjects import objectify, layout_validator, deck_validator, parser

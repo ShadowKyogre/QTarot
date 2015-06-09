@@ -1,10 +1,10 @@
 #!/usr/bin/python
-import os
-#import argparse
-
 from PyQt4 import QtCore, QtGui
 from lxml import objectify, etree
 from lxml.etree import DocumentInvalid
+
+import os
+#import argparse
 
 from .utilities import ZPGraphicsView
 from . import APPNAME,APPVERSION,AUTHOR,DESCRIPTION,YEAR,PAGE,EMAIL

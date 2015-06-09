@@ -3,8 +3,9 @@
 from lxml import etree
 from html2text import HTML2Text
 
-from argparse import ArgumentParser
 import os
+
+from argparse import ArgumentParser
 
 ALL_MEANINGS = etree.XPath('//meaning/normal|//meaning/reversed')
 CONVERTER = HTML2Text()

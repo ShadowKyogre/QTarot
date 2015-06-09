@@ -1,5 +1,6 @@
 from PyQt4 import QtGui,QtCore
 from lxml import objectify, etree
+
 from .xmlobjects import TarotCard, objectify, parser
 
 class QDeckBrowser(QtGui.QWidget):

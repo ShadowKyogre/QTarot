@@ -1,12 +1,12 @@
 #!/usr/bin/python
 
-import os
-import re
-import argparse
-
 from PyQt4 import QtGui,QtCore
 from lxml import objectify, etree
 from lxml.etree import DocumentInvalid
+
+import os
+import re
+import argparse
 
 from urllib.parse import quote as urlquote
 from random import sample,random

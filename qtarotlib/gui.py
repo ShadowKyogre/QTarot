@@ -1,9 +1,11 @@
 #!/usr/bin/python
 
-import os
-import argparse
 from PyQt4 import QtGui,QtCore
 from markdown import markdown
+
+import os
+import argparse
+
 from urllib.parse import urlparse
 from random import sample,random
 
