@@ -3,6 +3,7 @@
 import os
 import argparse
 from PyQt4 import QtGui,QtCore
+from markdown import markdown
 from urllib.parse import urlparse
 from random import sample,random
 
@@ -218,11 +219,11 @@ class QTarot(QtGui.QMainWindow):
 		if skin:
 			oldfn=QtCore.QDir("skin:/").absoluteFilePath(card.file.text)
 			fn=os.path.join('skins:{skin}'.format(**locals()),os.path.basename(oldfn))
-		revtext=card.meaning.reversed.text if card.meaning.reversed.text else "Cannot be reversed"
+		revtext=markdown(card.meaning.reversed.text) if card.meaning.reversed.text else "Cannot be reversed"
 		result=template.format(fn=fn, name=card.fullname(), \
 		n=card.number, suit=card.getparent().get('name'), \
 		af=card.getparent().get('affinity'), \
-		normal=card.meaning.normal.text, \
+		normal=markdown(card.meaning.normal.text), \
 		reverse=revtext,
 		reading_specific=reading_specific.format(purp=purpose,\
 		status="Reversed" if reverse else "Normal"))
