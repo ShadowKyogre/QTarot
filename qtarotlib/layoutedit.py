@@ -91,9 +91,9 @@ class InteractableRectItem(QtGui.QGraphicsRectItem):
 		else:
 			tmprot = self.rotation()
 			if _counterClockwise(self.boundingRect().center(), self._initialPos, pos):
-				tmprot +=1
+				tmprot += 1
 			else:
-				tmprot -=1
+				tmprot -= 1
 			self.setRotation(tmprot)
 		self._initialPos = pos
 		super().mouseMoveEvent(event)
@@ -121,7 +121,7 @@ class MoveRotateScene(QtGui.QGraphicsScene):
 		recty = rect.intersect(self.sceneRect())
 		left = int(recty.left()) - int(recty.left()) % 30
 		top = int(recty.top()) - int(recty.top()) % 30
-		lines=[]
+		lines = []
 		for x in range(left, int(recty.right())+1, 30):
 			lines.append(QtCore.QLineF(x, recty.top(), x, recty.bottom()))
 		for y in range(top, int(recty.bottom())+1, 30):
@@ -172,10 +172,11 @@ class QTarotLayoutEdit(QtGui.QMainWindow):
 
 	def about(self):
 		QtGui.QMessageBox.about (self, "About {}".format(APPNAME),
-		("<center><big><b>{0} Layout Editor {1}</b></big>"
-		"<br />{2}<br />(C) <a href=\"mailto:{3}\">{4}</a> {5}<br />"
-		"<a href=\"{6}\">{0} Homepage</a></center>")\
-		.format(APPNAME,APPVERSION,DESCRIPTION,EMAIL,AUTHOR,YEAR,PAGE))
+		    ("<center><big><b>{0} Layout Editor {1}</b></big>"
+		    "<br />{2}<br />(C) <a href=\"mailto:{3}\">{4}</a> {5}<br />"
+		    "<a href=\"{6}\">{0} Homepage</a></center>")format(
+		        APPNAME,APPVERSION,DESCRIPTION,EMAIL,AUTHOR,YEAR,PAGE)
+		)
 
 	def newCard(self, checked=False, x=15, y=15, width=None, height=None, angle=None, purpose="Neeep! {}"):
 		item = InteractableRectItem(x=0, y=0, width=30, height=30, purpose=purpose)
@@ -304,7 +305,7 @@ class QTarotLayoutEdit(QtGui.QMainWindow):
 		selectAllAction.setStatusTip('Select all card positions')
 		selectAllAction.triggered.connect(lambda: self.allSel(True))
 
-		aboutAction=QtGui.QAction(QtGui.QIcon.fromTheme('help-about'), 'About', self)
+		aboutAction = QtGui.QAction(QtGui.QIcon.fromTheme('help-about'), 'About', self)
 		aboutAction.triggered.connect(self.about)
 
 		toolbar = self.addToolBar('Exit')
@@ -318,10 +319,10 @@ class QTarotLayoutEdit(QtGui.QMainWindow):
 
 	def openFile(self, checked=False, filename=None):
 		if filename is None:
-			filename = QtGui.QFileDialog.getOpenFileName (self, 
-						caption="Open a layout file", 
-						directory=QtCore.QDir.homePath(), 
-						filter="*.xml")
+			filename = QtGui.QFileDialog.getOpenFileName(self, 
+			               caption="Open a layout file", 
+			               directory=QtCore.QDir.homePath(), 
+			               filter="*.xml")
 		if filename != "":
 			print("Opening file...")
 			try:
@@ -334,7 +335,9 @@ class QTarotLayoutEdit(QtGui.QMainWindow):
 				self.authorEdit.setText(lay.author.text)
 				self.sourceEdit.setText(lay.source.text)
 				for i in lay.iterchildren(tag='pos'):
-					self.newCard(x=i.x*self.view.scene().width(), y=i.y*self.view.scene().height(), angle=i.angle, purpose=i.purpose.text)
+					self.newCard(x=i.x*self.view.scene().width(), 
+					    y=i.y*self.view.scene().height(), angle=i.angle, 
+					    purpose=i.purpose.text)
 			except DocumentInvalid as e:
 				print(filename, "was an invalid layout xml file, starting empty.")
 			except OSError as e:
@@ -342,9 +345,9 @@ class QTarotLayoutEdit(QtGui.QMainWindow):
 
 	def saveFile(self, checked=False, filename=None):
 		xmlobj = etree.fromstring('<layout></layout>')
-		xmlobj.attrib['name']=self.nameEdit.text()
-		xmlobj.attrib['height']=str(self.heightBox.value())
-		xmlobj.attrib['width']=str(self.widthBox.value())
+		xmlobj.attrib['name'] = self.nameEdit.text()
+		xmlobj.attrib['height'] = str(self.heightBox.value())
+		xmlobj.attrib['width'] = str(self.widthBox.value())
 		etree.SubElement(xmlobj, 'purpose').text = self.purposeEdit.text()
 		etree.SubElement(xmlobj, 'author').text = self.authorEdit.text()
 		etree.SubElement(xmlobj, 'source').text = self.sourceEdit.text()
@@ -364,7 +367,7 @@ class QTarotLayoutEdit(QtGui.QMainWindow):
 		tree_string = etree.tostring(xmlobj, pretty_print=True).decode('utf-8')
 		if not filename:
 			filename = QtGui.QFileDialog.getSaveFileName(self, caption="Save Layout", 
-			                                             filter="*.xml" )
+			               filter="*.xml" )
 		if filename:
 			with open(filename, 'w', encoding='utf-8') as f:
 				f.write(tree_string)

@@ -10,7 +10,7 @@ from . import APPVERSION, AUTHOR, APPNAME, DECKS, DECK_DEFS, LAYOUTS, HTMLTPL
 
 class QTarotConfig:
 	def __init__(self):
-		self.settings=QtCore.QSettings(QtCore.QSettings.IniFormat,
+		self.settings = QtCore.QSettings(QtCore.QSettings.IniFormat,
 						QtCore.QSettings.UserScope,
 						AUTHOR,
 						APPNAME)
@@ -20,31 +20,31 @@ class QTarotConfig:
 		#deck defs are like "decks:{deck}.xml"
 		#path for layouts is like "layouts:<layout-name>.lyt"
 
-		self.userconfdir=QtGui.QDesktopServices.storageLocation\
-		(QtGui.QDesktopServices.DataLocation).replace('//','/')
+		self.userconfdir = QtGui.QDesktopServices.storageLocation\
+		    (QtGui.QDesktopServices.DataLocation).replace('//','/')
 
-		app_theme_path=DECKS
-		config_theme_path=os.path.join(self.userconfdir,"decks")
+		app_theme_path = DECKS
+		config_theme_path = os.path.join(self.userconfdir,"decks")
 
-		app_layout_path=LAYOUTS
-		config_layout_path=os.path.join(self.userconfdir,"layouts")
+		app_layout_path = LAYOUTS
+		config_layout_path = os.path.join(self.userconfdir,"layouts")
 
-		app_defs_path=DECK_DEFS
-		config_defs_path=os.path.join(self.userconfdir,"deck_defs")
+		app_defs_path = DECK_DEFS
+		config_defs_path = os.path.join(self.userconfdir,"deck_defs")
 
-		app_htmltpl_path=HTMLTPL
-		config_htmltpl_path=os.path.join(self.userconfdir,"htmltpl")
+		app_htmltpl_path = HTMLTPL
+		config_htmltpl_path = os.path.join(self.userconfdir,"htmltpl")
 
 		QtCore.QDir.setSearchPaths("layouts", [config_layout_path,app_layout_path])
 		QtCore.QDir.setSearchPaths("skins", [config_theme_path,app_theme_path])
 		QtCore.QDir.setSearchPaths("deckdefs", [config_defs_path,app_defs_path])
 		QtCore.QDir.setSearchPaths("htmltpl", [config_htmltpl_path,app_htmltpl_path])
 
-		self.sys_icotheme=QtGui.QIcon.themeName()
+		self.sys_icotheme = QtGui.QIcon.themeName()
 		self.reset_settings()
 
 	def get_bases(self, prefix):
-		paths=QtCore.QDir.searchPaths(prefix)
+		paths = QtCore.QDir.searchPaths(prefix)
 		seen = {}
 		results = []
 		for path in paths:
@@ -55,44 +55,44 @@ class QTarotConfig:
 		return results
 
 	def load_layouts(self):
-		self.layouts=od()
-		layouts_path=QtCore.QDir("layouts:/")
+		self.layouts = od()
+		layouts_path = QtCore.QDir("layouts:/")
 		for i in self.get_bases("layouts"):
-			path=QtCore.QFile("layouts:/{}".format(i)).fileName()
-			lay=objectify.parse(path,parser=parser)
+			path = QtCore.QFile("layouts:/{}".format(i)).fileName()
+			lay = objectify.parse(path,parser = parser)
 			try:
 				layout_validator.assertValid(lay)
-				lay=lay.getroot()
-				self.layouts[lay.attrib['name']]=lay
+				lay = lay.getroot()
+				self.layouts[lay.attrib['name']] = lay
 			except DocumentInvalid as e:
 				print('File',lay,'is invalid for these reason(s):',e,file=os.sys.stderr)
 
-	def setup_skin(self,skin):
+	def setup_skin(self, skin):
 		QtCore.QDir.setSearchPaths("skin", ["skins:%s" %(skin)])
 
 	def load_deck_defs(self):
-		self.deck_defs=od()
-		deck_defs_path=QtCore.QDir("deckdefs:/")
+		self.deck_defs = od()
+		deck_defs_path = QtCore.QDir("deckdefs:/")
 		for i in self.get_bases("deckdefs"):
-			path=QtCore.QFile("deckdefs:/{}".format(i)).fileName()
-			deck_def=objectify.parse(path,parser=parser)
+			path = QtCore.QFile("deckdefs:/{}".format(i)).fileName()
+			deck_def = objectify.parse(path, parser=parser)
 			try:
 				deck_validator.assertValid(deck_def)
-				deck_def=deck_def.getroot()
-				self.deck_defs[deck_def.attrib['name']]={}
-				self.deck_defs[deck_def.attrib['name']]['definition']=deck_def
-				self.deck_defs[deck_def.attrib['name']]['skins']=[]
+				deck_def = deck_def.getroot()
+				self.deck_defs[deck_def.attrib['name']] = {}
+				self.deck_defs[deck_def.attrib['name']]['definition'] = deck_def
+				self.deck_defs[deck_def.attrib['name']]['skins'] = []
 			except DocumentInvalid as e:
-				print('File',path,'is invalid for these reason(s):',e,file=os.sys.stderr)
+				print('File',path,'is invalid for these reason(s):', e, file=os.sys.stderr)
 
 	def load_skins(self):
-		deck_skins_path=QtCore.QDir("skins:/")
+		deck_skins_path = QtCore.QDir("skins:/")
 		for i in self.get_bases("skins"):
 			if deck_skins_path.exists("skins:/{}/deck.ini".format(i)):
-				skin_info=QtCore.QSettings("skins:/{}/deck.ini".format(i), \
-							QtCore.QSettings.IniFormat)
+				skin_info = QtCore.QSettings("skins:/{}/deck.ini".format(i), 
+				                QtCore.QSettings.IniFormat)
 				skin_info.beginGroup("Deck Skin")
-				for_deck=skin_info.value("definition","")
+				for_deck = skin_info.value("definition","")
 				if for_deck:
 					if for_deck in self.deck_defs:
 						if self.deck_defs[for_deck]['definition'].conforms(i):
@@ -115,20 +115,20 @@ class QTarotConfig:
 
 	def reset_settings(self):
 		self.settings.beginGroup("Reading")
-		self.deck_def=self.settings.value("deck","Rider Waite")
-		self.negativity=float(self.settings.value("negativity",0.5))
-		self.default_layout=self.settings.value("defaultLayout","Ellipse")
+		self.deck_def = self.settings.value("deck","Rider Waite")
+		self.negativity = float(self.settings.value("negativity",0.5))
+		self.default_layout = self.settings.value("defaultLayout","Ellipse")
 		self.settings.endGroup()
 
 		self.settings.beginGroup("Appearance")
 		#deck_name is now deck_skin
-		self.deck_skin=self.settings.value("skin","coleman-white")
-		self.current_icon_override=self.settings.value("stIconTheme", "")
+		self.deck_skin = self.settings.value("skin","coleman-white")
+		self.current_icon_override = self.settings.value("stIconTheme", "")
 		if self.current_icon_override > "":
 			QtGui.QIcon.setThemeName(self.current_icon_override)
 		else:
 			QtGui.QIcon.setThemeName(self.sys_icotheme)
-		self.table=self.settings.value("table","skin:table.png")
+		self.table = self.settings.value("table","skin:table.png")
 		self.settings.endGroup()
 
 		self.refreshData()

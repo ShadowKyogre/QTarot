@@ -4,21 +4,21 @@ from lxml import objectify, etree
 from .xmlobjects import TarotCard, objectify, parser
 
 class QDeckBrowser(QtGui.QWidget):
-	def __init__(self, parent = None, deck_source = None):
+	def __init__(self, parent=None, deck_source=None):
 		super().__init__(parent)
 		layout = QtGui.QGridLayout(self)
-		self.deckPicker=QtGui.QComboBox(self)
-		self.skinPicker=QtGui.QComboBox(self)
+		self.deckPicker = QtGui.QComboBox(self)
+		self.skinPicker = QtGui.QComboBox(self)
 		self.deckPicker.currentIndexChanged['QString'].connect(self.populateSkins)
 		self.skinPicker.currentIndexChanged['QString'].connect(self.populatePreview)
 
-		self.previewArea=QtGui.QListView(self)
+		self.previewArea = QtGui.QListView(self)
 		self.previewArea.setGridSize(QtCore.QSize(128,128))
 		self.previewArea.setViewMode (QtGui.QListView.IconMode)
 		self.previewArea.setResizeMode (QtGui.QListView.Adjust)
 		self.previewArea.setWrapping(True)
 
-		m=QtGui.QStandardItemModel(self.previewArea)
+		m = QtGui.QStandardItemModel(self.previewArea)
 		m.setColumnCount(1)
 
 		self.previewArea.setModel(m)
@@ -32,19 +32,19 @@ class QDeckBrowser(QtGui.QWidget):
 		layout.addWidget(self.skinPicker,1,1)
 		layout.addWidget(self.previewArea,2,0,1,2)
 
-		self.deckSource=deck_source
+		self.deckSource = deck_source
 
 	def populateSkins(self, new_def):
 		if new_def in self.deckSource:
-			skins_list=self.deckSource[new_def]['skins']
+			skins_list = self.deckSource[new_def]['skins']
 		else:
-			skins_list=[]
+			skins_list = []
 		self.skinPicker.clear()
 		self.skinPicker.addItems(skins_list)
 		self.skinPicker.setCurrentIndex(0)
 
 	def setDeckSource(self, new_source):
-		self._deckSource=new_source
+		self._deckSource = new_source
 		self.deckPicker.addItems(list(self._deckSource.keys()))
 		self.deckPicker.setCurrentIndex(0)
 
@@ -58,14 +58,15 @@ class QDeckBrowser(QtGui.QWidget):
 		self.previewArea.model().removeRows(0,self.previewArea.model().rowCount())
 		if not new_skin:
 			return
-		model=self.previewArea.model()
+		model = self.previewArea.model()
 		for card in self.currentDeck()['definition'].cards():
-			f=QtCore.QFileInfo(card.file.text)
-			bf=f.baseName()
-			sf=f.completeSuffix()
-			fn="{bf}.{sf}".format(**locals())
-			item=QtGui.QStandardItem(QtGui.QIcon("skins:/{new_skin}/{fn}".format(**locals())), \
-			card.fullname())
+			f = QtCore.QFileInfo(card.file.text)
+			bf = f.baseName()
+			sf = f.completeSuffix()
+			fn = "{bf}.{sf}".format(**locals())
+			item = QtGui.QStandardItem(QtGui.QIcon("skins:/{new_skin}/{fn}".format(
+			               **locals())
+			           ), card.fullname())
 			item.setData(card.getroottree().getpath(card),32)
 			item.setData(new_skin,33)
 			model.appendRow(item)
@@ -75,16 +76,16 @@ class QDeckBrowser(QtGui.QWidget):
 class QTarotScene(QtGui.QGraphicsScene):
 	def __init__(self,*args):
 		super().__init__(*args)
-		self.tableitem=self.addPixmap(QtGui.QPixmap())
+		self.tableitem = self.addPixmap(QtGui.QPixmap())
 		self.tableitem.setZValue(-1000.0)
 	def calculateOffset(self):
-		xoffset=(self.sceneRect().width()-self.smallerD)/2.0
-		yoffset=(self.sceneRect().height()-self.smallerD)/2.0
+		xoffset = (self.sceneRect().width()-self.smallerD)/2.0
+		yoffset = (self.sceneRect().height()-self.smallerD)/2.0
 		return QtCore.QPointF(xoffset,yoffset)
 	def clear(self):
-		px=self.tableitem.pixmap()
+		px = self.tableitem.pixmap()
 		QtGui.QGraphicsScene.clear(self)
-		self.tableitem=self.addPixmap(px)
+		self.tableitem = self.addPixmap(px)
 	@property
 	def smallerD(self):
 		return self.sceneRect().width() if \
@@ -100,7 +101,7 @@ class QTarotScene(QtGui.QGraphicsScene):
 		return self.tableitem.pixmap()
 
 	def addTarot(self, card, pos_data, rev=False):
-		qtarotitem=QTarotItem(card, pos_data, rev)
+		qtarotitem = QTarotItem(card, pos_data, rev)
 		#qtarotitem.rev=rev
 		self.addItem(qtarotitem)
 		qtarotitem.refresh()
@@ -112,17 +113,17 @@ class QTarotScene(QtGui.QGraphicsScene):
 class QTarotItem(QtGui.QGraphicsPixmapItem):
 
 	class QTarotItemEmitter(QtCore.QObject):
-		showAllInfo=QtCore.pyqtSignal([TarotCard,'bool',objectify.ObjectifiedElement])
-		showName=QtCore.pyqtSignal(['QString'])
-		clearName=QtCore.pyqtSignal([])
+		showAllInfo = QtCore.pyqtSignal([TarotCard,'bool',objectify.ObjectifiedElement])
+		showName = QtCore.pyqtSignal(['QString'])
+		clearName = QtCore.pyqtSignal([])
 
 	def __init__(self, card, pos_data, reverse, parent=None, scene=None):
 		super().__init__(parent=None, scene=None)
 		#QtGui.QGraphicsObject.__init__(self, parent)
 		self.setAcceptHoverEvents(True)
-		self.card=card
-		self.posData=pos_data
-		self.rev=reverse
+		self.card = card
+		self.posData = pos_data
+		self.rev = reverse
 		self.setFlags(self.flags() | QtGui.QGraphicsItem.ItemIsSelectable)
 
 		self.emitter = QTarotItem.QTarotItemEmitter()
@@ -135,30 +136,30 @@ class QTarotItem(QtGui.QGraphicsPixmapItem):
 	def refresh(self):
 		if None in (self.posData, self.card, self.scene()):
 			return
-		fn=self.card.file.text
+		fn = self.card.file.text
 		#or skin:fn
-		px=QtGui.QPixmap("skin:{fn}".format(**locals()))
-		largestDim=self.posData.getparent().largetDimension()
-		shortest_dim_size=1/largestDim*self.scene().smallerD
+		px = QtGui.QPixmap("skin:{fn}".format(**locals()))
+		largestDim = self.posData.getparent().largetDimension()
+		shortest_dim_size = 1/largestDim*self.scene().smallerD
 
 		if px.width() < px.height():
-			px=px.scaledToWidth(shortest_dim_size)
+			px = px.scaledToWidth(shortest_dim_size)
 		else:
-			px=px.scaledToHeight(shortest_dim_size)
+			px = px.scaledToHeight(shortest_dim_size)
 
 		if self.rev:
-			rm=QtGui.QMatrix()
+			rm = QtGui.QMatrix()
 			rm.rotate(180)
-			px=px.transformed(rm)
+			px = px.transformed(rm)
 
 		self.setPixmap(px)
 
 	def reposition(self):
-		largestDim=self.posData.getparent().largetDimension()
-		shortest_dim_size=1/largestDim*self.scene().smallerD
-		offset=self.scene().calculateOffset()
-		pos=QtCore.QPointF(self.posData.x*self.scene().smallerD, \
-				self.posData.y*self.scene().smallerD)
+		largestDim = self.posData.getparent().largetDimension()
+		shortest_dim_size = 1/largestDim*self.scene().smallerD
+		offset = self.scene().calculateOffset()
+		pos = QtCore.QPointF(self.posData.x*self.scene().smallerD, 
+		          self.posData.y*self.scene().smallerD)
 		#print self.posData.angle
 		#print
 		if self.posData.angle != 0 and self.rotation() != self.posData.angle:
@@ -208,7 +209,7 @@ class QTarotItem(QtGui.QGraphicsPixmapItem):
 class ZPGraphicsView(QtGui.QGraphicsView):
 	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)
-		self.lastPanPoint=QtCore.QPoint()
+		self.lastPanPoint = QtCore.QPoint()
 		self.setCenter(QtCore.QPointF(self.sceneRect().width()/2.0, \
 		self.sceneRect().height()/2.0))
 		self.setMouseTracking(True)
@@ -227,7 +228,7 @@ class ZPGraphicsView(QtGui.QGraphicsView):
 		boundHeight = sceneBounds.height() - 2.0 * boundY
 
 		#The max boundary that the centerPoint can be to
-		bounds=QtCore.QRectF(boundX, boundY, boundWidth, boundHeight)
+		bounds = QtCore.QRectF(boundX, boundY, boundWidth, boundHeight)
 
 		if bounds.contains(centerPoint):
 			#We are within the bounds
@@ -277,7 +278,7 @@ class ZPGraphicsView(QtGui.QGraphicsView):
 
 	def wheelEvent(self,event):
 		#Get the position of the mouse before scaling, in scene coords
-		pointBeforeScale=QtCore.QPointF(self.mapToScene(event.pos()))
+		pointBeforeScale = QtCore.QPointF(self.mapToScene(event.pos()))
 
 		#Get the original screen centerpoint
 		screenCenter = self.currentCenterPoint # //currentCenterPoint; //(visRect.center());
@@ -291,15 +292,14 @@ class ZPGraphicsView(QtGui.QGraphicsView):
 			self.scale(scaleFactor, scaleFactor)
 		else:
 			#Zooming out
-			cursize=self.mapFromScene (self.sceneRect()).boundingRect()
-			if cursize.width() > self.width() and \
-			cursize.height() > self.height():
+			cursize = self.mapFromScene (self.sceneRect()).boundingRect()
+			if cursize.width() > self.width() and cursize.height() > self.height():
 				self.scale(1/abs(scaleFactor), 1/abs(scaleFactor))
 			else:
-				self.fitInView (self.sceneRect(),mode=QtCore.Qt.KeepAspectRatio)
+				self.fitInView(self.sceneRect(), mode=QtCore.Qt.KeepAspectRatio)
 
 		#Get the position after scaling, in scene coords
-		pointAfterScale=QtCore.QPointF(self.mapToScene(event.pos()))
+		pointAfterScale = QtCore.QPointF(self.mapToScene(event.pos()))
 
 		#Get the offset of how the screen moved
 		offset = pointBeforeScale - pointAfterScale

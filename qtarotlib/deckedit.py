@@ -452,10 +452,11 @@ class QTarotDeckEdit(QtGui.QMainWindow):
 
 	def about(self):
 		QtGui.QMessageBox.about (self, "About {}".format(APPNAME),
-		("<center><big><b>{0} Deck Editor {1}</b></big>"
-		"<br />{2}<br />(C) <a href=\"mailto:{3}\">{4}</a> {5}<br />"
-		"<a href=\"{6}\">{0} Homepage</a></center>")\
-		.format(APPNAME,APPVERSION,DESCRIPTION,EMAIL,AUTHOR,YEAR,PAGE))
+		    ("<center><big><b>{0} Deck Editor {1}</b></big>"
+		    "<br />{2}<br />(C) <a href=\"mailto:{3}\">{4}</a> {5}<br />"
+		    "<a href=\"{6}\">{0} Homepage</a></center>").format(
+		        APPNAME,APPVERSION,DESCRIPTION,EMAIL,AUTHOR,YEAR,PAGE)
+		)
 
 	def initUI(self):
 		self.setWindowTitle(app.applicationName())
@@ -494,10 +495,10 @@ class QTarotDeckEdit(QtGui.QMainWindow):
 		browsingAction.triggered.connect(self.browseDecks)
 		'''
 
-		aboutAction=QtGui.QAction(QtGui.QIcon.fromTheme('help-about'), 'About', self)
+		aboutAction = QtGui.QAction(QtGui.QIcon.fromTheme('help-about'), 'About', self)
 		aboutAction.triggered.connect(self.about)
 
-		st=self.statusBar()
+		st = self.statusBar()
 
 		menubar = self.menuBar()
 		fileMenu = menubar.addMenu('&File')
@@ -525,10 +526,10 @@ def main():
 	global app
 	global qtrcfg
 
-	formats=set(["*."+''.join(i).lower() for i in \
+	formats = set(["*."+''.join(i).lower() for i in \
 		QtGui.QImageWriter.supportedImageFormats()])
 
-	formats=sorted(list(formats),key=str.lower)
+	formats = sorted(list(formats), key=str.lower)
 	try:
 		formats.remove('*.bw')
 	except ValueError:
